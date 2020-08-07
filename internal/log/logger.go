@@ -1,9 +1,12 @@
 package log
 
 import (
+	"os"
+
+	"github.com/mitchellh/go-homedir"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func NewLogger() *zap.SugaredLogger {
@@ -18,8 +21,22 @@ func NewLogger() *zap.SugaredLogger {
 	fileLevel := zap.DebugLevel
 	consoleLevel := zap.DebugLevel
 
+	homedir, err := homedir.Dir()
+
+	if err != nil {
+		return nil
+	}
+
+	logSync := &lumberjack.Logger{
+		Filename:   homedir + "/logs/RoyalAfgInGo/log.log",
+		MaxSize:    50,
+		MaxBackups: 5,
+		MaxAge:     14,
+		Compress:   false,
+	}
+
 	core := zapcore.NewTee(
-		zapcore.NewCore(jsonEncoder, zapcore.AddSync(os.Stdout), fileLevel),
+		zapcore.NewCore(jsonEncoder, zapcore.AddSync(logSync), fileLevel),
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), consoleLevel),
 	)
 
