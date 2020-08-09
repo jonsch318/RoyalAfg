@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/account//pkg/account/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/account/pkg/account/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/internal/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/account/pkg/account/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/log"
 	sharedMiddleware "github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/middleware"
 	"github.com/Kamva/mgm/v3"
 	"github.com/go-openapi/runtime/middleware"
@@ -17,6 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Start starts the account service
 func Start() {
 	logger := log.NewLogger()
 
