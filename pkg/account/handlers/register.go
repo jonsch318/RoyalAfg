@@ -2,19 +2,21 @@ package handlers
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/account/models"
 )
 
 func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	h.l.Info("Register route called")
 
-	var dto dtos.RegisterUser
+	var dto RegisterUser
 	err := dto.FromJSON(r.Body)
 	if err != nil {
 		h.l.Error(err)
@@ -88,4 +90,25 @@ func getJwt(user *models.User) (string, error) {
 	}
 
 	return token, nil
+}
+
+type RegisterUser struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// FromJSON reads from the given io reader and decodes it if possible to a RegisterUser dto, else it returns an error.
+func (dto *RegisterUser) FromJSON(r io.Reader) error {
+	decoder := json.NewDecoder(r)
+	return decoder.Decode(dto)
+}
+
+// Validate validates if the RegisterUser dto matches all the user requirements
+func (dto RegisterUser) Validate() error {
+	return validation.ValidateStruct(&dto,
+		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
+		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
+		validation.Field(&dto.Email, is.Email),
+	)
 }

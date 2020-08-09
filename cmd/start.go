@@ -3,11 +3,10 @@ Copyright © 2020 Jonas Schneider jonas.max.schnedier@gmail.com
 */
 package cmd
 
-import  (
-	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user"
-	"github.com/spf13/viper"
+import (
 	"time"
+
+	"github.com/spf13/viper"
 
 	"github.com/spf13/cobra"
 )
@@ -22,10 +21,6 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Starting the Application... \n Logging will be initialized in a bit.")
-		user.Start()
-	},
 }
 
 func init() {
@@ -34,6 +29,6 @@ func init() {
 	startCmd.Flags().Int("port", 8080, "Defines the port on which the royalafg server will listen for request")
 	viper.BindPFlag("port", startCmd.Flags().Lookup("port"))
 
-	startCmd.Flags().Duration("gracyfulTimeout", time.Second * 20, "The duration for which the server waits for existing connections to finish")
+	startCmd.Flags().Duration("gracyfulTimeout", time.Second*20, "The duration for which the server waits for existing connections to finish")
 	viper.BindPFlag("GracefulTimeout", startCmd.Flags().Lookup("gracefulTimeout"))
 }
