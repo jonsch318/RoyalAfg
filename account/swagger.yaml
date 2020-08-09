@@ -1,0 +1,20 @@
+basePath: /
+consumes:
+- application/json
+host: royalafg.games
+info:
+  contact:
+    email: jonas.max.schneider@gmail.com
+  description: Documentation for RoyalAfg Account API
+  license:
+    name: MIT
+    url: http://opensource.org/license/MIT
+  title: of RoyalAfg Account API
+  version: 0.0.1
+paths: {}
+produces:
+- application/json
+schemes:
+- http
+- https
+swagger: "2.0"
