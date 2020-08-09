@@ -7,10 +7,12 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/internal/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/account/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/account/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/account//pkg/account/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/account/pkg/account/database"
+	"github.com/JohnnyS318/RoyalAfgInGo/shared/internal/log"
+	sharedMiddleware "github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/middleware"
 	"github.com/Kamva/mgm/v3"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -37,24 +39,41 @@ func Start() {
 
 	userDb := database.NewUserDatabase(logger)
 
-	postRouter := r.Methods(http.MethodPost).Subrouter()
+	// Register Middleware
+	loggerHandler := sharedMiddleware.NewLoggerHandler(logger)
+	r.Use(loggerHandler.LogRouteWithIP)
 
+	// Handlers
 	userHandler := handlers.NewUserHandler(logger, userDb)
+
+	// Get Subrouters
+	postRouter := r.Methods(http.MethodPost).Subrouter()
+	getRouter := r.Methods(http.MethodGet).Subrouter()
+
+	postRouter.Use(loggerHandler.ContentTypeJSON)
+
 	postRouter.HandleFunc("/account/register", userHandler.Register)
 	postRouter.HandleFunc("/account/login", userHandler.Login)
 
-	// SERVER SETUP
+	getRouter.HandleFunc("/account/verify", userHandler.VerifyLoggedIn)
 
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(opts, nil)
+
+	getRouter.Handle("/docs", sh)
+	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+
+	// SERVER SETUP
 	port := 8080
 
 	srv := &http.Server{
-		Addr: ":8080",
+		Addr:         ":8080",
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		Handler:      r,
 	}
-.
+
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Error(err)
