@@ -1,9 +1,8 @@
-module github.com/JohnnyS318/RoyalAfgInGo/account
+module github.com/JohnnyS318/RoyalAfgInGo
 
 go 1.14
 
 require (
-	github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0
 	github.com/Kamva/mgm/v3 v3.0.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elithrar/simple-scrypt v1.3.0
@@ -15,6 +14,5 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.4.0
 	go.uber.org/zap v1.15.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
-
-replace github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0 => ../shared
