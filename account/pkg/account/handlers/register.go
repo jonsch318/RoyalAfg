@@ -10,6 +10,27 @@ import (
 )
 
 // Register registers a new user
+// swagger:route POST /account/register authentication
+//
+//	Register a new user
+//
+// This will register a new user with the provided details
+//
+//	Consumes:
+//	-	application/json
+//
+//	Produces:
+//	-	application/json
+//
+//	Schemes: http, https
+//
+// 	Responses:
+// 		default: ErrorResponse
+//		400: ErrorResponse
+//		422: ValidationErrorResponse
+//		500: ErrorResponse
+//		200: UserResponse
+//
 func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	h.l.Info("Register route called")
 
@@ -17,10 +38,10 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 
-	var dto RegisterUser
+	dto := &RegisterUser{}
 	err := FromJSON(dto, r.Body)
 	if err != nil {
-		h.l.Error(err)
+		h.l.Error("Decoding JSON", "error", err)
 		JSONError(rw, &ErrorResponse{Error: "user could not be decoded"}, http.StatusBadRequest)
 		return
 	}
@@ -28,12 +49,12 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	h.l.Debug("Decoded user")
 
 	if err := dto.Validate(); err != nil {
-		h.l.Error(err)
+		h.l.Error("Validation", "error", err)
 		JSONError(rw, &ValidationError{Errors: err}, http.StatusUnprocessableEntity)
 		return
 	}
 
-	user, err := models.NewUser(dto.Username, dto.Password, dto.Email)
+	user, err := dto.ToObject()
 
 	if err != nil {
 		h.l.Error(err)
@@ -62,7 +83,7 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	cookie := generateCookie(token, dto.RememberMe)
 
 	http.SetCookie(rw, cookie)
-	user.ToJSON(rw)
+	ToJSON(NewUserDTO(user), rw)
 }
 
 // RegisterUser defines the dto for the user account registration
@@ -70,6 +91,7 @@ type RegisterUser struct {
 	Username   string `json:"username"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
+	FullName   string `json:"fullName"`
 	RememberMe bool   `json:"rememberme"`
 }
 
@@ -78,6 +100,23 @@ func (dto RegisterUser) Validate() error {
 	return validation.ValidateStruct(&dto,
 		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
 		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
-		validation.Field(&dto.Email, is.Email),
+		validation.Field(&dto.FullName, validation.Required, validation.Length(1, 100)),
+		validation.Field(&dto.Email, validation.Required, is.Email),
 	)
+}
+
+// ToObject converts the RegisterUser dto to the internal user object
+func (dto RegisterUser) ToObject() (*models.User, error) {
+	user := &models.User{
+		Username: dto.Username,
+		Email:    dto.Email,
+		FullName: dto.FullName,
+	}
+	err := user.SetPassword(dto.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

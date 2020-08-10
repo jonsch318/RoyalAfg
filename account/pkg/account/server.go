@@ -14,7 +14,10 @@ import (
 	"github.com/Kamva/mgm/v3"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 // Start starts the account service
@@ -32,17 +35,23 @@ func Start() {
 	if err != nil {
 		panic(err)
 	}
-	defer client.Disconnect(mgm.Ctx())
+
+	defer logger.Desugar().Sync()
+
+	defer disconnectClient(logger, client)
 
 	if err != nil {
 		panic(err)
 	}
 
+	logger.Warn("MongoDb connected")
+
 	userDb := database.NewUserDatabase(logger)
 
 	// Register Middleware
 	loggerHandler := sharedMiddleware.NewLoggerHandler(logger)
-	r.Use(loggerHandler.LogRouteWithIP)
+
+	stdChain := alice.New(loggerHandler.LogRouteWithIP)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(logger, userDb)
@@ -51,18 +60,21 @@ func Start() {
 	postRouter := r.Methods(http.MethodPost).Subrouter()
 	getRouter := r.Methods(http.MethodGet).Subrouter()
 
-	postRouter.Use(loggerHandler.ContentTypeJSON)
+	prChain := stdChain.Append(loggerHandler.ContentTypeJSON)
 
-	postRouter.HandleFunc("/account/register", userHandler.Register)
-	postRouter.HandleFunc("/account/login", userHandler.Login)
+	postRouter.Handle("/account/register", prChain.ThenFunc(userHandler.Register))
+	postRouter.Handle("/account/login", prChain.ThenFunc(userHandler.Login))
+	postRouter.Handle("/account/logout", prChain.Append(userHandler.AuthMW).ThenFunc(userHandler.Logout))
 
-	getRouter.HandleFunc("/account/verify", userHandler.VerifyLoggedIn)
+	getRouter.Handle("/account/verify", stdChain.Append(userHandler.AuthMW).ThenFunc(userHandler.VerifyLoggedIn))
 
-	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
-	sh := middleware.Redoc(opts, nil)
+	logger.Debug("Setup Routes")
 
-	getRouter.Handle("/docs", sh)
+	opts := middleware.RedocOpts{SpecURL: "http://localhost:8080/swagger.yaml", Title: "RoyalAfg Auth API Documentation"}
+	getRouter.Handle("/docs", stdChain.Then(middleware.Redoc(opts, nil)))
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+
+	logger.Debug("Setup swagger docs")
 
 	// SERVER SETUP
 	port := 8080
@@ -93,4 +105,12 @@ func Start() {
 	srv.Shutdown(ctx)
 
 	logger.Warn("Application Shutting down!")
+}
+
+func disconnectClient(logger *zap.SugaredLogger, client *mongo.Client) {
+	err := client.Disconnect(mgm.Ctx())
+	if err != nil {
+		logger.Error("MongoDB disconnect", "error", err)
+	}
+	logger.Warn("Mongodb disconnected")
 }
