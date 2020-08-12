@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// StartGracefully starts a http server on another go routine so when an interrupt signal hits,
+// a timout is initialized and all active requests can be handled before shutting down.
 func StartGracefully(logger *zap.SugaredLogger, server *http.Server, timeoutDuration time.Duration) {
 	go func() {
 		if err := server.ListenAndServe(); err != nil {

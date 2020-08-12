@@ -5,13 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/spf13/cobra"
-
-	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/docs/pkg/docs"
+	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -55,7 +52,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	config.ConfigureDefaults()
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -69,6 +65,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".RoyalAfgInGo" (without extension).
 		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
+		viper.AddConfigPath(".")
 		viper.SetConfigName("docs_service")
 	}
 

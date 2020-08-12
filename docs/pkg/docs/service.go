@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/docs/pkg/docs/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/user/pkg/user/config"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -14,10 +15,11 @@ import (
 
 // Start starts the documentation service to serve the swagger documentation
 func Start() {
-	logger := log.NewLogger()
-	logger.Warn("Docs service now running")
 
-	defer logger.Warn("Docs service shut down")
+	logger := log.NewLogger()
+	logger.Warn("User service now running")
+
+	defer logger.Warn("User service shut down")
 	defer logger.Desugar().Sync()
 
 	r := mux.NewRouter()
@@ -30,7 +32,6 @@ func Start() {
 	gr.Handle("/docs", middleware.Redoc(opts, nil))
 	gr.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
-	logger.Debug("Setup swagger docs")
 	server := &http.Server{
 		Addr:         ":" + viper.GetString(config.Port),
 		WriteTimeout: viper.GetDuration(config.WriteTimeout),
