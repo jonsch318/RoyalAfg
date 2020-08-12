@@ -1,4 +1,0 @@
-HttpServer:
-  Port: 9000
-  GracefulTimeout: 20s
-  
