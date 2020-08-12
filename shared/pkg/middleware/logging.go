@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -19,14 +20,16 @@ func NewLoggerHandler(logger *zap.SugaredLogger) *LoggerHandler {
 // LogRoute logs the called route together
 func (h *LoggerHandler) LogRoute(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		h.l.Debug("Route called", r.URL.Path)
+		h.l.Debugw(fmt.Sprintf("%v called", r.URL.Path), "route", r.URL.Path)
+		next.ServeHTTP(rw, r)
 	})
 }
 
 // LogRouteWithIP logs the called route together with the ip
 func (h *LoggerHandler) LogRouteWithIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		h.l.Debug("Route called from", GetIP(r), r.URL.Path)
+		h.l.Debugw(fmt.Sprintf("%v called", r.URL.Path), r.URL.Path, "remote_ip", GetIP(r))
+		next.ServeHTTP(rw, r)
 	})
 }
 

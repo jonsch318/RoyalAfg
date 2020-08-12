@@ -16,6 +16,7 @@ func NewLogger() *zap.SugaredLogger {
 
 	encodingConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encodingConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	encodingConfig.EncodeCaller = zapcore.ShortCallerEncoder
 	consoleEncoder := zapcore.NewConsoleEncoder(encodingConfig)
 
 	fileLevel := zap.DebugLevel
@@ -40,5 +41,5 @@ func NewLogger() *zap.SugaredLogger {
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), consoleLevel),
 	)
 
-	return zap.New(core).Sugar()
+	return zap.New(core, zap.AddCaller()).Sugar()
 }
