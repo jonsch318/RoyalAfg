@@ -15,3 +15,5 @@
 vendor/
 
 .idea/
+
+*_service.yaml
