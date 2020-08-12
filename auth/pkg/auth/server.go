@@ -54,7 +54,7 @@ func Start() {
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(logger, userDb)
-	authmwHandler := authmw.NewAuthMWHandler(logger)
+	authmwHandler := authmw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
 
 	// Get Subrouters
 	postRouter := r.Methods(http.MethodPost).Subrouter()
