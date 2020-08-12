@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -16,12 +14,14 @@ type KeyJWTClaims struct{}
 type KeyUserId struct{}
 
 type AuthMWHandler struct {
-	l *zap.SugaredLogger
+	l   *zap.SugaredLogger
+	key string
 }
 
-func NewAuthMWHandler(logger *zap.SugaredLogger) *AuthMWHandler {
+func NewAuthMWHandler(logger *zap.SugaredLogger, key string) *AuthMWHandler {
 	return &AuthMWHandler{
-		l: logger,
+		l:   logger,
+		key: key,
 	}
 }
 
@@ -50,7 +50,7 @@ func (h *AuthMWHandler) RequireAuthTokenHandler(rw http.ResponseWriter, r *http.
 		return nil, err
 	}
 
-	claims, err := ValidateJwt(cookie.Value)
+	claims, err := ValidateJwt(cookie.Value, h.key)
 
 	if err != nil {
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "You're login is not valid. We will sign you out"}, http.StatusUnauthorized)
@@ -60,7 +60,7 @@ func (h *AuthMWHandler) RequireAuthTokenHandler(rw http.ResponseWriter, r *http.
 	return claims, nil
 }
 
-func ValidateJwt(tokenString string) (jwt.MapClaims, error) {
+func ValidateJwt(tokenString, key string) (jwt.MapClaims, error) {
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
@@ -72,7 +72,7 @@ func ValidateJwt(tokenString string) (jwt.MapClaims, error) {
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(viper.GetString(config.JwtSigningKey)), nil
+		return []byte(key), nil
 	})
 
 	if err != nil {

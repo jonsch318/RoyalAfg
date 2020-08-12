@@ -18,8 +18,8 @@ type ValidationError struct {
 	Errors interface{} `json:"validationErrors"`
 }
 
-func (err *ValidationError) Error() string {
-	b, err := json.Marshal(err.Errors)
+func (myErr *ValidationError) Error() string {
+	b, err := json.Marshal(myErr.Errors)
 
 	if err != nil {
 		return "Could not encode validation errors"

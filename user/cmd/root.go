@@ -10,7 +10,6 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/user/pkg/user"
 )
 
@@ -55,7 +54,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	config.ConfigureDefaults()
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
