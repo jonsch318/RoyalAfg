@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+go_library(
+    name = "docs",
+    srcs = ["service.go"],
+    importpath = "royalafg/pkg/docs/pkg/docs",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/docs/pkg/docs/config:config",
+        "//pkg/shared/pkg/log:log",
+        "//pkg/shared/pkg/utils:utils",
+        "@com_github_go_openapi_runtime//middleware:go_default_library",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)

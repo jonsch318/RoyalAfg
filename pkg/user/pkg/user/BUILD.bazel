@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "user",
+    srcs = ["service.go"],
+    importpath = "royalafg/pkg/user/pkg/user",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/shared/pkg/log:log",
+        "//pkg/shared/pkg/utils:utils",
+        "//pkg/shared/pkg/mw:mw",
+        "//pkg/user/pkg/user/config",
+        "@com_github_kamva_mgm//:go_default_library",
+        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+        "@com_github_justinas_alice//:go_default_library",
+    ]
+)

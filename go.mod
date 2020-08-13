@@ -3,6 +3,7 @@ module github.com/JohnnyS318/RoyalAfgInGo
 go 1.15
 
 require (
+	github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0-20200812222218-34fb709a33cf
 	github.com/Kamva/mgm v1.2.3
 	github.com/Kamva/mgm/v3 v3.0.1
 	github.com/aws/aws-sdk-go v1.34.3 // indirect
