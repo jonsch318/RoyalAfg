@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+go_library(
+    name = "mw",
+    srcs = ["auth.go", "logging.go",],
+    importpath = "royalafg/pkg/shared/pkg/mw",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/shared/pkg/responses:responses",
+        "//pkg/shared/pkg/utils:utils",
+        "@com_github_dgrijalva_jwt_go//:go_default_library",
+        "@org_uber_go_zap//:go_default_library"
+    ],
+)

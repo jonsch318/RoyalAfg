@@ -14,6 +14,8 @@ dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0-20200812222218-34fb709a33cf h1:sfcPo8/6qRBL+pFFXaJF7yrUgop4eTO2XdrWXTQw1mQ=
+github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0-20200812222218-34fb709a33cf/go.mod h1:/R/N8LBwT6wsrpuvb4xrpb7ce6IJ1CMczMtrbIQ+sGA=
 github.com/Kamva/mgm v1.2.3 h1:EokuP5HyjsURC/YyFrarQkMx4IecKq7yz3j2tC6oTcI=
 github.com/Kamva/mgm v1.2.3/go.mod h1:si3Kyg7KypBXHibQh9+UfMouSuu+XhjPlTCfQCZrr6s=
 github.com/Kamva/mgm/v3 v3.0.1 h1:jgWuqhdzUGLpGmbNfHtONY/6ikBs2g0aKlKqvEK/HzI=
