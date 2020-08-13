@@ -31,7 +31,7 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 	}
 
 	db.coll.Create(user)
-	db.logger.Info("Inserted new User ", user.Username)
+	db.l.Info("Inserted new User ", user.Username)
 	return nil
 }
 
