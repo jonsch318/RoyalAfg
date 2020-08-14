@@ -8,7 +8,20 @@ go_library(
     deps = [
         "//pkg/user/pkg/user:user",
         "@com_github_mitchellh_go_homedir//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
-    ]
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = ["root.go"],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/user/pkg/user",
+        "@com_github_mitchellh_go_homedir//:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
 )

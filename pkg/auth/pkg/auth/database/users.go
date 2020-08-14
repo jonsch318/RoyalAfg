@@ -1,7 +1,8 @@
 package database
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/models"
+	"royalafg/pkg/shared/pkg/models"
+
 	"github.com/Kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"

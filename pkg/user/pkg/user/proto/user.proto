@@ -20,5 +20,6 @@ message User {
 
 
 message GetUser {
-    string identifier = 1;
+    string api_key = 1;
+    string identifier = 2;
 }

@@ -1,9 +1,37 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/user/cmd",
+    ],
+)
+
+filegroup(
+    name = "config",
+    srcs = glob([
+        "*_service.yaml",
+    ]),
+    visibility = ["//visibility:public"],
+)
 
 go_binary(
     name = "user",
-    srcs = ["main.go"],
-    deps = [
-        "//pkg/user/cmd:cmd",
-    ]
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@alpine_linux_amd64//image",
+    entrypoint = ["/user"],
+    visibility = ["//visibility:public"],
+    files = [
+        ":user",
+        ":config",
+    ],
 )

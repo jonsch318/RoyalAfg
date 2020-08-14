@@ -42,9 +42,9 @@ func Start() {
 
 	gr := r.Methods(http.MethodGet).Subrouter()
 
-	gr.Handle("/hello", stdChain.ThenFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.WriteHeader(200)
-	}))
+	// grpc server config
+
+	//gs := grpc.NewServer()
 
 	server := &http.Server{
 		Addr:         ":" + viper.GetString(config.Port),

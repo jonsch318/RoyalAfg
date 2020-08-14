@@ -3,9 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/security"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses"
+	"royalafg/pkg/auth/pkg/auth/security"
+	"royalafg/pkg/shared/pkg/models"
+	"royalafg/pkg/shared/pkg/responses"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/spf13/viper"

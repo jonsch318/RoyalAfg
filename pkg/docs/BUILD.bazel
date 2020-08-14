@@ -1,9 +1,37 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_binary")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/docs/cmd",
+    ],
+)
+
+filegroup(
+    name = "config",
+    srcs = [
+        "docs_service.yaml",
+        "swagger.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)
 
 go_binary(
     name = "docs",
-    srcs = ["main.go"],
-    deps = [
-        "//pkg/docs/cmd:cmd",
-    ]
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@alpine_linux_amd64//image",
+    entrypoint = ["/docs"],
+    files = [
+        ":docs",
+        ":config",
+    ],
 )

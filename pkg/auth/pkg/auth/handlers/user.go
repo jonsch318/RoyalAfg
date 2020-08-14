@@ -3,8 +3,9 @@ package handlers
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/models"
+	"royalafg/pkg/auth/pkg/auth/database"
+	"royalafg/pkg/shared/pkg/models"
+
 	"go.uber.org/zap"
 )
 

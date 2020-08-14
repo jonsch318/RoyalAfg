@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses"
+import "royalafg/pkg/shared/pkg/responses"
 
 // UserResponse represents a user
 // swagger:response UserResponse
