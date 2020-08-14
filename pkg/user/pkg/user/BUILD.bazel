@@ -7,13 +7,32 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/shared/pkg/log:log",
-        "//pkg/shared/pkg/utils:utils",
         "//pkg/shared/pkg/mw:mw",
+        "//pkg/shared/pkg/utils:utils",
         "//pkg/user/pkg/user/config",
-        "@com_github_kamva_mgm//:go_default_library",
-        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
         "@com_github_gorilla_mux//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
         "@com_github_justinas_alice//:go_default_library",
-    ]
+        "@com_github_kamva_mgm//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = ["service.go"],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/shared/pkg/log",
+        "//pkg/shared/pkg/mw",
+        "//pkg/shared/pkg/utils",
+        "//pkg/user/pkg/user/config",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@com_github_justinas_alice//:go_default_library",
+        "@com_github_kamva_mgm//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+        "@org_mongodb_go_mongo_driver//mongo/options:go_default_library",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
 )

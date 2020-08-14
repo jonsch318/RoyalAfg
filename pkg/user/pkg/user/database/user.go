@@ -1,7 +1,8 @@
 package database
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/models"
+	"royalafg/pkg/shared/pkg/models"
+
 	"github.com/Kamva/mgm"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -62,7 +63,7 @@ func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 	return user, nil
 }
 
-func (db *UserDatabases) FindByUsername(username string) (*models.User, error) {
+func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 	user := &models.User{}
 
 	err := db.coll.FindOne(mgm.Ctx(), bson.M{"username": username}).Decode(user)

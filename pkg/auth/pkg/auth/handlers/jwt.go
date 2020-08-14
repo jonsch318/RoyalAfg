@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/models"
+	"royalafg/pkg/auth/pkg/auth/config"
+	"royalafg/pkg/shared/pkg/models"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
 )

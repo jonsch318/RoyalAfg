@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/authmw"
+	"royalafg/pkg/shared/pkg/mw"
 )
 
 // Logout removes the cookie and therefore logs the user out
@@ -39,7 +39,7 @@ func (h *User) Logout(rw http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(rw, cookie)
 
-	h.l.Debugw("logged out user", "sub", r.Context().Value(authmw.KeyUserId{}).(string))
+	h.l.Debugw("logged out user", "sub", r.Context().Value(mw.KeyUserId{}).(string))
 
 	rw.WriteHeader(http.StatusOK)
 	ToJSON(&noContentResponse{}, rw)

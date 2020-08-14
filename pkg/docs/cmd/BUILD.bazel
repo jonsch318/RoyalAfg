@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
 go_library(
     name = "cmd",
     srcs = ["root.go"],
@@ -6,6 +7,19 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/docs/pkg/docs:docs",
+        "@com_github_mitchellh_go_homedir//:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = ["root.go"],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/docs/pkg/docs",
         "@com_github_mitchellh_go_homedir//:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",
         "@com_github_spf13_viper//:go_default_library",

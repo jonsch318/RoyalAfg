@@ -3,3 +3,6 @@ check_swagger_install:
 
 swagger: check_swagger_install
 	swagger generate spec -o ./docs/swagger.yaml --scan-models
+
+update_go_deps: 
+	bazel run //:gazelle -- update-repos -from_file=go.mod

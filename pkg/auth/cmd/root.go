@@ -5,12 +5,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/spf13/cobra"
+	"royalafg/pkg/auth/pkg/auth"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	account "github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth"
 )
 
 var cfgFile string
@@ -22,7 +21,7 @@ var rootCmd = &cobra.Command{
 	Long:  `The auth service is all about the user. It includes registration, signin, authentication`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting the Application... \n Logging will be initialized in a bit.")
-		account.Start()
+		auth.Start()
 	},
 }
 

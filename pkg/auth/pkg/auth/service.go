@@ -1,19 +1,17 @@
-package account
+package auth
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/authmw"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/log"
-	sharedMiddleware "github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/middleware"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/utils"
+	"royalafg/pkg/auth/pkg/auth/config"
+	"royalafg/pkg/auth/pkg/auth/database"
+	"royalafg/pkg/auth/pkg/auth/handlers"
+	"royalafg/pkg/shared/pkg/log"
+	"royalafg/pkg/shared/pkg/mw"
+	"royalafg/pkg/shared/pkg/utils"
+
 	"github.com/Kamva/mgm/v3"
-	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
 	"github.com/spf13/viper"
@@ -48,13 +46,13 @@ func Start() {
 	userDb := database.NewUserDatabase(logger)
 
 	// Register Middleware
-	loggerHandler := sharedMiddleware.NewLoggerHandler(logger)
+	loggerHandler := mw.NewLoggerHandler(logger)
 
 	stdChain := alice.New(loggerHandler.LogRouteWithIP)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(logger, userDb)
-	authmwHandler := authmw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
+	authmwHandler := mw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
 
 	// Get Subrouters
 	postRouter := r.Methods(http.MethodPost).Subrouter()
@@ -70,15 +68,8 @@ func Start() {
 
 	logger.Debug("Setup Routes")
 
-	port := viper.GetString(config.Port)
-
-	opts := middleware.RedocOpts{SpecURL: fmt.Sprintf("http://localhost:%v/swagger.yaml", port), Title: viper.GetString("SwaggerDocs.Title")}
-	getRouter.Handle("/docs", middleware.Redoc(opts, nil))
-	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
-
-	logger.Debug("Setup swagger docs")
-
 	// SERVER SETUP
+	port := viper.GetString(config.Port)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
