@@ -1,13 +1,13 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth",
     visibility = ["//visibility:private"],
     deps = [
-        "//pkg/auth/cmd",
+        "//pkg/auth/cmd:go_default_library",
     ],
 )
 
@@ -21,6 +21,9 @@ filegroup(
 
 go_binary(
     name = "auth",
+    data = [
+        ":config",
+    ],
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
 )
@@ -29,9 +32,9 @@ container_image(
     name = "image",
     base = "@alpine_linux_amd64//image",
     entrypoint = ["/auth"],
-    visibility = ["//visibility:public"],
     files = [
         ":auth",
         ":config",
     ],
+    visibility = ["//visibility:public"],
 )

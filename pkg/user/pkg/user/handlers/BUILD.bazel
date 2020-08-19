@@ -6,12 +6,13 @@ go_library(
         "get_user.go",
         "handler.go",
     ],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_johnnys318_royalafgingo_shared//pkg/authmw:go_default_library",
-        "@com_github_johnnys318_royalafgingo_shared//pkg/responses:go_default_library",
-        "@com_github_johnnys318_royalafgingo_shared//pkg/utils:go_default_library",
+        "//pkg/shared/pkg/mw:go_default_library",
+        "//pkg/shared/pkg/responses:go_default_library",
+        "//pkg/shared/pkg/utils:go_default_library",
+        "//pkg/user/pkg/user/database:go_default_library",
         "@org_uber_go_zap//:go_default_library",
     ],
 )

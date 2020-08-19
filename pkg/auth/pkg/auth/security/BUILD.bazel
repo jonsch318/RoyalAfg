@@ -1,19 +1,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "security",
-    srcs = ["hash.go"],
-    importpath = "royalafg/pkg/auth/pkg/auth/security",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_elithrar_simple_scrypt//:go_default_library",
-    ],
-)
-
-go_library(
     name = "go_default_library",
     srcs = ["hash.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/security",
     visibility = ["//visibility:public"],
     deps = ["@com_github_elithrar_simple_scrypt//:go_default_library"],
 )

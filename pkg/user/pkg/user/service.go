@@ -1,21 +1,26 @@
 package user
 
 import (
-	"net/http"
+	"fmt"
+	"net"
+	"os"
 
-	"royalafg/pkg/shared/pkg/log"
-	"royalafg/pkg/shared/pkg/mw"
-	"royalafg/pkg/shared/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/utils"
 
-	"royalafg/pkg/user/pkg/user/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/database"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/servers"
 
 	"github.com/Kamva/mgm"
-	"github.com/gorilla/mux"
-	"github.com/justinas/alice"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
+// Start starts the user service
 func Start() {
 	logger := log.NewLogger()
 	logger.Warn("User service now running")
@@ -35,24 +40,24 @@ func Start() {
 	}
 	defer utils.DisconnectClient(logger, client)
 
-	r := mux.NewRouter()
-
-	loggerHandler := mw.NewLoggerHandler(logger)
-	stdChain := alice.New(loggerHandler.LogRouteWithIP)
-
-	gr := r.Methods(http.MethodGet).Subrouter()
+	userDatabase := database.NewUserDatabase(logger)
 
 	// grpc server config
+	gs := grpc.NewServer()
 
-	//gs := grpc.NewServer()
+	userServer := servers.NewUserServer(logger, userDatabase)
 
-	server := &http.Server{
-		Addr:         ":" + viper.GetString(config.Port),
-		WriteTimeout: viper.GetDuration(config.WriteTimeout),
-		ReadTimeout:  viper.GetDuration(config.ReadTimeout),
-		IdleTimeout:  viper.GetDuration(config.IdleTimeout),
-		Handler:      r,
+	protos.RegisterUserServiceServer(gs, userServer)
+
+	reflection.Register(gs)
+
+	// create a TCP socket for inbound server connections
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", viper.Get(config.Port)))
+	if err != nil {
+		logger.Errorw("Unable to create listener", "error", err)
+		os.Exit(1)
 	}
 
-	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulTimeout))
+	// Start the grpc server
+	utils.StartGrpcGracefully(logger, gs, l)
 }

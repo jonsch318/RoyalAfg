@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"royalafg/pkg/shared/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/utils"
 
 	"go.uber.org/zap"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"royalafg/pkg/auth/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -17,7 +17,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "auth",
-	Short: "Start the auth service of the RoyalAfg project",
+	Short: "Start the auth service of the github.com/JohnnyS318/RoyalAfgInGo project",
 	Long:  `The auth service is all about the user. It includes registration, signin, authentication`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting the Application... \n Logging will be initialized in a bit.")
@@ -41,9 +41,9 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.RoyalAfgInGo.d/auth_service.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/auth_service.yaml)")
 
-	rootCmd.Flags().Int("port", 8080, "Defines the port on which the royalafg server will listen for request")
+	rootCmd.Flags().Int("port", 8080, "Defines the port on which the github.com/JohnnyS318/RoyalAfgInGo server will listen for request")
 	//viper.BindPFlag("Port", rootCmd.Flags().Lookup("port"))
 
 	rootCmd.Flags().Duration("gracefulTimeout", time.Second*15, "The duration for which the server waits for existing connections to finish")
@@ -64,9 +64,11 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".RoyalAfgInGo" (without extension).
+		// Search config in home directory with name "RoyalAfgInGo.d" (without extension).
 		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
+		viper.AddConfigPath("./pkg/auth/")
+		viper.AddConfigPath("./.RoyalAfgInGo.d/")
 		viper.SetConfigName("auth_service")
 	}
 

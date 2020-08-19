@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"royalafg/pkg/shared/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/mw"
 )
 
 // Logout removes the cookie and therefore logs the user out

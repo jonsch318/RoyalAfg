@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
-	"royalafg/pkg/shared/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
 
 	"github.com/dgrijalva/jwt-go"
 	"go.uber.org/zap"
@@ -61,7 +62,10 @@ func (h *AuthMWHandler) RequireAuthTokenHandler(rw http.ResponseWriter, r *http.
 	return claims, nil
 }
 
-func ValidateJwt(tokenString, key string) (jwt.MapClaims, error) {
+func ValidateJwt(bearer, key string) (jwt.MapClaims, error) {
+
+	tokenString := strings.Split(bearer, "Bearer ")[1]
+
 	// Parse takes the token string and a function for looking up the key. The latter is especially
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided

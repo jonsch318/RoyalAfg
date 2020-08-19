@@ -27,7 +27,7 @@ const JwtExpiresAt = "HttpServer.Jwt.ExpiresAt"
 func ConfigureDefaults() {
 
 	// Database
-	viper.SetDefault(DatabaseName, "RoyalAfgInGo")
+	viper.SetDefault(DatabaseName, "github.com/JohnnyS318/RoyalAfgInGoInGo")
 	viper.SetDefault(DatabaseUrl, "mongodb//localhost:27017/")
 	viper.SetDefault(DatabaseTimeout, time.Second*20)
 
@@ -40,6 +40,6 @@ func ConfigureDefaults() {
 	viper.SetDefault(CookieExpires, time.Now().Add(time.Hour*24*7))
 
 	// Jwt Settings
-	viper.SetDefault(JwtIssuer, "royalafg.games")
+	viper.SetDefault(JwtIssuer, "github.com/JohnnyS318/RoyalAfgInGo.games")
 	viper.SetDefault(JwtExpiresAt, time.Now().Add(time.Hour*24*7).Unix())
 }

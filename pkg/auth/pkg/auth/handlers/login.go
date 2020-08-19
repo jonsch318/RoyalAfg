@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
-	"royalafg/pkg/auth/pkg/auth/security"
-	"royalafg/pkg/shared/pkg/models"
-	"royalafg/pkg/shared/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/security"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -101,17 +102,8 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 		h.l.Debug("Login using email")
 	}
 
-	var user *models.User
-
-	// validate user in db
-	if isEmail {
-		// validation succeded. sign in using email
-		user, err = h.db.FindByEmail(dto.Username)
-
-	} else {
-		// email format validation failed. Sign in using username
-		user, err = h.db.FindByUsername(dto.Username)
-	}
+	m, err := h.userService.GetUserByUsername(context.Background(), &protos.GetUser{Identifier: dto.Username})
+	user := protos.FromMessageUserExact(m)
 
 	if err != nil {
 		h.l.Errorw("user with username or email not found", "error", dto.Username)
@@ -120,8 +112,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate password
-
-	if security.ComparePassword(dto.Password, user.Hash, viper.GetString("User.Pepper")) {
+	if !security.ComparePassword(dto.Password, user.Hash, viper.GetString("User.Pepper")) {
 		h.l.Errorw("password did not match", "error", dto.Username)
 		JSONError(rw, &responses.ErrorResponse{Error: "credentials did not match"}, http.StatusUnauthorized)
 		return
@@ -131,7 +122,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	// validate other schemes (later)
 
 	// create jwt
-	token, err := getJwt(user)
+	token, err := generateBearerToken(user)
 
 	if err != nil {
 		h.l.Errorw("jwt could not be created", "error", err)

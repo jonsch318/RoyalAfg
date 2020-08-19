@@ -29,7 +29,7 @@ func NewLogger() *zap.SugaredLogger {
 	}
 
 	logSync := &lumberjack.Logger{
-		Filename:   homedir + "/logs/RoyalAfgInGo/log.log",
+		Filename:   homedir + "/logs/github.com/JohnnyS318/RoyalAfgInGoInGo/log.log",
 		MaxSize:    50,
 		MaxBackups: 5,
 		MaxAge:     14,
