@@ -1,7 +1,7 @@
 package database
 
 import (
-	"royalafg/pkg/shared/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 
 	"github.com/Kamva/mgm"
 	"go.mongodb.org/mongo-driver/bson"

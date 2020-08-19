@@ -1,21 +1,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "models",
-    srcs = ["user.go"],
-    importpath = "royalafg/pkg/shared/pkg/models",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_go_ozzo_ozzo_validation//:go_default_library",
-        "@com_github_go_ozzo_ozzo_validation//is:go_default_library",
-        "@com_github_kamva_mgm//:go_default_library",
-    ],
-)
-
-go_library(
     name = "go_default_library",
     srcs = ["user.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_go_ozzo_ozzo_validation//:go_default_library",

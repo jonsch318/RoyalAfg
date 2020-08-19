@@ -1,15 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
-	"time"
 
-	"royalafg/pkg/auth/pkg/auth/security"
-	"royalafg/pkg/shared/pkg/models"
-	"royalafg/pkg/shared/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/security"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/spf13/viper"
 )
 
@@ -52,12 +51,6 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 
 	h.l.Debug("Decoded user")
 
-	if err := dto.Validate(); err != nil {
-		h.l.Error("Validation", "error", err)
-		JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
-		return
-	}
-
 	user, err := dto.ToObject()
 
 	if err != nil {
@@ -66,9 +59,16 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.l.Debug("User validated")
+	if err := user.Validate(); err != nil {
+		h.l.Error("Validation", "error", err)
+		JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
+		return
+	}
 
-	if err = h.db.CreateUser(user); err != nil {
+	m := protos.ToMessageUser(user)
+	_, err = h.userService.SaveUser(context.Background(), m)
+
+	if err != nil {
 		h.l.Error(err)
 		JSONError(rw, &responses.ErrorResponse{Error: err.Error()}, http.StatusInternalServerError)
 		return
@@ -76,7 +76,7 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 
 	h.l.Debug("User saved")
 
-	token, err := getJwt(user)
+	token, err := generateBearerToken(user)
 
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
@@ -92,26 +92,17 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 
 // RegisterUser defines the dto for the user account registration
 type RegisterUser struct {
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
-	Password   string    `json:"password"`
-	FullName   string    `json:"fullName"`
-	Birthdate  time.Time `json:"birthdate"`
-	RememberMe bool      `json:"rememberme"`
-}
-
-// Validate validates if the RegisterUser dto matches all the user requirements
-func (dto RegisterUser) Validate() error {
-	return validation.ValidateStruct(&dto,
-		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
-		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
-		validation.Field(&dto.FullName, validation.Required, validation.Length(1, 100)),
-		validation.Field(&dto.Email, validation.Required, is.Email),
-	)
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	FullName   string `json:"fullName"`
+	Birthdate  int64  `json:"birthdate"`
+	RememberMe bool   `json:"rememberme"`
 }
 
 // ToObject converts the RegisterUser dto to the internal user object
 func (dto RegisterUser) ToObject() (*models.User, error) {
+
 	user := models.NewUser(dto.Username, dto.Email, dto.FullName, dto.Birthdate)
 
 	hash, err := security.HashPassword(dto.Password, viper.GetString("User.Pepper"))

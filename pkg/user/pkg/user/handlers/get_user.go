@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/authmw"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/utils"
 )
 
 // GetUser returns the authenticated user object
@@ -29,7 +29,7 @@ import (
 //
 //
 func (h *UserHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
-	id, ok := r.Context().Value(authmw.KeyUserId{}).(string)
+	id, ok := r.Context().Value(mw.KeyUserId{}).(string)
 
 	if ok && id != "" {
 		h.l.Errorw("User Id after authmv empty", "error", "User Id after authmv empty")

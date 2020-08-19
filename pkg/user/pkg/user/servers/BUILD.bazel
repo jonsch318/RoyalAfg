@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["user.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/servers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/protos:go_default_library",
+        "//pkg/shared/pkg/models:go_default_library",
+        "//pkg/user/pkg/user/database:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//metadata:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

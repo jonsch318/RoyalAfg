@@ -1,17 +1,8 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "classification",
-    srcs = ["docs.go"],
-    importpath = "royalafg/pkg/docs/classification",
-    visibility = ["//visibility:public"],
-    deps = [
-    ],
-)
-
-go_library(
     name = "go_default_library",
     srcs = ["docs.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/classification",
     visibility = ["//visibility:public"],
 )

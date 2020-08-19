@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
-	"royalafg/pkg/auth/pkg/auth/config"
-	"royalafg/pkg/shared/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
@@ -31,7 +32,7 @@ func getJwt(user *models.User) (string, error) {
 	claims := jwt.StandardClaims{
 		Subject:   user.ID.Hex(),
 		Issuer:    viper.GetString(config.JwtIssuer),
-		Audience:  "royalafg.games",
+		Audience:  "github.com/JohnnyS318/RoyalAfgInGo.games",
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: viper.GetInt64(config.JwtExpiresAt),
 	}
@@ -45,4 +46,14 @@ func getJwt(user *models.User) (string, error) {
 	}
 
 	return token, nil
+}
+
+func generateBearerToken(user *models.User) (string, error) {
+	token, err := getJwt(user)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("Bearer %v", token), nil
 }

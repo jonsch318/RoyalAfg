@@ -25,6 +25,6 @@ func ConfigureDefaults() {
 	viper.SetDefault(IdleTimeout, time.Second*60)
 
 	// Database configuration
-	viper.SetDefault(DatabaseName, "RoyalAfgUserService")
+	viper.SetDefault(DatabaseName, "github.com/JohnnyS318/RoyalAfgInGoUserService")
 	viper.SetDefault(DatabaseTimeout, time.Second*20)
 }

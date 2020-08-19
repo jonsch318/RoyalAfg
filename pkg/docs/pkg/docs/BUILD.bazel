@@ -1,29 +1,14 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "docs",
-    srcs = ["service.go"],
-    importpath = "royalafg/pkg/docs/pkg/docs",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//pkg/docs/pkg/docs/config:config",
-        "//pkg/shared/pkg/log:log",
-        "//pkg/shared/pkg/utils:utils",
-        "@com_github_go_openapi_runtime//middleware:go_default_library",
-        "@com_github_gorilla_mux//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-    ],
-)
-
-go_library(
     name = "go_default_library",
     srcs = ["service.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/pkg/docs",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/docs/pkg/docs/config",
-        "//pkg/shared/pkg/log",
-        "//pkg/shared/pkg/utils",
+        "//pkg/docs/pkg/docs/config:go_default_library",
+        "//pkg/shared/pkg/log:go_default_library",
+        "//pkg/shared/pkg/utils:go_default_library",
         "@com_github_go_openapi_runtime//middleware:go_default_library",
         "@com_github_gorilla_mux//:go_default_library",
         "@com_github_spf13_viper//:go_default_library",

@@ -3,21 +3,21 @@ package handlers
 import (
 	"time"
 
-	"royalafg/pkg/auth/pkg/auth/database"
-	"royalafg/pkg/shared/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 
 	"go.uber.org/zap"
 )
 
 type User struct {
-	l  *zap.SugaredLogger
-	db *database.Users
+	l           *zap.SugaredLogger
+	userService protos.UserServiceClient
 }
 
-func NewUserHandler(logger *zap.SugaredLogger, db *database.Users) *User {
+func NewUserHandler(logger *zap.SugaredLogger, userService protos.UserServiceClient) *User {
 	return &User{
-		l:  logger,
-		db: db,
+		l:           logger,
+		userService: userService,
 	}
 }
 
@@ -47,6 +47,10 @@ type UserDTO struct {
 	// min length: 1
 	// max length: 100
 	FullName string `json:"fullName"`
+
+	// The unix bithdate of the user
+	// required: true
+	Birthdate int64 `json:"birthdate"`
 }
 
 // NewUserDTO creates a new user dto form the given user
@@ -58,5 +62,6 @@ func NewUserDTO(user *models.User) *UserDTO {
 		Username:  user.Username,
 		Email:     user.Email,
 		FullName:  user.FullName,
+		Birthdate: user.Birthdate,
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"royalafg/pkg/user/pkg/user"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user"
 )
 
 var cfgFile string
@@ -41,9 +41,9 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.RoyalAfgInGo.d/user_service.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/RoyalAfgInGo.d/user_service.yaml)")
 
-	rootCmd.Flags().Int("port", 8080, "Defines the port on which the royalafg server will listen for request")
+	rootCmd.Flags().Int("port", 8080, "Defines the port on which the RoyalAfg user service will listen for http api request")
 	viper.BindPFlag("Port", rootCmd.Flags().Lookup("port"))
 
 	rootCmd.Flags().Duration("gracyfulTimeout", time.Second*20, "The duration for which the server waits for existing connections to finish")
@@ -64,7 +64,7 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".RoyalAfgInGo" (without extension).
+		// Search config in home directory with name "RoyalAfgInGo.d" (without extension).
 		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
 		viper.SetConfigName("user_service")
 	}

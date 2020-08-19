@@ -11,7 +11,7 @@ definitions:
         type: string
         x-go-name: Error
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses
   LoginUser:
     description: LoginUser defines the object for the api login request
     properties:
@@ -25,13 +25,13 @@ definitions:
         type: string
         x-go-name: Username
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
   RegisterUser:
     description: RegisterUser defines the dto for the user account registration
     properties:
       birthdate:
-        format: date-time
-        type: string
+        format: int64
+        type: integer
         x-go-name: Birthdate
       email:
         type: string
@@ -49,10 +49,15 @@ definitions:
         type: string
         x-go-name: Username
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
   UserDTO:
     description: UserDTO is the data transfer object of the internal user object
     properties:
+      birthdate:
+        description: The unix bithdate of the user
+        format: int64
+        type: integer
+        x-go-name: Birthdate
       created_at:
         description: The registration time of the user
         format: date-time
@@ -91,8 +96,9 @@ definitions:
     - username
     - email
     - fullName
+    - birthdate
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
   ValidationError:
     description: Each form property that has missing requirements is listet under Errors (validationErrors)
     properties:
@@ -102,16 +108,16 @@ definitions:
         x-go-name: Errors
     title: ValidationError shows the failed validation requirements.
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses
-host: royalafg.games
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses
+host: github.com/JohnnyS318/RoyalAfgInGo.games
 info:
   contact:
     email: jonas.max.schneider@gmail.com
-  description: Documentation for RoyalAfg API
+  description: Documentation for github.com/JohnnyS318/RoyalAfgInGo API
   license:
     name: MIT
     url: http://opensource.org/license/MIT
-  title: RoyalAfg API
+  title: github.com/JohnnyS318/RoyalAfgInGo API
   version: 0.0.1
 paths:
   /account:

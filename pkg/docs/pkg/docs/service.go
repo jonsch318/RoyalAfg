@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"royalafg/pkg/docs/pkg/docs/config"
-	"royalafg/pkg/shared/pkg/log"
-	"royalafg/pkg/shared/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/pkg/docs/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/utils"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"

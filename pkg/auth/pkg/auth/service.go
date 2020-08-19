@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"time"
 
-	"royalafg/pkg/auth/pkg/auth/config"
-	"royalafg/pkg/auth/pkg/auth/database"
-	"royalafg/pkg/auth/pkg/auth/handlers"
-	"royalafg/pkg/shared/pkg/log"
-	"royalafg/pkg/shared/pkg/mw"
-	"royalafg/pkg/shared/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/utils"
+	"google.golang.org/grpc"
 
 	"github.com/Kamva/mgm/v3"
 	"github.com/gorilla/mux"
@@ -43,7 +44,19 @@ func Start() {
 	}
 	defer utils.DisconnectClient(logger, client)
 
-	userDb := database.NewUserDatabase(logger)
+	// Grpc Setup
+
+	conn, err := grpc.Dial("127.0.0.1:5000")
+
+	if err != nil {
+		logger.Fatalf("Connection could not be established")
+	}
+
+	defer conn.Close()
+
+	userService := protos.NewUserServiceClient(conn)
+
+	//userDb := database.NewUserDatabase(logger)
 
 	// Register Middleware
 	loggerHandler := mw.NewLoggerHandler(logger)
@@ -51,7 +64,7 @@ func Start() {
 	stdChain := alice.New(loggerHandler.LogRouteWithIP)
 
 	// Handlers
-	userHandler := handlers.NewUserHandler(logger, userDb)
+	userHandler := handlers.NewUserHandler(logger, userService)
 	authmwHandler := mw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
 
 	// Get Subrouters

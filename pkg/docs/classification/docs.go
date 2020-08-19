@@ -1,11 +1,11 @@
-// Package classification RoyalAfg API
+// Package classification github.com/JohnnyS318/RoyalAfgInGo API
 //
-// Documentation for RoyalAfg API
+// Documentation for github.com/JohnnyS318/RoyalAfgInGo API
 //
 //	Schemes:http, https
 //	BasePath: /
 //	Version: 0.0.1
-// 	Host: royalafg.games
+// 	Host: github.com/JohnnyS318/RoyalAfgInGo.games
 //	Contact: jonas.max.schneider@gmail.com
 //	License: MIT http://opensource.org/license/MIT
 //

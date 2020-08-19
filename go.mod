@@ -3,7 +3,6 @@ module github.com/JohnnyS318/RoyalAfgInGo
 go 1.15
 
 require (
-	github.com/JohnnyS318/RoyalAfgInGo/shared v0.0.0-20200812222218-34fb709a33cf
 	github.com/Kamva/mgm v1.2.3
 	github.com/Kamva/mgm/v3 v3.0.1
 	github.com/aws/aws-sdk-go v1.34.3 // indirect
@@ -32,10 +31,11 @@ require (
 	go.mongodb.org/mongo-driver v1.4.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
+	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d // indirect
-	google.golang.org/grpc v1.27.0
+	golang.org/x/sys v0.0.0-20200817155316-9781c653f443 // indirect
+	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70
+	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

@@ -4,10 +4,10 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 go_library(
     name = "go_default_library",
     srcs = ["main.go"],
-    importpath = "",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/docs",
     visibility = ["//visibility:private"],
     deps = [
-        "//pkg/docs/cmd",
+        "//pkg/docs/cmd:go_default_library",
     ],
 )
 

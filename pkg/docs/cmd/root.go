@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"royalafg/pkg/docs/pkg/docs"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/pkg/docs"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -17,7 +17,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "user",
-	Short: "Start the docs service of the RoyalAfg project",
+	Short: "Start the docs service of the github.com/JohnnyS318/RoyalAfgInGo project",
 	Long:  `The docs service hosts the swagger openapi documentation for this server project`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting the docs service... \n Logging will be initialized in a bit.")
@@ -41,9 +41,9 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.RoyalAfgInGo.d/docs_service.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/docs_service.yaml)")
 
-	rootCmd.Flags().Int("port", 9000, "Defines the port on which the royalafg documentation server will listen for request")
+	rootCmd.Flags().Int("port", 9000, "Defines the port on which the github.com/JohnnyS318/RoyalAfgInGo documentation server will listen for request")
 	viper.BindPFlag("Port", rootCmd.Flags().Lookup("port"))
 
 	rootCmd.Flags().Duration("gracyfulTimeout", time.Second*20, "The duration for which the server waits for existing connections to finish")
@@ -64,9 +64,10 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".RoyalAfgInGo" (without extension).
+		// Search config in home directory with name ".github.com/JohnnyS318/RoyalAfgInGoInGo" (without extension).
 		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
+		viper.AddConfigPath("./pkg/docs")
 		viper.SetConfigName("docs_service")
 	}
 
