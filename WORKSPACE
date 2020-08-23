@@ -88,6 +88,24 @@ http_archive(
     ],
 )
 
+load(
+    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure = "toolchain_configure",
+)
+
+docker_toolchain_configure(
+    name = "docker_config",
+    # OPTIONAL: Path to a directory which has a custom docker client config.json.
+    # See https://docs.docker.com/engine/reference/commandline/cli/#configuration-files
+    # for more details.
+    client_config = "/home/jonas/.docker/config.json",
+    docker_flags = [
+        "--tls",
+        "--log-level=info",
+    ],
+)
+# End of OPTIONAL segment.
+
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
