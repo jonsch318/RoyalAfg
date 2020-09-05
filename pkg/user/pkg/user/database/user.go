@@ -1,10 +1,14 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 
 	"github.com/Kamva/mgm"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -18,20 +22,50 @@ func NewUserDatabase(logger *zap.SugaredLogger) *UserDatabase {
 
 	logger.Infof("Connected to Collection %v", coll.Name())
 
+	i := []mongo.IndexModel{
+		{
+			Keys:    bson.M{"username": 1},
+			Options: options.Index().SetUnique(true),
+		},
+		{
+			Keys:    bson.M{"email": 1},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+
+	ind, err := coll.Indexes().CreateMany(
+		mgm.Ctx(),
+		i,
+	)
+
+	for _, in := range ind {
+		logger.Debugf("Index created %v", in)
+	}
+
+	if err != nil {
+		logger.Errorw("Error during creating indexes", "error", err)
+		return nil
+	}
+
 	return &UserDatabase{
 		l:    logger,
 		coll: coll,
 	}
 }
-
 func (db *UserDatabase) CreateUser(user *models.User) error {
+
 	err := user.Validate()
 
 	if err != nil {
 		return err
 	}
 
-	db.coll.Create(user)
+	err = db.coll.Create(user)
+
+	if err != nil {
+		return err
+	}
+
 	db.l.Info("Inserted new User ", user.Username)
 	return nil
 }
@@ -73,4 +107,19 @@ func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+// IsDup returns whether err informs of a duplicate key error because
+// a primary key index or a secondary unique index already has an entry
+// with the given value.
+func IsDup(err error) bool {
+	var e mongo.WriteException
+	if errors.As(err, &e) {
+		for _, we := range e.WriteErrors {
+			if we.Code == 11000 {
+				return true
+			}
+		}
+	}
+	return false
 }

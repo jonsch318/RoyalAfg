@@ -1,7 +1,6 @@
 package docs
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/pkg/docs/config"
@@ -16,6 +15,8 @@ import (
 // Start starts the documentation service to serve the swagger documentation
 func Start() {
 
+	config.ConfigureDefaults()
+
 	logger := log.NewLogger()
 	logger.Warn("User service now running")
 
@@ -26,11 +27,14 @@ func Start() {
 
 	gr := r.Methods(http.MethodGet).Subrouter()
 
-	port := viper.GetString(config.Port)
-
-	opts := middleware.RedocOpts{SpecURL: fmt.Sprintf("http://localhost:%v/swagger.yaml", port), Title: viper.GetString("SwaggerDocs.Title")}
+	opts := middleware.RedocOpts{BasePath: "/docs", Path: "/", SpecURL: viper.GetString("SwaggerDocs.SwaggerUrl"), Title: viper.GetString("SwaggerDocs.Title")}
+	//opts := middleware.RedocOpts{BasePath: "/", Path: "/", SpecURL: "http://localhost:9000/docs/swagger.yaml", Title: viper.GetString("SwaggerDocs.Title")}
 	gr.Handle("/docs", middleware.Redoc(opts, nil))
-	gr.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+	//gr.Handle("/docs/swagger.yaml", http.FileServer(http.Dir("./")))
+	gr.HandleFunc("/docs/swagger.yaml", func(rw http.ResponseWriter, r *http.Request) {
+		logger.Infof("Path /docs/swagger.yaml called")
+		http.ServeFile(rw, r, "./swagger.yaml")
+	})
 
 	server := &http.Server{
 		Addr:         ":" + viper.GetString(config.Port),

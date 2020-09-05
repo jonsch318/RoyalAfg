@@ -2,7 +2,12 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["user.go"],
+    srcs = [
+        "get_user.go",
+        "save_user.go",
+        "update_user.go",
+        "user.go",
+    ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/servers",
     visibility = ["//visibility:public"],
     deps = [

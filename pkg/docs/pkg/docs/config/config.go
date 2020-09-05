@@ -12,6 +12,9 @@ const WriteTimeout = "HttpServer.WriteTimeout"
 const ReadTimeout = "HttpServer.ReadTimeout"
 const IdleTimeout = "HttpServer.IdleTimeout"
 
+const SwaggerUrl = "SwaggerDocs.SwaggerUrl"
+const SwaggerTitle = "SwaggerDocs.Title"
+
 func ConfigureDefaults() {
 	// HttpServer configuration
 	viper.SetDefault(Port, 9000)

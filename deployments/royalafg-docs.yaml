@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-docs
+  namespace: royalafg
+spec:
+  selector:
+    app: royalafg-docs
+  ports:
+    - name: web
+      port: 80
+      targetPort: 9000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: royalafg-docs
+  namespace: royalafg
+spec:
+  rules:
+    - host: troyalafg.games
+      http:
+        paths:
+          - path: /docs
+            backend:
+              serviceName: royalafg-docs
+              servicePort: 80
+    - host: royalafg.games
+      http:
+        paths:
+          - path: /docs
+            backend:
+              serviceName: royalafg-docs
+              servicePort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-docs
+  namespace: royalafg
+  annotations:
+    "consul.hashicorp.com/connect-inject": "true"
+spec:
+  selector:
+    matchLabels:
+      app: royalafg-docs
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+      labels:
+        app: royalafg-docs
+    spec:
+      containers:
+        - name: royalafg-docs
+          image: "docker.io/johnnys318/royalafg-docs:latest"
+          resources:
+            limits:
+              memory: "50Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+            - name: royalafg-docs-config
+              mountPath: "/etc/royalafg-docs"
+
+      volumes:
+        - name: royalafg-docs-config
+          configMap:
+            name: royalafg-docs-configmap

@@ -8,6 +8,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/spf13/viper"
 )
@@ -66,13 +68,31 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	m := protos.ToMessageUser(user)
-	_, err = h.userService.SaveUser(context.Background(), m)
-
+	m, err = h.userService.SaveUser(context.Background(), m)
 	if err != nil {
+		st, _ := status.FromError(err)
 		h.l.Error(err)
+
+		switch st.Code() {
+		case codes.InvalidArgument:
+			h.l.Errorw("Validation", "error", st.Err())
+			JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
+			return
+		case codes.Internal:
+			h.l.Errorw("UserService Call Internal", "error", st.Err())
+			JSONError(rw, &responses.ErrorResponse{Error: st.Message()}, http.StatusInternalServerError)
+			return
+		case codes.AlreadyExists:
+			h.l.Errorw("Validation", "error", st.Err())
+			JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
+			return
+		}
+
 		JSONError(rw, &responses.ErrorResponse{Error: err.Error()}, http.StatusInternalServerError)
 		return
 	}
+
+	user = protos.FromMessageUserExact(m)
 
 	h.l.Debug("User saved")
 

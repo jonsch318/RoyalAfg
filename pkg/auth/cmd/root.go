@@ -65,7 +65,7 @@ func initConfig() {
 		}
 
 		// Search config in home directory with name "RoyalAfgInGo.d" (without extension).
-		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
+		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
 		viper.AddConfigPath("./pkg/auth/")
 		viper.AddConfigPath("./.RoyalAfgInGo.d/")

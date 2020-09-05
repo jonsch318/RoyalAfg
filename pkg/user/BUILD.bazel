@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 
 go_library(
@@ -11,14 +11,6 @@ go_library(
     ],
 )
 
-filegroup(
-    name = "config",
-    srcs = glob([
-        "*_service.yaml",
-    ]),
-    visibility = ["//visibility:public"],
-)
-
 go_binary(
     name = "user",
     embed = [":go_default_library"],
@@ -29,9 +21,9 @@ container_image(
     name = "image",
     base = "@alpine_linux_amd64//image",
     entrypoint = ["/user"],
-    visibility = ["//visibility:public"],
     files = [
         ":user",
-        ":config",
+        "//.RoyalAfgInGo.d:config",
     ],
+    visibility = ["//visibility:public"],
 )
