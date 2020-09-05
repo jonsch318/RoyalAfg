@@ -23,3 +23,5 @@ bazel-out/
 bazel-RoyalAfgInGo/
 bazel-testlogs/
 bazel-*/
+/bazel-*
+configuration/

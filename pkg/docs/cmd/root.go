@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/docs/pkg/docs"
+	"github.com/fsnotify/fsnotify"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -65,10 +66,11 @@ func initConfig() {
 		}
 
 		// Search config in home directory with name ".github.com/JohnnyS318/RoyalAfgInGoInGo" (without extension).
-		viper.AddConfigPath(home + "/RoyalAfgInGo.d/")
+		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
 		viper.AddConfigPath("./pkg/docs")
 		viper.SetConfigName("docs_service")
+		viper.SetConfigFile("/etc/royalafg-docs/config.yaml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -77,4 +79,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed %v", e.Name)
+
+	})
 }

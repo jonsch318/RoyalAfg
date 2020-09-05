@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go v1.34.3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elithrar/simple-scrypt v1.3.0
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-openapi/runtime v0.19.20
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
