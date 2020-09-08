@@ -1,0 +1,32 @@
+global:
+  name: consul
+  datacenter: dc1
+  gossipEncryption:
+    secretName: consul-gossip-encryption-key
+    secretKey: key
+  tls:
+    enabled: true
+    caCert:
+      secretName: consul-ca-cert
+      secretKey: tls.crt
+    caKey:
+      secretName: consul-ca-key
+      secretKey: tls.key
+
+server:
+  replicas: 1
+  bootstrapExpect: 1
+  connect: true
+  disruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+
+client:
+  enabled: true
+
+ui:
+  service:
+    type: "NodePort"
+
+connectInject:
+  enabled: true

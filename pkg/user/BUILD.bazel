@@ -1,5 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 go_library(
     name = "go_default_library",
@@ -23,7 +23,14 @@ container_image(
     entrypoint = ["/user"],
     files = [
         ":user",
-        "//.RoyalAfgInGo.d:config",
     ],
     visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_image",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "johnnys318/royalafg-user",
 )

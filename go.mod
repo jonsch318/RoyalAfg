@@ -6,6 +6,7 @@ require (
 	github.com/Kamva/mgm v1.2.3
 	github.com/Kamva/mgm/v3 v3.0.1
 	github.com/aws/aws-sdk-go v1.34.3 // indirect
+	github.com/cloudflare/cfssl v1.4.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/fsnotify/fsnotify v1.4.9
@@ -33,7 +34,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200817155316-9781c653f443 // indirect
+	golang.org/x/sys v0.0.0-20200817155316-9781c653f443
 	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0

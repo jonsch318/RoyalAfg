@@ -25,3 +25,4 @@ bazel-testlogs/
 bazel-*/
 /bazel-*
 configuration/
+certs/
