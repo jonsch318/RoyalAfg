@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-auth
+  namespace: royalafg
+spec:
+  selector:
+    app: royalafg-auth
+  ports:
+    - name: grpc
+      port: 8080
+      targetPort: 8080
+    - name: web
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: royalafg-auth
+  namespace: royalafg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-auth
+  namespace: royalafg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: royalafg-auth
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:8080"
+      labels:
+        app: royalafg-auth
+    spec:
+      serviceAccountName: royalafg-auth
+      containers:
+        - name: royalafg-auth
+          image: docker.io/johnnys318/royalafg-auth:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - protocol: TCP
+              containerPort: 80
+          env:
+            - name: Jwt.SigningKey
+              valueFrom:
+                secretKeyRef:
+                  name: royalafg-auth
+                  key: jwt-key
+          volumeMounts:
+            - name: royalafg-auth-config
+              mountPath: "/ect/royalafg-auth"
+      volumes:
+        - name: royalafg-auth-config
+          configMap:
+            name: royalafg-auth

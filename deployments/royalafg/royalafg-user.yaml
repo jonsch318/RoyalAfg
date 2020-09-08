@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-user
+  namespace: royalafg
+spec:
+  selector:
+    app: royalafg-user
+  ports:
+    - name: grpc
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: royalafg-user
+  namespace: royalafg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-user
+  namespace: royalafg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: royalafg-user
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+      labels:
+        app: royalafg-user
+    spec:
+      serviceAccountName: royalafg-user
+      containers:
+        - name: royalafg-user
+          image: docker.io/johnnys318/royalafg-user:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - protocol: TCP
+              containerPort: 8080
+          env:
+            - name: Jwt.SigningKey
+              valueFrom:
+                secretKeyRef:
+                  name: royalafg-user
+                  key: jwt-key
+            - name: Database.Url
+              valueFrom:
+                secretKeyRef:
+                  key: db-url
+                  name: royalafg-user
+            - name: User.Pepper
+              valueFrom:
+                secretKeyRef:
+                  key: user-pepper
+                  name: royalafg-user
+          volumeMounts:
+            - name: royalafg-user-config
+              mountPath: "/ect/royalafg-user"
+      volumes:
+        - name: royalafg-user-config
+          configMap:
+            name: royalafg-user

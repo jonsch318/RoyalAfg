@@ -1718,10 +1718,3 @@ go_repository(
     sum = "h1:ZZCA22JRF2gQE5FoNmhmrf7jeJJ2uhqDUNRYKm8dvmM=",
     version = "v1.15.0",
 )
-
-go_repository(
-    name = "com_github_johnnys318_royalafgingo_shared",
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/shared",
-    sum = "h1:sfcPo8/6qRBL+pFFXaJF7yrUgop4eTO2XdrWXTQw1mQ=",
-    version = "v0.0.0-20200812222218-34fb709a33cf",
-)

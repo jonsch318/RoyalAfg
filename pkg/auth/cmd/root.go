@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth"
+	"github.com/fsnotify/fsnotify"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -70,6 +71,7 @@ func initConfig() {
 		viper.AddConfigPath("./pkg/auth/")
 		viper.AddConfigPath("./.RoyalAfgInGo.d/")
 		viper.SetConfigName("auth_service")
+		viper.SetConfigFile("/etc/royalafg-auth/config.yaml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -78,4 +80,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed %v", e.Name)
+		viper.ReadInConfig()
+	})
 }

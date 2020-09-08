@@ -11,7 +11,7 @@ spec:
       port: 80
       targetPort: 9000
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: royalafg-docs
@@ -22,25 +22,36 @@ spec:
       http:
         paths:
           - path: /docs
+            pathType: Prefix
             backend:
-              serviceName: royalafg-docs
-              servicePort: 80
+              service:
+                name: royalafg-docs
+                port:
+                  number: 80
     - host: royalafg.games
       http:
         paths:
           - path: /docs
+            pathType: Prefix
             backend:
-              serviceName: royalafg-docs
-              servicePort: 80
-
+              service:
+                name: royalafg-docs
+                port:
+                  number: 80
+  tls:
+    - secretName: docs-tls-cert
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: royalafg-docs
+  namespace: royalafg
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: royalafg-docs
   namespace: royalafg
-  annotations:
-    "consul.hashicorp.com/connect-inject": "true"
 spec:
   selector:
     matchLabels:
@@ -71,3 +82,26 @@ spec:
         - name: royalafg-docs-config
           configMap:
             name: royalafg-docs-configmap
+---
+apiVersion: mongodb.com/v1
+kind: MongoDB
+metadata:
+  name: royalafg-user-mongo
+  namespace: mongodb
+spec:
+  members: 1
+  version: 4.2.2-ent
+  opsManager:
+    configMapRef:
+      name: royalafg-user-mongo
+  credentials: royalafg-user-mongo-cred
+  type: ReplicaSet
+  persistent: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-user-mongo
+  namespace: mongodb
+data:
+  baseUrl:

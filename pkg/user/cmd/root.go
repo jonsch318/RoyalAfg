@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -49,6 +50,15 @@ func init() {
 	rootCmd.Flags().Duration("gracyfulTimeout", time.Second*20, "The duration for which the server waits for existing connections to finish")
 	viper.BindPFlag("GracefulTimeout", rootCmd.Flags().Lookup("gracefulTimeout"))
 
+	rootCmd.Flags().String("db-url", "", "Url to connect to the mongo database")
+	viper.BindPFlag("Database.Url", rootCmd.Flags().Lookup("db-url"))
+
+	rootCmd.Flags().String("user-pepper", "", "Pepper to include after the hash")
+	viper.BindPFlag("User.Pepper", rootCmd.Flags().Lookup("user-pepper"))
+
+	rootCmd.Flags().String("jwt-key", "", "Key to sign jwts for authorization")
+	viper.BindPFlag("Jwt.SigningKey", rootCmd.Flags().Lookup("jwt-key"))
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -66,10 +76,9 @@ func initConfig() {
 
 		// Search config in home directory with name "RoyalAfgInGo.d" (without extension).
 		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
-		viper.AddConfigPath(".")
-		viper.AddConfigPath("./pkg/auth/")
-		viper.AddConfigPath("./.RoyalAfgInGo.d")
 		viper.SetConfigName("user_service")
+		viper.SetConfigFile("/etc/royalafg-user/config.yaml")
+		viper.SetConfigFile("/etc/royalafg-user-secret/secret.yaml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -78,4 +87,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed %v", e.Name)
+		viper.ReadInConfig()
+	})
 }
