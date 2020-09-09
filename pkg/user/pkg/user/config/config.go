@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const Port = "HttpServer.Port"
+const Port = "port"
 const GracefulTimeout = "HttpServer.GracefulTimeout"
 const WriteTimeout = "HttpServer.WriteTimeout"
 const ReadTimeout = "HttpServer.ReadTimeout"
@@ -14,7 +14,7 @@ const IdleTimeout = "HttpServer.IdleTimeout"
 
 const DatabaseName = "Database.Name"
 const DatabaseTimeout = "Database.Timeout"
-const DatabaseUrl = "Database.Url"
+const DatabaseUrl = "mongodburl"
 
 func ConfigureDefaults() {
 	// HttpServer configuration
