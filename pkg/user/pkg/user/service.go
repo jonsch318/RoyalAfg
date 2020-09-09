@@ -32,6 +32,7 @@ func Start() {
 	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(config.DatabaseTimeout)}
 	err := mgm.SetDefaultConfig(cfg, viper.GetString(config.DatabaseName), options.Client().ApplyURI(viper.GetString(config.DatabaseUrl)))
 	if err != nil {
+		logger.Errorf("Connection error to url %v see!", viper.GetString(config.DatabaseUrl))
 		logger.Fatalw("Connection to mongo failed", "error", err)
 	}
 	_, client, _, err := mgm.DefaultConfigs()

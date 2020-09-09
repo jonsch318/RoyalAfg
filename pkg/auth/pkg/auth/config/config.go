@@ -7,29 +7,24 @@ import (
 )
 
 // Port on which the server listens
-const Port = "HttpServer.Port"
+const Port = "port"
 
 // GracefulTimeout sets the timout to wait for active connectons after that forcing them to close
-const GracefulTimeout = "HttpServer.GracefulTimeout"
+const GracefulTimeout = "gracefultimeout"
 
-const DatabaseName = "Database.Name"
-const DatabaseUrl = "Database.Url"
-const DatabaseTimeout = "Database.Timeout"
+const UserServiceUrl = "userservice"
 
-const CookieName = "HttpServer.Cookie.Name"
-const CookieExpires = "HttpServer.Cookie.Expires"
+const CookieName = "cookiename"
+const CookieExpires = "cookieexpires"
 
-const JwtSigningKey = "HttpServer.Jwt.SigningKey"
-const JwtIssuer = "HttpServer.Jwt.Issuer"
-const JwtExpiresAt = "HttpServer.Jwt.ExpiresAt"
+const JwtSigningKey = "jwtsigningkey"
+const JwtIssuer = "jwtissuer"
+const JwtExpiresAt = "jwtexpiresat"
 
 // ConfigureDefaults configures the viper default configuration values
 func ConfigureDefaults() {
 
-	// Database
-	viper.SetDefault(DatabaseName, "github.com/JohnnyS318/RoyalAfgInGoInGo")
-	viper.SetDefault(DatabaseUrl, "mongodb//localhost:27017/")
-	viper.SetDefault(DatabaseTimeout, time.Second*20)
+	viper.SetDefault(UserServiceUrl, "royalafg-user.royalafg.svc.cluster.local:8080")
 
 	// HTTPServer settings
 	viper.SetDefault(GracefulTimeout, time.Second*20)

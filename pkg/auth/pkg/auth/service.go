@@ -18,7 +18,6 @@ import (
 	"github.com/justinas/alice"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -34,20 +33,9 @@ func Start() {
 
 	r := mux.NewRouter()
 
-	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(config.DatabaseTimeout)}
-	err := mgm.SetDefaultConfig(cfg, viper.GetString(config.DatabaseName), options.Client().ApplyURI(viper.GetString(config.DatabaseUrl)))
-	if err != nil {
-		logger.Fatalw("Connection to mongo failed", "error", err)
-	}
-	_, client, _, err := mgm.DefaultConfigs()
-	if err != nil {
-		logger.Fatalw("Could not get the mongo client", "error", err)
-	}
-	defer utils.DisconnectClient(logger, client)
-
 	// Grpc Setup
 
-	conn, err := grpc.DialContext(context.Background(), viper.GetString("UserService.Url"), grpc.WithBlock(), grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.Background(), viper.GetString(config.UserServiceUrl), grpc.WithBlock(), grpc.WithInsecure())
 
 	if err != nil {
 		logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString("UserService.Url"))

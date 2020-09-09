@@ -1,3 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royalafg-auth
+  namespace: royalafg
+spec:
+  rules:
+    - host: troyalafg.games
+      http:
+        paths:
+          - path: /account
+            pathType: Prefix
+            backend:
+              service:
+                name: royalafg-auth
+                port:
+                  number: 80
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,12 +26,9 @@ spec:
   selector:
     app: royalafg-auth
   ports:
-    - name: grpc
-      port: 8080
-      targetPort: 8080
     - name: web
       port: 80
-      targetPort: 80
+      targetPort: 8080
 
 ---
 apiVersion: v1
@@ -49,13 +65,13 @@ spec:
               cpu: "500m"
           ports:
             - protocol: TCP
-              containerPort: 80
+              containerPort: 8080
           env:
-            - name: Jwt.SigningKey
+            - name: RYL_JWTSIGNINGKEY
               valueFrom:
                 secretKeyRef:
                   name: royalafg-auth
-                  key: jwt-key
+                  key: jwt-signing-key
           volumeMounts:
             - name: royalafg-auth-config
               mountPath: "/ect/royalafg-auth"

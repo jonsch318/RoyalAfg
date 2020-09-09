@@ -47,17 +47,17 @@ spec:
             - protocol: TCP
               containerPort: 8080
           env:
-            - name: Jwt.SigningKey
+            - name: RYLUSER_JWT_KEY
               valueFrom:
                 secretKeyRef:
                   name: royalafg-user
                   key: jwt-key
-            - name: Database.Url
+            - name: RYLUSER_MONGODBURL
               valueFrom:
                 secretKeyRef:
                   key: db-url
                   name: royalafg-user
-            - name: User.Pepper
+            - name: RYLUSER_USER-PEPPER
               valueFrom:
                 secretKeyRef:
                   key: user-pepper
@@ -65,7 +65,13 @@ spec:
           volumeMounts:
             - name: royalafg-user-config
               mountPath: "/ect/royalafg-user"
+
+            - name: royalafg-user-secret
+              mountPath: "/ect/royalafg-user-secret"
       volumes:
         - name: royalafg-user-config
           configMap:
             name: royalafg-user
+        - name: royalafg-user-secret
+          secret:
+            secretName: royalafg-user-secret
