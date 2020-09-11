@@ -21,3 +21,6 @@ spec:
           db: admin
         - name: userAdminAnyDatabase
           db: admin
+  podSpec:
+    cpu: 100m
+    memory: 1Gi

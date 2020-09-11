@@ -69,8 +69,11 @@ spec:
           image: "docker.io/johnnys318/royalafg-docs:latest"
           resources:
             limits:
-              memory: "50Mi"
-              cpu: "200m"
+              memory: "20Mi"
+              cpu: "250m"
+            requests:
+              memory: 10Mi
+              cpu: 100m
           ports:
             - containerPort: 9000
               protocol: TCP

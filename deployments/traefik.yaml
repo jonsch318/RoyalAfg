@@ -93,6 +93,13 @@ spec:
             - --defaultentrypoints=http,https
             - --entrypoints=Name:https Address::443 TLS
             - --entrypoints=Name:http Address::80
+          resources:
+            limits:
+              memory: "200Mi"
+              cpu: "400m"
+            requests:
+              memory: 200Mi
+              cpu: 200m
 ---
 apiVersion: v1
 kind: Service
