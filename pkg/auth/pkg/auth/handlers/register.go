@@ -70,8 +70,12 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	m := protos.ToMessageUser(user)
 	m, err = h.userService.SaveUser(context.Background(), m)
 	if err != nil {
-		st, _ := status.FromError(err)
-		h.l.Error(err)
+		st, ok := status.FromError(err)
+		if ok {
+			h.l.Errorw("Error from grpc conn", "error", err, "status", st)
+		} else {
+			h.l.Errorw("Error from grpc conn", "error", err)
+		}
 
 		switch st.Code() {
 		case codes.InvalidArgument:

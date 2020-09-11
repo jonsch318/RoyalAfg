@@ -41,8 +41,11 @@ spec:
           image: docker.io/johnnys318/royalafg-user:latest
           resources:
             limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: "20Mi"
+              cpu: "250m"
+            requests:
+              memory: 10Mi
+              cpu: 100m
           ports:
             - protocol: TCP
               containerPort: 8080
@@ -74,4 +77,4 @@ spec:
             name: royalafg-user
         - name: royalafg-user-secret
           secret:
-            secretName: royalafg-user-secret
+            secretName: royalafg-user

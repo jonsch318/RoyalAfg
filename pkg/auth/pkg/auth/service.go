@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"net/http"
 	"time"
 
@@ -35,10 +34,12 @@ func Start() {
 
 	// Grpc Setup
 
-	conn, err := grpc.DialContext(context.Background(), viper.GetString(config.UserServiceUrl), grpc.WithBlock(), grpc.WithInsecure())
+	logger.Infof("User service url %v trying to connect", viper.GetString(config.UserServiceUrl))
+	connectAddrs := viper.GetString(config.UserServiceUrl)
+	conn, err := grpc.Dial(connectAddrs, grpc.WithInsecure())
 
 	if err != nil {
-		logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString("UserService.Url"))
+		logger.Fatalw("Connection could not be established", "error", err, "target", connectAddrs)
 	}
 
 	defer conn.Close()
