@@ -30,7 +30,7 @@ func (h *LoggerHandler) LogRoute(next http.Handler) http.Handler {
 // LogRouteWithIP logs the called route together with the ip
 func (h *LoggerHandler) LogRouteWithIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		h.l.Debugw(fmt.Sprintf("%v called", r.URL.Path), r.URL.Path, "remote_ip", utils.GetIP(r))
+		h.l.Debugw(fmt.Sprintf("%v called", r.URL.Path), "route", r.URL.Path, "remote_ip", utils.GetIP(r))
 		next.ServeHTTP(rw, r)
 	})
 }

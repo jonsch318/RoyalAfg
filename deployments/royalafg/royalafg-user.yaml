@@ -30,19 +30,15 @@ spec:
       app: royalafg-user
   template:
     metadata:
-      annotations:
-        "consul.hashicorp.com/connect-inject": "true"
       labels:
         app: royalafg-user
     spec:
       serviceAccountName: royalafg-user
       containers:
         - name: royalafg-user
+          imagePullPolicy: Always
           image: docker.io/johnnys318/royalafg-user:latest
           resources:
-            limits:
-              memory: "20Mi"
-              cpu: "250m"
             requests:
               memory: 10Mi
               cpu: 100m
@@ -67,14 +63,9 @@ spec:
                   name: royalafg-user
           volumeMounts:
             - name: royalafg-user-config
-              mountPath: "/ect/royalafg-user"
+              mountPath: "/etc/royalafg-user" 
 
-            - name: royalafg-user-secret
-              mountPath: "/ect/royalafg-user-secret"
       volumes:
-        - name: royalafg-user-config
+        - name:  royalafg-user-config
           configMap:
-            name: royalafg-user
-        - name: royalafg-user-secret
-          secret:
-            secretName: royalafg-user
+              name: royalafg-user

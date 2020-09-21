@@ -37,7 +37,8 @@ func Start() {
 	logger.Infof("User service url %v trying to connect", viper.GetString(config.UserServiceUrl))
 	connectAddrs := viper.GetString(config.UserServiceUrl)
 	conn, err := grpc.Dial(connectAddrs, grpc.WithInsecure())
-
+	state := conn.GetState()
+	logger.Infow("Calling state", "state", state.String())
 	if err != nil {
 		logger.Fatalw("Connection could not be established", "error", err, "target", connectAddrs)
 	}
@@ -51,7 +52,7 @@ func Start() {
 	// Register Middleware
 	loggerHandler := mw.NewLoggerHandler(logger)
 
-	stdChain := alice.New(loggerHandler.LogRouteWithIP)
+	stdChain := alice.New(loggerHandler.LogRoute)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(logger, userService)

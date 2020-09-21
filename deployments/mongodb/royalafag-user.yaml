@@ -10,6 +10,8 @@ spec:
   security:
     authentication:
       modes: ["SCRAM"]
+  persistent: true
+  exposedExternally: true
   users:
     - name: admin
       db: admin
@@ -21,6 +23,3 @@ spec:
           db: admin
         - name: userAdminAnyDatabase
           db: admin
-  podSpec:
-    cpu: 100m
-    memory: 1Gi

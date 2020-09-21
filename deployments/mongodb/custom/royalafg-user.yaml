@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-1
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/mongodata"
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name:  royalafg
+  namespace: mongodb
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  mongo
+  namespace: mongodb
+spec:
+  selector:
+    role: mongo
+  type:  ClusterIP
+  clusterIP: None
+  ports:
+  - name:  mongo
+    port:  27017
+    targetPort:  27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: royalafg-user-mongo
+  namespace: mongodb
+spec:
+  selector:
+    matchLabels:
+      role: mongo
+  serviceName: mongo
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: mongo
+        app: royalafg-user
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo:4.4.0
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: admin
+            - name: MONGO_INTIDB_ROOT_PASSWORD
+              value: admin
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+        
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-persistent-storage
+      spec:
+        storageClassName: manual
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---

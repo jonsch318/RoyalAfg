@@ -60,7 +60,11 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 		return err
 	}
 
+	db.l.Info("Succeded validation")
+
 	err = db.coll.Create(user)
+
+	db.l.Infof("User Creation %v", err)
 
 	if err != nil {
 		return err

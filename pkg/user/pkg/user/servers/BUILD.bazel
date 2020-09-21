@@ -14,6 +14,7 @@ go_library(
         "//pkg/protos:go_default_library",
         "//pkg/shared/pkg/models:go_default_library",
         "//pkg/user/pkg/user/database:go_default_library",
+        "//pkg/user/pkg/user/metrics:go_default_library",
         "@org_golang_google_grpc//codes:go_default_library",
         "@org_golang_google_grpc//metadata:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",
