@@ -10,8 +10,6 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/spf13/viper"
 )
 
 // Register registers a new user
@@ -37,8 +35,6 @@ import (
 //		200: UserResponse
 //
 func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
-	h.l.Info("Register route called")
-
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
@@ -51,24 +47,26 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.l.Debug("Decoded user")
-
 	user, err := dto.ToObject()
 
+	h.l.Debug("Decoded newly registered user")
+
 	if err != nil {
-		h.l.Error(err)
+		h.l.Errorw("Error during dto eval and hashing", "error", err)
 		JSONError(rw, &responses.ErrorResponse{Error: "User could not be created"}, http.StatusInternalServerError)
 		return
 	}
 
 	if err := user.Validate(); err != nil {
-		h.l.Error("Validation", "error", err)
+		h.l.Error("Validation failed", "error", err)
 		JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
 		return
 	}
 
-	m := protos.ToMessageUser(user)
-	m, err = h.userService.SaveUser(context.Background(), m)
+	msg := protos.ToMessageUser(user)
+
+	m, err := h.userService.SaveUser(context.Background(), msg)
+
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok {
@@ -129,7 +127,7 @@ func (dto RegisterUser) ToObject() (*models.User, error) {
 
 	user := models.NewUser(dto.Username, dto.Email, dto.FullName, dto.Birthdate)
 
-	hash, err := security.HashPassword(dto.Password, viper.GetString("User.Pepper"))
+	hash, err := security.HashPassword(dto.Password, "")
 
 	if err != nil {
 		return nil, err

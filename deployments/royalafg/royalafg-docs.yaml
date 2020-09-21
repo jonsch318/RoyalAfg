@@ -59,8 +59,6 @@ spec:
   replicas: 1
   template:
     metadata:
-      annotations:
-        "consul.hashicorp.com/connect-inject": "true"
       labels:
         app: royalafg-docs
     spec:
@@ -84,4 +82,4 @@ spec:
       volumes:
         - name: royalafg-docs-config
           configMap:
-            name: royalafg-docs-configmap
+            name: royalafg-docs

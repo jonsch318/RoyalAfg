@@ -78,7 +78,6 @@ func initConfig() {
 		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
 		viper.SetConfigName("user_service")
 		viper.SetConfigFile("/etc/royalafg-user/config.yaml")
-		viper.SetConfigFile("/etc/royalafg-user-secret/secret.yaml")
 	}
 
 	viper.SetEnvPrefix("ryluser")

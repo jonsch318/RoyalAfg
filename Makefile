@@ -15,3 +15,9 @@ proto:
 
 protos:
 	cd ./pkg/protos && make protos
+
+push_user:
+	bazel run //pkg/user:push_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
+
+push_auth:
+	bazel run //pkg/auth:push_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64

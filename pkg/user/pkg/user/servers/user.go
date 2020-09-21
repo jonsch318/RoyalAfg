@@ -4,18 +4,22 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/database"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user/pkg/user/metrics"
 	"go.uber.org/zap"
 )
 
 type UserServer struct {
-	l  *zap.SugaredLogger
-	db *database.UserDatabase
+	l       *zap.SugaredLogger
+	db      *database.UserDatabase
+	metrics *metrics.User
 }
 
-func NewUserServer(logger *zap.SugaredLogger, database *database.UserDatabase) *UserServer {
+func NewUserServer(logger *zap.SugaredLogger, database *database.UserDatabase, metrics *metrics.User) *UserServer {
+
 	return &UserServer{
-		l:  logger,
-		db: database,
+		l:       logger,
+		db:      database,
+		metrics: metrics,
 	}
 }
 

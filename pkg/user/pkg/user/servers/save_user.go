@@ -27,12 +27,15 @@ func (s *UserServer) SaveUser(ctx context.Context, m *protos.User) (*protos.User
 	if err != nil {
 
 		if database.IsDup(err) {
+			s.l.Errorw("Username or Email duplication", "error", "Username or Email already exist")
 			return nil, status.Error(codes.AlreadyExists, "Username or Email already used pleace try again using a different Username or Email")
 		}
 
 		s.l.Errorw("Error during parsing", "error", err)
 		return nil, status.Error(codes.Internal, "User could not be saved to the database")
 	}
+
+	s.metrics.SavedUser()
 
 	return toMessageUser(user), nil
 }
