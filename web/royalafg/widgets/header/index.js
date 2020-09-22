@@ -11,6 +11,10 @@ export default function Header() {
     const toggle = () => {
         setIsOpen(!isOpen);
     }
+    const [width, setWidth] = React.useState(0);
+    React.useEffect(() => {
+      setWidth(window.innerWidth);
+    });
 
     return (
         <div>
@@ -22,12 +26,11 @@ export default function Header() {
                     <div className="logo md:ml-16 flex items-center md:h-full h-16 z-0 w-full md:w-auto justify-center md:relative absolute mt-0 mb-auto">
                         <a className="font-medium font-sans text-xl text-center cursor-pointer" href="/">Royalafg</a>
                     </div>
-                    {
-                        isOpen
-                        ? <div className="nav md:ml-4 md:flex absolute md:relative w-full md:h-full z-50 md:z-10 bg-gray-200 md:bg-transparent text-black md:text-white mt-16 md:mt-0">
+                    {   
+                        width <= 768 && !isOpen ? <></> 
+                        :<div className="nav md:ml-4 md:flex absolute md:relative w-full md:h-full z-50 md:z-10 bg-gray-200 md:bg-transparent text-black md:text-white mt-16 md:mt-0">
                             <NavItems></NavItems>
                         </div> 
-                        : <></>
                     }
                     
                 </div>
