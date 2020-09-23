@@ -16,3 +16,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.move-down-nav-top{
+  top: 4rem
+}
