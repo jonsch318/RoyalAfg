@@ -4,7 +4,7 @@ import Header from "../widgets/header"
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div>
+    <div className="main-container">
       <Header></Header>
       <Component {...pageProps} />
     </div>
