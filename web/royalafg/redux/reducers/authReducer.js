@@ -1,13 +1,13 @@
-import { LOGGED_USER_IN } from "../types/authTypes";
+import { LOGIN_USER_SUCCESS } from "../types/authTypes";
 
 const intialState = {
     user: {},
     isLoggedIn: false
 }
 
-export default function(state = intialState, action) {
+const authReducer = (state = intialState, action) => {
     switch (action.type) {
-        case LOGGED_USER_IN:
+        case LOGIN_USER_SUCCESS:
             return {
                 ...state,
                 user: action.payload,
@@ -17,3 +17,5 @@ export default function(state = intialState, action) {
             return state;
     }
 }
+
+export default authReducer
