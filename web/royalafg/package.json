@@ -12,9 +12,15 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "next": "9.5.3",
+    "next-i18next": "^6.0.3",
+    "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-hook-form": "^6.8.4"
+    "react-hook-form": "^6.8.4",
+    "react-redux": "^7.2.1",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "postcss-preset-env": "^6.7.0",
