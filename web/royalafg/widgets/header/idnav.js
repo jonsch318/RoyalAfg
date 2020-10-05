@@ -1,11 +1,12 @@
 import { useSelector } from "react-redux"
+import Avatar from "../../components/header/id/avatar";
 
 export default function IdNav() {
 
     const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
 
 
-    if(!isLoggedIn){
+    if (!isLoggedIn) {
         return (
             <nav className="flex items-center h-full w-full">
                 <div className="flex items-center h-full w-full px-4">
@@ -21,8 +22,8 @@ export default function IdNav() {
 
     return (
         <nav className="flex items-center h-full w-full">
-            <h1>Signed </h1>
-        </nav>
+            <Avatar />
+        </nav >
     )
 
 
