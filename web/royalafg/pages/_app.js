@@ -4,6 +4,7 @@ import "../styles/globals.css"
 import "../styles/tailwind.css"
 import Header from "../widgets/header"
 import { appWithTranslation } from "../i18n"
+import Footer from "../widgets/footer"
 
 function MyApp({ Component, pageProps }) {
 
@@ -14,9 +15,10 @@ function MyApp({ Component, pageProps }) {
       <div className="main-container">
         <Header></Header>
         <Component {...pageProps} />
+        <Footer />
       </div>
-    </Provider>
+    </Provider >
   )
 }
 
-export default appWithTranslation(MyApp)
+export default MyApp
