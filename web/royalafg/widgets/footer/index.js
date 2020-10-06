@@ -2,24 +2,29 @@ const { default: FooterCard } = require("./card")
 const { default: FooterCardItem } = require("./cardItem")
 
 const Footer = (props) => {
+
+    let containerClass = "w-full";
+
+
+    if (props.absolute) {
+        containerClass += " absolute bottom-0 top-auto";
+        console.log(containerClass);
+    }
+
     return (
-        <div className="absolute bottom-0 top-auto w-full">
+        <div className={containerClass}>
             <style jsx>{`
                 .footer-grid{
                     grid-template-columns: auto 1fr;
                 }
-                .footer-grid-content{
-                    grid-template-columns: auto auto;
-                    grid-tempalte-rows: auto auto;
-                }
             `}</style>
-            <footer className="bg-blue-600 text-white font-sans px-16 py-8">
-                <div className="grid footer-grid">
-                    <div className="grid grid-rows-2 w-auto mr-16">
+            <footer className="bg-blue-600 text-white font-sans md:px-16 md:py-8 py-4 px-8">
+                <div className="md:grid footer-grid">
+                    <div className="md:grid md:grid-rows-2 w-auto md:mr-16 mb-2">
                         <div>&copy; Jonas Schneider</div>
                         <a href="/" className="font-medium font-sans text-xl cursor-pointer">Royalafg</a>
                     </div>
-                    <div className="grid footer-grid-content row-span-2 gap-2">
+                    <div className="md:grid footer-grid-content row-span-2 md:gap-2 md:grid-cols-3 md:justify-items-center">
                         <FooterCard title="legal">
                             <FooterCardItem href="/legal/terms">Terms & Conditions</FooterCardItem>
                             <FooterCardItem href="/legal/privacy">Privacy Statement</FooterCardItem>

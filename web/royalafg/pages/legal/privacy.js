@@ -1,7 +1,13 @@
-export default function PrivacyPage() {
+import Layout from "../../components/layout";
+
+const Privacy = (props) => {
     return (
-        <div>
-            <h1>Privacy</h1>
-        </div>
+        <Layout footerAbsolute>
+            <div>
+                <h1>Privacy</h1>
+            </div>
+        </Layout>
     )
 }
+
+export default Privacy

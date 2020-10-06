@@ -2,7 +2,7 @@ import shortid from "shortid";
 
 const title = (title) => {
     return (
-        <div className="font-sans text-lg font-medium">
+        <div className="font-sans text-base font-medium">
             {title.toUpperCase()}
         </div>
     );
@@ -36,9 +36,9 @@ const content = (items) => {
 const FooterCard = (props) => {
 
     return (
-        <div>
+        <div className="mb-4">
             {title(props.title)}
-            { content(props.children)}
+            {content(props.children)}
         </div>
     )
 

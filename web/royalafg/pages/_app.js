@@ -13,9 +13,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <Provider store={store}>
       <div className="main-container">
-        <Header></Header>
         <Component {...pageProps} />
-        <Footer />
       </div>
     </Provider >
   )
