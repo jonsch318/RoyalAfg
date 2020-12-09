@@ -61,3 +61,8 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+bazel-bin
+bazel-out
+bazel-RoyalAfgInGo
+bazel-testlogs
