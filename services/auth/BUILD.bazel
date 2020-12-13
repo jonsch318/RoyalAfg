@@ -1,0 +1,48 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/auth/cmd:go_default_library",
+    ],
+)
+
+filegroup(
+    name = "config",
+    srcs = glob([
+        "*_service.yaml",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+go_binary(
+    name = "auth",
+    data = [
+        ":config",
+    ],
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
+
+container_image(
+    name = "image",
+    base = "@alpine_linux_amd64//image",
+    entrypoint = ["/auth"],
+    files = [
+        ":auth",
+        ":config",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_image",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "johnnys318/royalafg-auth",
+)
