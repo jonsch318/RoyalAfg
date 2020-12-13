@@ -3,7 +3,7 @@ package handlers
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 
 	"go.uber.org/zap"

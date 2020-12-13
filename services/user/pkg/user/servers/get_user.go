@@ -3,7 +3,7 @@ package servers
 import (
 	"context"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -17,7 +17,18 @@ func (s *UserServer) GetUserById(ctx context.Context, m *protos.GetUser) (*proto
 		return nil, status.Error(codes.NotFound, "The user could not be found")
 	}
 
-	return toMessageUser(user), nil
+	msg := &protos.User{
+		CreatedAt: user.CreatedAt.Unix(),
+		UpdatedAt: user.UpdatedAt.Unix(),
+		Id:        user.ID.Hex(),
+		Username:  user.Username,
+		FullName:  user.FullName,
+		Birthdate: user.Birthdate,
+		Email:     user.Email,
+		Hash:      user.Hash,
+	}
+
+	return msg, nil
 }
 
 func (s *UserServer) GetUserByUsername(ctx context.Context, m *protos.GetUser) (*protos.User, error) {
@@ -28,5 +39,16 @@ func (s *UserServer) GetUserByUsername(ctx context.Context, m *protos.GetUser) (
 		return nil, status.Error(codes.NotFound, "The user could not be found")
 	}
 
-	return toMessageUser(user), nil
+	msg := &protos.User{
+		CreatedAt: user.CreatedAt.Unix(),
+		UpdatedAt: user.UpdatedAt.Unix(),
+		Id:        user.ID.Hex(),
+		Username:  user.Username,
+		FullName:  user.FullName,
+		Birthdate: user.Birthdate,
+		Email:     user.Email,
+		Hash:      user.Hash,
+	}
+
+	return msg, nil
 }
