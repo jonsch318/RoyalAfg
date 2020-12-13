@@ -1,0 +1,34 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "docs.go",
+        "error.go",
+        "jwt.go",
+        "login.go",
+        "logout.go",
+        "register.go",
+        "user.go",
+        "utils.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models:go_default_library",
+        "//pkg/mw:go_default_library",
+        "//pkg/protos:go_default_library",
+        "//pkg/responses:go_default_library",
+        "//services/auth/pkg/auth/config:go_default_library",
+        "//services/auth/pkg/auth/security:go_default_library",
+        "@com_github_dgrijalva_jwt_go//:go_default_library",
+        "@com_github_go_ozzo_ozzo_validation_v4//:go_default_library",
+        "@com_github_go_ozzo_ozzo_validation_v4//is:go_default_library",
+        "@com_github_gorilla_schema//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
+        "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

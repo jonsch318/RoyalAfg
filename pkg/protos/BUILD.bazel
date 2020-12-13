@@ -23,7 +23,7 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/shared/pkg/models:go_default_library",
+        "//pkg/models:go_default_library",
         "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
     ],
 )
