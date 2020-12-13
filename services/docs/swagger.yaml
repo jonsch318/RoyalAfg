@@ -1,7 +1,7 @@
 basePath: /
 consumes:
-- application/json
-- application/x-www-form-urlencoded
+  - application/json
+  - application/x-www-form-urlencoded
 definitions:
   ErrorResponse:
     description: ErrorResponse is a generic response containing an error
@@ -92,11 +92,11 @@ definitions:
         type: string
         x-go-name: Username
     required:
-    - id
-    - username
-    - email
-    - fullName
-    - birthdate
+      - id
+      - username
+      - email
+      - fullName
+      - birthdate
     type: object
     x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
   ValidationError:
@@ -125,159 +125,159 @@ paths:
       description: return the authenticated user based on the api key
       operationId: getUser
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          $ref: '#/responses/UserResponse'
+          $ref: "#/responses/UserResponse"
         "401":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "404":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "500":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
       schemes:
-      - http
-      - https
+        - http
+        - https
       security:
-      - api_key: []
+        - api_key: []
       tags:
-      - account
+        - account
   /account/login:
     post:
       consumes:
-      - application/json
-      - application/x-www-form-urlencoded
+        - application/json
+        - application/x-www-form-urlencoded
       description: After matching credentials, this will generate a jwt and pass it on as a cookie
       operationId: loginUser
       parameters:
-      - description: Credentials verify the user
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/LoginUser'
+        - description: Credentials verify the user
+          in: body
+          name: Body
+          required: true
+          schema:
+            $ref: "#/definitions/LoginUser"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          $ref: '#/responses/UserResponse'
+          $ref: "#/responses/UserResponse"
         "400":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "401":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "404":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "422":
-          $ref: '#/responses/ValidationErrorResponse'
+          $ref: "#/responses/ValidationErrorResponse"
         "500":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
       schemes:
-      - http
-      - https
+        - http
+        - https
       summary: Login to a user account
       tags:
-      - authentication
+        - authentication
   /account/logout:
     post:
       description: This will remove the identity cookie
       operationId: logoutUser
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          $ref: '#/responses/NoContentResponse'
+          $ref: "#/responses/NoContentResponse"
         "401":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
       schemes:
-      - http
-      - https
+        - http
+        - https
       security:
-      - api_key: []
+        - api_key: []
       summary: Logout of account
       tags:
-      - account
+        - account
   /account/register:
     post:
       consumes:
-      - application/json
+        - application/json
       description: This will register a new user with the provided details
       operationId: registerUser
       parameters:
-      - description: User to register and save
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/RegisterUser'
+        - description: User to register and save
+          in: body
+          name: Body
+          required: true
+          schema:
+            $ref: "#/definitions/RegisterUser"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          $ref: '#/responses/UserResponse'
+          $ref: "#/responses/UserResponse"
         "400":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         "422":
-          $ref: '#/responses/ValidationErrorResponse'
+          $ref: "#/responses/ValidationErrorResponse"
         "500":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
       schemes:
-      - http
-      - https
+        - http
+        - https
       summary: Register a new user
       tags:
-      - authentication
+        - authentication
   /account/verify:
     get:
       description: This will return either status code 401 Unauthorized if user is not signed in and 200 when the login token is valid
       operationId: verifyLoggedIn
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          $ref: '#/responses/NoContentResponse'
+          $ref: "#/responses/NoContentResponse"
         "401":
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: "#/responses/ErrorResponse"
       schemes:
-      - http
-      - https
+        - http
+        - https
       summary: Verify that the user is logged in
       tags:
-      - authentication
-      - account
+        - authentication
+        - account
 produces:
-- application/json
+  - application/json
 responses:
   ErrorResponse:
     description: ErrorResponse is a generic error response
     schema:
-      $ref: '#/definitions/ErrorResponse'
+      $ref: "#/definitions/ErrorResponse"
   NoContentResponse:
     description: NoContentResponse is an empty object with no content
   UserResponse:
     description: UserResponse represents a user
     schema:
-      $ref: '#/definitions/UserDTO'
+      $ref: "#/definitions/UserDTO"
   ValidationErrorResponse:
     description: |-
       ValidationError shows the failed validation requirements.
       Each form field that has missing requirements is listet under validationErrors
     schema:
-      $ref: '#/definitions/ValidationError'
+      $ref: "#/definitions/ValidationError"
 schemes:
-- http
-- https
+  - http
+  - https
 security:
-- api_key: []
+  - api_key: []
 securityDefinitions:
   api_key:
     in: cookie
