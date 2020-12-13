@@ -8,10 +8,10 @@ go_library(
     deps = [
         "//pkg/log:go_default_library",
         "//pkg/mw:go_default_library",
+        "//pkg/protos:go_default_library",
         "//pkg/utils:go_default_library",
         "//services/auth/pkg/auth/config:go_default_library",
         "//services/auth/pkg/auth/handlers:go_default_library",
-        "//services/protos:go_default_library",
         "@com_github_gorilla_mux//:go_default_library",
         "@com_github_justinas_alice//:go_default_library",
         "@com_github_kamva_mgm_v3//:go_default_library",

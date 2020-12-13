@@ -9,7 +9,7 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/database"

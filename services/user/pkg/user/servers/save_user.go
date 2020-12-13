@@ -2,9 +2,12 @@ package servers
 
 import (
 	"context"
+	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/database"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -13,7 +16,20 @@ func (s *UserServer) SaveUser(ctx context.Context, m *protos.User) (*protos.User
 
 	s.l.Infof("Called SaveUser Grpc %v", m)
 
-	user := fromMessageUserExact(m)
+	user := &models.User{
+		Username:  m.Username,
+		Email:     m.Email,
+		Birthdate: m.Birthdate,
+		FullName:  m.FullName,
+		Hash:      m.Hash,
+	}
+
+	id, _ := primitive.ObjectIDFromHex(m.Id)
+
+	user.ID = id
+
+	user.CreatedAt = time.Unix(m.CreatedAt, 0)
+	user.UpdatedAt = time.Unix(m.UpdatedAt, 0)
 
 	if err := user.Validate(); err != nil {
 		s.l.Errorw("Validation error", "error", err)

@@ -9,7 +9,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"google.golang.org/grpc"
 
 	"github.com/Kamva/mgm/v3"
