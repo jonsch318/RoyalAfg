@@ -6,7 +6,7 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/cmd",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/auth/pkg/auth:go_default_library",
+        "//services/auth/pkg:go_default_library",
         "@com_github_fsnotify_fsnotify//:go_default_library",
         "@com_github_mitchellh_go_homedir//:go_default_library",
         "@com_github_spf13_cobra//:go_default_library",

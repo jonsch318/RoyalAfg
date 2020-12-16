@@ -1,25 +1,9 @@
-package handlers
+package dto
 
 import (
-	"time"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-
-	"go.uber.org/zap"
+	"time"
 )
-
-type User struct {
-	l           *zap.SugaredLogger
-	userService protos.UserServiceClient
-}
-
-func NewUserHandler(logger *zap.SugaredLogger, userService protos.UserServiceClient) *User {
-	return &User{
-		l:           logger,
-		userService: userService,
-	}
-}
 
 // UserDTO is the data transfer object of the internal user object
 // swagger:model
@@ -48,7 +32,7 @@ type UserDTO struct {
 	// max length: 100
 	FullName string `json:"fullName"`
 
-	// The unix bithdate of the user
+	// The unix birthdate of the user
 	// required: true
 	Birthdate int64 `json:"birthdate"`
 }

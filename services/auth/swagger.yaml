@@ -148,7 +148,7 @@ paths:
       schemes:
       - http
       - https
-      summary: Login to a user account
+      summary: login to a user account
       tags:
       - authentication
   /account/logout:

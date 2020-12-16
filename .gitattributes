@@ -1,0 +1,2 @@
+*.bazel text eol=lf
+WORKSPACE text eol=lf

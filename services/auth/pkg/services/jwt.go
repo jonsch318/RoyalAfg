@@ -1,18 +1,16 @@
-package handlers
+package services
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/spf13/viper"
+	"net/http"
+	"time"
 )
 
-func generateCookie(token string, persistent bool) *http.Cookie {
+func GenerateCookie(token string, persistent bool) *http.Cookie {
 	cookie := &http.Cookie{
 		Name:     viper.GetString(config.CookieName),
 		Value:    token,
@@ -27,7 +25,7 @@ func generateCookie(token string, persistent bool) *http.Cookie {
 	return cookie
 }
 
-func getJwt(user *models.User) (string, error) {
+func GetJwt(user *models.User) (string, error) {
 	signingKey := []byte(viper.GetString(config.JwtSigningKey))
 	claims := jwt.StandardClaims{
 		Subject:   user.ID.Hex(),
@@ -48,8 +46,8 @@ func getJwt(user *models.User) (string, error) {
 	return token, nil
 }
 
-func generateBearerToken(user *models.User) (string, error) {
-	token, err := getJwt(user)
+func GenerateBearerToken(user *models.User) (string, error) {
+	token, err := GetJwt(user)
 
 	if err != nil {
 		return "", err

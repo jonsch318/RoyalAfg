@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg"
 	"os"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth"
 	"github.com/fsnotify/fsnotify"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -22,7 +22,7 @@ var rootCmd = &cobra.Command{
 	Long:  `The auth service is all about the user. It includes registration, signin, authentication`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting the Application... \n Logging will be initialized in a bit.")
-		auth.Start()
+		pkg.Start()
 	},
 }
 
