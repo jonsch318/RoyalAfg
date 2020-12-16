@@ -1,15 +1,17 @@
-package auth
+package pkg
 
 import (
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
 	"net/http"
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
 	"google.golang.org/grpc"
 
 	"github.com/Kamva/mgm/v3"
@@ -23,7 +25,6 @@ import (
 // Start starts the account service
 func Start() {
 	logger := log.NewLogger()
-
 	logger.Warn("Application started. Router will be configured next")
 	defer logger.Warn("Application shut down")
 	defer logger.Desugar().Sync()
@@ -37,26 +38,29 @@ func Start() {
 	logger.Infof("User service url %v trying to connect", viper.GetString(config.UserServiceUrl))
 	connectAddrs := viper.GetString(config.UserServiceUrl)
 	conn, err := grpc.Dial(connectAddrs, grpc.WithInsecure())
-	state := conn.GetState()
-	logger.Infow("Calling state", "state", state.String())
 	if err != nil {
 		logger.Fatalw("Connection could not be established", "error", err, "target", connectAddrs)
 	}
+	state := conn.GetState()
+	logger.Infow("Calling state", "state", state.String())
 
 	defer conn.Close()
 
-	userService := protos.NewUserServiceClient(conn)
+	userServiceClient := protos.NewUserServiceClient(conn)
 
 	//userDb := database.NewUserDatabase(logger)
 
 	// Register Middleware
 	loggerHandler := mw.NewLoggerHandler(logger)
-
 	stdChain := alice.New(loggerHandler.LogRoute)
 
+	//services
+	userRepo := user.NewUserService(userServiceClient)
+	authService := authentication.NewAuthenticationService(userRepo)
+
 	// Handlers
-	userHandler := handlers.NewUserHandler(logger, userService)
-	authmwHandler := mw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
+	userHandler := handlers.NewUserHandler(logger, authService)
+	authMWHandler := mw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
 
 	// Get Subrouters
 	postRouter := r.Methods(http.MethodPost).Subrouter()
@@ -66,9 +70,9 @@ func Start() {
 
 	postRouter.Handle("/account/register", prChain.ThenFunc(userHandler.Register))
 	postRouter.Handle("/account/login", prChain.ThenFunc(userHandler.Login))
-	postRouter.Handle("/account/logout", prChain.Append(authmwHandler.AuthMW).ThenFunc(userHandler.Logout))
+	postRouter.Handle("/account/logout", prChain.Append(authMWHandler.AuthMW).ThenFunc(userHandler.Logout))
 
-	getRouter.Handle("/account/verify", stdChain.Append(authmwHandler.AuthMW).ThenFunc(userHandler.VerifyLoggedIn))
+	getRouter.Handle("/account/verify", stdChain.Append(authMWHandler.AuthMW).ThenFunc(userHandler.VerifyLoggedIn))
 
 	logger.Debug("Setup Routes")
 

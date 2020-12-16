@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "authentication.go",
+        "login.go",
+        "logout.go",
+        "register.go",
+        "verify.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models:go_default_library",
+        "//services/auth/config:go_default_library",
+        "//services/auth/pkg/dto:go_default_library",
+        "//services/auth/pkg/interfaces:go_default_library",
+        "//services/auth/pkg/security:go_default_library",
+        "//services/auth/pkg/services:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)

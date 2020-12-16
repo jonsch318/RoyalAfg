@@ -21,6 +21,8 @@ const JwtSigningKey = "jwtsigningkey"
 const JwtIssuer = "jwtissuer"
 const JwtExpiresAt = "jwtexpiresat"
 
+const Pepper = "pepper"
+
 // ConfigureDefaults configures the viper default configuration values
 func ConfigureDefaults() {
 
@@ -37,4 +39,7 @@ func ConfigureDefaults() {
 	// Jwt Settings
 	viper.SetDefault(JwtIssuer, "github.com/JohnnyS318/RoyalAfgInGo.games")
 	viper.SetDefault(JwtExpiresAt, time.Now().Add(time.Hour*24*7).Unix())
+
+	viper.SetDefault(Pepper, "")
+
 }

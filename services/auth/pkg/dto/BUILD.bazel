@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "login.go",
+        "register.go",
+        "user.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/models:go_default_library"],
+)

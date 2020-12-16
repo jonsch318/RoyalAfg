@@ -1,13 +1,16 @@
-package handlers
+package documentation
 
-import "github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+import (
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
+)
 
 // UserResponse represents a user
 // swagger:response UserResponse
 type userResponseWrapper struct {
 	// The user
 	// in: body
-	Body UserDTO
+	Body handlers.UserDTO
 }
 
 // ErrorResponse is a generic error response
@@ -38,7 +41,7 @@ type registerUserParamsWrapper struct {
 	// User to register and save
 	// in: body
 	// required: true
-	Body RegisterUser
+	Body handlers.RegisterUser
 }
 
 // swagger:parameters loginUser
@@ -47,5 +50,5 @@ type loginUserParamsWrapper struct {
 	// Credentials verify the user
 	// in: body
 	// required: true
-	Body LoginUser
+	Body handlers.LoginUser
 }

@@ -1,30 +1,17 @@
 package handlers
 
 import (
-	"context"
-	"net/http"
-	"time"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/auth/security"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/spf13/viper"
+	"net/http"
 )
 
-// LoginUser defines the object for the api login request
-type LoginUser struct {
-	Username   string `json:"username" schema:"username"`
-	Password   string `json:"password" schema:"password"`
-	RememberMe bool   `json:"rememberme" schema:"rememberme"`
-}
 
-// Validate validates the LoginUser dto to conform to the api's expectation
-func (dto LoginUser) Validate() error {
+
+// Validate validates the LoginDto dto to conform to the api's expectation
+func Validate(dto *dto.LoginDto) error {
 	return validation.ValidateStruct(&dto,
 		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
 		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
@@ -62,7 +49,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 
-	dto := &LoginUser{}
+	loginDto := &dto.LoginDto{}
 
 	cType := r.Header.Get("Content-Type")
 
@@ -72,7 +59,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	case "application/x-www-form-urlencoded":
 		h.l.Debug("content type form urlencoded")
 
-		err := FromFormURLEncodedRequest(dto, r)
+		err := FromFormURLEncodedRequest(loginDto, r)
 
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
@@ -82,7 +69,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 
 	case "application/json":
 		h.l.Debug("content type json")
-		err := FromJSON(dto, r.Body)
+		err := FromJSON(loginDto, r.Body)
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
 			JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
@@ -91,55 +78,14 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate dto
-	err := dto.Validate()
+	err := Validate(loginDto)
 	if err != nil {
 		h.l.Errorw("Validation login dto", "error", err)
 		JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
 		return
 	}
 
-	// check wether email or userame was used
-
-	isEmail := validation.Validate(dto.Username, is.EmailFormat) == nil
-	if isEmail {
-		h.l.Debug("Login using email")
-	}
-
-	m, err := h.userService.GetUserByUsername(context.Background(), &protos.GetUser{Identifier: dto.Username})
-
-	user := &models.User{
-		Username:  m.Username,
-		Email:     m.Email,
-		Birthdate: m.Birthdate,
-		FullName:  m.FullName,
-		Hash:      m.Hash,
-	}
-
-	id, _ := primitive.ObjectIDFromHex(m.Id)
-
-	user.ID = id
-
-	user.CreatedAt = time.Unix(m.CreatedAt, 0)
-	user.UpdatedAt = time.Unix(m.UpdatedAt, 0)
-
-	if err != nil {
-		h.l.Errorw("user with username or email not found", "error", dto.Username)
-		JSONError(rw, &responses.ErrorResponse{Error: "user with username or email not found"}, http.StatusNotFound)
-		return
-	}
-
-	// validate password
-	if !security.ComparePassword(dto.Password, user.Hash, viper.GetString("User.Pepper")) {
-		h.l.Errorw("password did not match", "error", dto.Username)
-		JSONError(rw, &responses.ErrorResponse{Error: "credentials did not match"}, http.StatusUnauthorized)
-		return
-	}
-
-	// execute other login schemes (later)
-	// validate other schemes (later)
-
-	// create jwt
-	token, err := generateBearerToken(user)
+	user, token, err := h.Auth.Login(loginDto.Username, loginDto.Password)
 
 	if err != nil {
 		h.l.Errorw("jwt could not be created", "error", err)
@@ -148,7 +94,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate Cookie with jwt
-	cookie := generateCookie(token, dto.RememberMe)
+	cookie := services.GenerateCookie(token, loginDto.RememberMe)
 
 	// send id cookie with jwt
 	http.SetCookie(rw, cookie)
@@ -157,7 +103,12 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 
 	// send user
-	ToJSON(NewUserDTO(user), rw)
+	err = ToJSON(dto.NewUserDTO(user), rw)
+	if err != nil {
+		h.l.Errorw("json serialization", "error", err)
+		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		return
+	}
 }
 
 // VerifyLoggedIn verifies and validates the cookie and it's jwt token. returns 401 if you are not signed in and 200 if everything is valid-
@@ -184,10 +135,22 @@ func (h *User) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 
+	authenticated, err := h.Auth.VerifyAuthentication()
+
+	if !authenticated || err != nil {
+		h.l.Errorw("A error during login verification", "error", err)
+		rw.WriteHeader(http.StatusUnauthorized)
+	}
+
 	rw.WriteHeader(http.StatusOK)
-	ToJSON(&noContentResponse{}, rw)
+	err = ToJSON(&noContentResponse{}, rw)
+	if err != nil {
+		h.l.Errorw("json serialization", "error", err)
+		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		return
+	}
 }
 
-// noContentReponse is a empty object.
+// noContentResponse is a empty object.
 type noContentResponse struct {
 }
