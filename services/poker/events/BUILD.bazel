@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "events",
+    srcs = [
+        "action.go",
+        "board.go",
+        "constants.go",
+        "end.go",
+        "gameStart.go",
+        "join.go",
+        "joinOptions.go",
+        "utils.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/events",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker/dto",
+        "//services/poker/models",
+        "@com_github_mitchellh_mapstructure//:go_default_library",
+    ],
+)

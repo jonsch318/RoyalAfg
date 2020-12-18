@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "round",
+    srcs = [
+        "blinds.go",
+        "blocking.go",
+        "cards.go",
+        "dealer.go",
+        "player.go",
+        "round.go",
+        "start.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/round",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker/bank",
+        "//services/poker/events",
+        "//services/poker/models",
+        "//services/poker/showdown",
+        "//services/poker/utils",
+    ],
+)
