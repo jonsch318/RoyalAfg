@@ -17,11 +17,12 @@ require (
 	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/schema v1.1.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/justinas/alice v1.2.0
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/mailru/easyjson v0.7.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mitchellh/mapstructure v1.3.3 // indirect
+	github.com/mitchellh/mapstructure v1.3.3
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/afero v1.3.4 // indirect
