@@ -41,7 +41,7 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	err := FromJSON(registerDto, r.Body)
 	if err != nil {
 		h.l.Error("Decoding JSON", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "user could not be decoded"}, http.StatusBadRequest)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "user could not be decoded"}, http.StatusBadRequest)
 		return
 	}
 
@@ -54,28 +54,28 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 			switch st.Code() {
 			case codes.InvalidArgument:
 				h.l.Errorw("Validation", "error", st.Err())
-				JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
+				responses.JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
 				return
 			case codes.Internal:
 				h.l.Errorw("UserService Call Internal", "error", st.Err())
-				JSONError(rw, &responses.ErrorResponse{Error: st.Message()}, http.StatusInternalServerError)
+				responses.JSONError(rw, &responses.ErrorResponse{Error: st.Message()}, http.StatusInternalServerError)
 				return
 			case codes.AlreadyExists:
 				h.l.Errorw("Validation", "error", st.Err())
-				JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
+				responses.JSONError(rw, &responses.ValidationError{Errors: st.Message()}, http.StatusUnprocessableEntity)
 				return
 			}
 
-			JSONError(rw, &responses.ErrorResponse{Error: err.Error()}, http.StatusInternalServerError)
+			responses.JSONError(rw, &responses.ErrorResponse{Error: err.Error()}, http.StatusInternalServerError)
 			return
 		} else {
 			h.l.Errorw("Error during RegisterService", "error", err)
 			switch err.(type) {
 			case *validation.Errors:
-				JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
+				responses.JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
 				return
 			default:
-				JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+				responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 				return
 			}
 		}
@@ -86,7 +86,7 @@ func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
 	err = ToJSON(dto.NewUserDTO(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
 }

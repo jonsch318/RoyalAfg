@@ -56,7 +56,7 @@ func Start() {
 
 	//services
 	userRepo := user.NewUserService(userServiceClient)
-	authService := authentication.NewAuthenticationService(userRepo)
+	authService := authentication.NewService(userRepo)
 
 	// Handlers
 	userHandler := handlers.NewUserHandler(logger, authService)

@@ -17,13 +17,13 @@ go_proto_library(
 )
 
 go_library(
-    name = "go_default_library",
+    name = "protos",
     srcs = ["user.go"],
     embed = [":protos_go_proto"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/models:go_default_library",
+        "//pkg/models",
         "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
     ],
 )

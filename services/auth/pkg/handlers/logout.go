@@ -42,7 +42,7 @@ func (h *User) Logout(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		h.l.Errorw("error during logout process", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "error during logout process"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "error during logout process"}, http.StatusInternalServerError)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (h *User) Logout(rw http.ResponseWriter, r *http.Request) {
 	err = ToJSON(&noContentResponse{}, rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
 }

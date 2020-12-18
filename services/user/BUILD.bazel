@@ -1,15 +1,15 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "user_lib",
     srcs = ["main.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user",
     visibility = ["//visibility:private"],
-    deps = ["//services/user/cmd:go_default_library"],
+    deps = ["//services/user/cmd"],
 )
 
 go_binary(
     name = "user",
-    embed = [":go_default_library"],
+    embed = [":user_lib"],
     visibility = ["//visibility:public"],
 )

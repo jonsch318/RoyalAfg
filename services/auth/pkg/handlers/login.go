@@ -4,11 +4,9 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation"
 	"net/http"
 )
-
-
 
 // Validate validates the LoginDto dto to conform to the api's expectation
 func Validate(dto *dto.LoginDto) error {
@@ -63,7 +61,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
-			JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
+			responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
 			return
 		}
 
@@ -72,7 +70,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 		err := FromJSON(loginDto, r.Body)
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
-			JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
+			responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
 			return
 		}
 	}
@@ -81,7 +79,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	err := Validate(loginDto)
 	if err != nil {
 		h.l.Errorw("Validation login dto", "error", err)
-		JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
+		responses.JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -89,7 +87,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		h.l.Errorw("jwt could not be created", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
 
@@ -106,7 +104,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 	err = ToJSON(dto.NewUserDTO(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
 }
@@ -146,7 +144,7 @@ func (h *User) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
 	err = ToJSON(&noContentResponse{}, rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
-		JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
 }

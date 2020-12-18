@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "handlers",
     srcs = [
         "get_user.go",
         "handler.go",
@@ -9,10 +9,10 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/mw:go_default_library",
-        "//pkg/responses:go_default_library",
-        "//pkg/utils:go_default_library",
-        "//services/user/pkg/user/database:go_default_library",
+        "//pkg/mw",
+        "//pkg/responses",
+        "//pkg/utils",
+        "//services/user/pkg/user/database",
         "@org_uber_go_zap//:go_default_library",
     ],
 )
