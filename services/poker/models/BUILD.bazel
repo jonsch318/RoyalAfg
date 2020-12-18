@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "models",
+    srcs = [
+        "bank.go",
+        "card.go",
+        "event.go",
+        "player.go",
+        "publicPlayer.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_go_ozzo_ozzo_validation//:go_default_library"],
+)

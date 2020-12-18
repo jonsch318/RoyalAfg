@@ -1,0 +1,38 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "showdown",
+    srcs = [
+        "eval.go",
+        "rankHand.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown",
+    visibility = ["//visibility:public"],
+    deps = ["//services/poker/models"],
+)
+
+go_test(
+    name = "showdown_test",
+    srcs = [
+        "eval_test.go",
+        "rankHand_test.go",
+    ],
+    embed = [":showdown"],
+    deps = [
+        "//services/poker/models",
+        "@com_github_johnnys318_go_poker//models:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "eval_test.go",
+        "rankHand_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//services/poker/models",
+        "@com_github_johnnys318_go_poker//models:go_default_library",
+    ],
+)

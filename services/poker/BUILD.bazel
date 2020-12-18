@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "poker_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/poker/config",
+        "//services/poker/handlers",
+        "//services/poker/lobbies",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "poker",
+    embed = [":poker_lib"],
+    visibility = ["//visibility:public"],
+)

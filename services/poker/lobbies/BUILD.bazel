@@ -1,0 +1,42 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "lobbies",
+    srcs = [
+        "buyInClasses.go",
+        "create.go",
+        "find.go",
+        "getAllLobbies.go",
+        "manage.go",
+        "manager.go",
+        "search.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobbies",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker/dto",
+        "//services/poker/events",
+        "//services/poker/lobby",
+        "//services/poker/models",
+    ],
+)
+
+go_test(
+    name = "lobbies_test",
+    srcs = [
+        "buyInClasses_test.go",
+        "find_test.go",
+        "manager_test.go",
+    ],
+    embed = [":lobbies"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "buyInClasses_test.go",
+        "find_test.go",
+        "manager_test.go",
+    ],
+    embed = [":go_default_library"],
+)
