@@ -18,10 +18,6 @@ vendor/
 
 *_service.yaml
 
-bazel-bin/
-bazel-out/
-bazel-RoyalAfgInGo/
-bazel-testlogs/
 bazel-*/
 /bazel-*
 configuration/
