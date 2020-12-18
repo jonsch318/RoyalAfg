@@ -1,12 +1,12 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "database",
     srcs = ["user.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/database",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/models:go_default_library",
+        "//pkg/models",
         "@com_github_kamva_mgm//:go_default_library",
         "@org_mongodb_go_mongo_driver//bson:go_default_library",
         "@org_mongodb_go_mongo_driver//mongo:go_default_library",

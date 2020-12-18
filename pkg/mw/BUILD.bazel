@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "mw",
     srcs = [
         "auth.go",
         "logging.go",
@@ -9,8 +9,8 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/mw",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/responses:go_default_library",
-        "//pkg/utils:go_default_library",
+        "//pkg/responses",
+        "//pkg/utils",
         "@com_github_dgrijalva_jwt_go//:go_default_library",
         "@org_uber_go_zap//:go_default_library",
     ],

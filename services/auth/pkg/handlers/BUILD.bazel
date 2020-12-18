@@ -1,23 +1,24 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "handlers",
     srcs = [
         "login.go",
         "logout.go",
         "register.go",
         "user.go",
+        "utils.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/mw:go_default_library",
-        "//pkg/responses:go_default_library",
-        "//services/auth/pkg/dto:go_default_library",
-        "//services/auth/pkg/interfaces:go_default_library",
-        "//services/auth/pkg/services:go_default_library",
+        "//pkg/mw",
+        "//pkg/responses",
+        "//services/auth/pkg/dto",
+        "//services/auth/pkg/interfaces",
+        "//services/auth/pkg/services",
         "@com_github_go_ozzo_ozzo_validation//:go_default_library",
-        "@com_github_go_ozzo_ozzo_validation_v4//:go_default_library",
+        "@com_github_gorilla_schema//:go_default_library",
         "@org_golang_google_grpc//codes:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",
         "@org_uber_go_zap//:go_default_library",

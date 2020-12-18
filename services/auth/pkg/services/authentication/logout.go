@@ -1,5 +1,5 @@
 package authentication
 
-func (auth AuthenticationService) Logout(id string) error {
+func (auth Service) Logout(id string) error {
 	return nil
 }

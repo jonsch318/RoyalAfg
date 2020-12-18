@@ -7,7 +7,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
-func (auth AuthenticationService) Register(dto *dto.RegisterDto) (*models.User, string, error) {
+func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error) {
 	user := models.NewUser(dto.Username, dto.Email, dto.FullName, dto.Birthdate)
 	hash, err := security.HashPassword(dto.Password, "")
 	if err != nil {

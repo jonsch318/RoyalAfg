@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (auth AuthenticationService) Login(username, password string) (*models.User, string, error) {
+func (auth Service) Login(username, password string) (*models.User, string, error) {
 
 	user, err := auth.UserService.GetUserByUsernameOrEmail(username)
 
 	if err != nil {
-		return nil,"", err
+		return nil, "", err
 	}
 
 	if !security.ComparePassword(password, user.Hash, viper.GetString(config.Pepper)) {

@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "responses",
     srcs = ["error.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/responses",
     visibility = ["//visibility:public"],

@@ -5,9 +5,9 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 )
 
-func (service *UserService)SaveUser(user *models.User) error{
+func (service *UserService) SaveUser(user *models.User) error {
 	message := ToMessage(user)
-	_, err := service.client.SaveUser(context.Background(), message)
+	_, err := service.Client.SaveUser(context.Background(), message)
 
 	if err != nil {
 		return err
