@@ -22,14 +22,14 @@ func NewLogger() *zap.SugaredLogger {
 	fileLevel := zap.DebugLevel
 	consoleLevel := zap.DebugLevel
 
-	homedir, err := homedir.Dir()
+	homeDirectory, err := homedir.Dir()
 
 	if err != nil {
 		return nil
 	}
 
 	logSync := &lumberjack.Logger{
-		Filename:   homedir + "/logs/github.com/JohnnyS318/RoyalAfgInGoInGo/log.log",
+		Filename:   homeDirectory + "/logs/github.com/JohnnyS318/RoyalAfgInGoInGo/log.log",
 		MaxSize:    50,
 		MaxBackups: 5,
 		MaxAge:     14,

@@ -3,9 +3,9 @@ package docs
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs/config"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
@@ -18,10 +18,10 @@ func Start() {
 	config.ConfigureDefaults()
 
 	logger := log.NewLogger()
-	logger.Warn("User service now running")
+	logger.Warn("Documentation service now running")
 
-	defer logger.Warn("User service shut down")
 	defer logger.Desugar().Sync()
+	defer logger.Warn("Docs service shut down")
 
 	r := mux.NewRouter()
 
