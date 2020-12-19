@@ -31,8 +31,5 @@ go_test(
         "rankHand_test.go",
     ],
     embed = [":go_default_library"],
-    deps = [
-        "//services/poker/models",
-        "@com_github_johnnys318_go_poker//models:go_default_library",
-    ],
+    deps = ["//services/poker/models"],
 )
