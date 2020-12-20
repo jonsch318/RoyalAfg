@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user/database"
@@ -26,11 +26,8 @@ import (
 
 // Start starts the user service
 func Start() {
-	logger := log.NewLogger()
-	logger.Warn("User service now running")
-
-	defer logger.Warn("User service shut down")
-	defer logger.Desugar().Sync()
+	logger := log.RegisterService()
+	defer log.CleanLogger()
 
 	metrics := metrics.New()
 
