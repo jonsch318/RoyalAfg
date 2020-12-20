@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "log",
-    srcs = ["logger.go"],
+    srcs = [
+        "logger.go",
+        "register.go",
+    ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/log",
     visibility = ["//visibility:public"],
     deps = [

@@ -18,9 +18,12 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/websocket v1.4.2
+	github.com/jetbasrawi/go.cqrs v0.0.0-20190206233932-e4d812d57f09
+	github.com/jetbasrawi/go.geteventstore v1.0.0 // indirect
 	github.com/justinas/alice v1.2.0
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/mailru/easyjson v0.7.3 // indirect
+	github.com/mishudark/eventhus v0.0.0-20191230110556-9c41720129ae // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.3.3
 	github.com/pelletier/go-toml v1.8.0 // indirect
