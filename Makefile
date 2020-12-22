@@ -5,7 +5,7 @@ swagger: check_swagger_install
 	swagger generate spec -o ./pkg/docs/swagger.yaml --scan-models
 
 update_go_deps: 
-	bazel run //:gazelle -- update-repos -from_file=go.mod
+	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
 
 update:
 	bazel run //:gazelle update
