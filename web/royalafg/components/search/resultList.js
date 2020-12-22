@@ -1,5 +1,6 @@
 import React from 'react';
 import Result from './result';
+import PropTypes from 'prop-types';
 
 const SearchResultList = (props) => {
     return (
@@ -9,8 +10,15 @@ const SearchResultList = (props) => {
                     <Result result={result} />
                 </li>
             ))}
+            {props.results.length < 1 && (
+                <span className="text-black">Sorry nothing was found.</span>
+            )}
         </ul>
     );
+};
+
+SearchResultList.propTypes = {
+    results: PropTypes.array
 };
 
 export default SearchResultList;

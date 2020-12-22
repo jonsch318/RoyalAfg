@@ -1,9 +1,6 @@
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
 import React from 'react';
-
-import IdNav from './idnav';
 import NavItems from './nav';
 
 class Header extends React.Component {
@@ -22,9 +19,9 @@ class Header extends React.Component {
         this.setState((state) => ({ isOpen: !state.isOpen }));
     }
 
-    updateDimensions = () => {
+    updateDimensions() {
         this.setState({ width: window.innerWidth });
-    };
+    }
     componentDidMount() {
         this.updateDimensions();
         window.addEventListener('resize', this.updateDimensions);
