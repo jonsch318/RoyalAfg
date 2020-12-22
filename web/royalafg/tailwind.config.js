@@ -5,14 +5,9 @@ module.exports = {
   },
   purge: [],
   theme: {
-    fontFamily: {
-      "sans": ["Poppins", "sans-serif"]
-    },
-    extend: {
-    },
+    fontFamily: { sans: ["Poppins", "sans-serif"] },
+    extend: {},
   },
   variants: {},
-  plugins: [
-    require('@tailwindcss/custom-forms'),
-  ],
-}
+  plugins: [require("@tailwindcss/custom-forms")],
+};
