@@ -1,9 +1,9 @@
-import { LOGIN_USER_SUCCESS } from "../types/authTypes";
+import { LOGIN_USER_SUCCESS } from '../types/authTypes';
 
 const intialState = {
     user: {},
     isLoggedIn: false
-}
+};
 
 const authReducer = (state = intialState, action) => {
     switch (action.type) {
@@ -11,11 +11,11 @@ const authReducer = (state = intialState, action) => {
             return {
                 ...state,
                 user: action.payload,
-                isLoggedIn: true,
-            }
+                isLoggedIn: true
+            };
         default:
             return state;
     }
-}
+};
 
-export default authReducer
+export default authReducer;

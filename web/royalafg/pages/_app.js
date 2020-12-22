@@ -1,22 +1,17 @@
-import { Provider } from "react-redux"
-import { useStore } from "../redux/store"
-import "../styles/globals.css"
-import "../styles/tailwind.css"
-import Header from "../widgets/header"
-import { appWithTranslation } from "../i18n"
-import Footer from "../widgets/footer"
+import React from 'react';
+import PropTypes from 'prop-types';
 
 function MyApp({ Component, pageProps }) {
-
-  const store = useStore(pageProps.initialReduxState)
-
-  return (
-    <Provider store={store}>
-      <div className="main-container">
-        <Component {...pageProps} />
-      </div>
-    </Provider >
-  )
+    return (
+        <div className="main-container">
+            <Component {...pageProps} />
+        </div>
+    );
 }
 
-export default MyApp
+MyApp.propTypes = {
+    Component: PropTypes.elementType.isRequired,
+    pageProps: PropTypes.object
+};
+
+export default MyApp;
