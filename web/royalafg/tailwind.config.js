@@ -8,7 +8,8 @@ module.exports = {
     fontFamily: {
       "sans": ["Poppins", "sans-serif"]
     },
-    extend: {},
+    extend: {
+    },
   },
   variants: {},
   plugins: [

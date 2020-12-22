@@ -3,6 +3,8 @@ import "./idnav"
 import IdNav from "./idnav"
 import PropTypes from "prop-types"
 import HeaderNavItem from "../../components/header/navItem"
+import React from "react"
+import SearchInput from "../../components/search/search";
 
 const NavItems = ({ t }) => {
     return (
@@ -12,8 +14,11 @@ const NavItems = ({ t }) => {
                 <HeaderNavItem href="/about">{t("about")}</HeaderNavItem>
                 <HeaderNavItem href="/games">{t("games")}</HeaderNavItem>
             </nav>
+            <div className="search-container w-full flex-auto py-1">
+                <SearchInput/>
+            </div>
             <div className="idnav md:mr-12 md:flex block my-2">
-                <IdNav></IdNav>
+                <IdNav/>
             </div>
         </div>
     )
