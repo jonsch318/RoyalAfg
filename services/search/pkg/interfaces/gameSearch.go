@@ -4,6 +4,6 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/dto"
 )
 
-type SearchService interface {
-	Search(query string) dto.SearchResult
+type GameSearch interface {
+	SearchGames(query string) []dto.GameResult
 }
