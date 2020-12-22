@@ -1,14 +1,7 @@
-class Avatar extends React.Component {
-    constructor(props) {
-        super(props);
+import React from 'react';
 
-    }
+const Avatar = () => {
+    return <div>Logged in</div>;
+};
 
-    render() {
-        return (
-            <div>Logged in</div>
-        )
-    }
-}
-
-export default Avatar
+export default Avatar;
