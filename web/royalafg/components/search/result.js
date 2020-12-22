@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Result = (props) => {
     return (
@@ -8,6 +9,10 @@ const Result = (props) => {
             <span>{props.result.name}</span>
         </a>
     );
+};
+
+Result.propTypes = {
+    result: PropTypes.object
 };
 
 export default Result;

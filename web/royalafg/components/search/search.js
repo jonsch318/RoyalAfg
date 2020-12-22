@@ -29,7 +29,6 @@ const SearchInput = () => {
     useEffect(() => {
         if (debouncedQuery) {
             setIsSearching(true);
-
             Search(query).then((results) => {
                 setIsSearching(false);
                 setResults(results);
@@ -63,7 +62,8 @@ const SearchInput = () => {
                         style={{
                             width: inputWidth
                         }}>
-                        <SearchResultList results={results} />
+                        {isSearching && <span className="text-black">Searching...</span>}
+                        {!isSearching && <SearchResultList results={results} />}
                     </div>
                 </div>
             )}
