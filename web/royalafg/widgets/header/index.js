@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import IdNav from "./idnav";
 import NavItems from "./nav";
+import React from "react"
 
 
 class Header extends React.Component {
@@ -48,7 +49,7 @@ class Header extends React.Component {
                         {
                             this.state.width <= 768 && !this.state.isOpen ? <></>
                                 : <div className="nav md:ml-4 md:flex absolute md:relative w-full md:h-full z-50 md:z-10 bg-gray-200 md:bg-transparent text-black md:text-white mt-16 md:mt-0">
-                                    <NavItems></NavItems>
+                                    <NavItems />
                                 </div>
                         }
 
