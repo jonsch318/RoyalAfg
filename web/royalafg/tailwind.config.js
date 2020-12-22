@@ -1,15 +1,13 @@
 module.exports = {
-  future : {
-    removeDeprecatedGapUtilities : true,
-    purgeLayersByDefault : true,
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
   },
-  purge : [],
-  theme : {
-    fontFamily : {"sans" : [ "Poppins", "sans-serif" ]},
-    extend : {},
+  purge: [],
+  theme: {
+    fontFamily: { sans: ["Poppins", "sans-serif"] },
+    extend: {},
   },
-  variants : {},
-  plugins : [
-    require('@tailwindcss/custom-forms'),
-  ],
-}
+  variants: {},
+  plugins: [require("@tailwindcss/custom-forms")],
+};
