@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "examples.go",
+        "gameSearch.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/services",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/search/pkg/dto:go_default_library",
+        "@com_github_elastic_go_elasticsearch_v8//:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

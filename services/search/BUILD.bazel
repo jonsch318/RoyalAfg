@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/config:go_default_library",
+        "//pkg/log",
+        "//pkg/mw",
+        "//pkg/utils",
+        "//services/search/pkg/handlers:go_default_library",
+        "//services/search/pkg/services:go_default_library",
+        "@com_github_elastic_go_elasticsearch_v8//:go_default_library",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@com_github_justinas_alice//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "search",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
