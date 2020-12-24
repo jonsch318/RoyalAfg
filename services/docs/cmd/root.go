@@ -82,7 +82,7 @@ func initConfig() {
 
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed %v", e.Name)
+		fmt.Printf("Config file changed %v", e.Name)
 		viper.ReadInConfig()
 	})
 }

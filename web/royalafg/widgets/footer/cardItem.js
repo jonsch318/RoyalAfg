@@ -16,7 +16,7 @@ const FooterCardItem = (props) => {
 
 FooterCardItem.propTypes = {
     href: PropTypes.string,
-    children: PropTypes.element.isRequired
+    children: PropTypes.object
 };
 
 export default FooterCardItem;

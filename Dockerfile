@@ -17,26 +17,17 @@ RUN go mod download
 # Copy the code into the container
 COPY . .
 
-# Run test
-RUN go test ./...
-
 ARG service
 
 # Build the application
-RUN go build -o main service
-
-# Move to /dist directory as the place for resulting binary folder
-WORKDIR /dist
-
-# Copy binary from build to main folder
-RUN cp /build/main .
+RUN go build -o main $service
 
 ############################
 # STEP 2 build a small image
 ############################
 FROM alpine:3.12.3
 
-COPY --from=builder /dist/main /
+COPY --from=builder /build/main /
 
 # Command to run the executable
 ENTRYPOINT ["/main"]

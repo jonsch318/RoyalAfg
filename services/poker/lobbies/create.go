@@ -2,6 +2,7 @@ package lobbies
 
 import (
 	"errors"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
 )
