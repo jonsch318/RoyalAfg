@@ -6,7 +6,7 @@ import (
 
 func TestAppendLobby(t *testing.T) {
 
-	manager := NewManager(2, [][]int{{5, 10}, {11, 25}, {26, 50}})
+	manager := NewManager(2, [][]int{{5, 10, 5}, {11, 25, 5}, {26, 50, 10}})
 
 	e, err := manager.AppendLobby(0)
 	if err != nil {

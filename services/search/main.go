@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/elastic/go-elasticsearch/v8"
 	"net/http"
+
+	"github.com/elastic/go-elasticsearch/v8"
 
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
@@ -46,7 +47,7 @@ func main() {
 
 	// Start Application
 	server := &http.Server{
-		Addr: ":8080",
+		Addr:    ":8080",
 		Handler: r,
 	}
 
