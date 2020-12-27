@@ -1,6 +1,6 @@
-import React from 'react';
-import shortid from 'shortid';
-import PropTypes from 'prop-types';
+import React from "react";
+import shortid from "shortid";
+import PropTypes from "prop-types";
 
 const title = (title) => {
     return <div className="font-sans text-base font-medium">{title.toUpperCase()}</div>;

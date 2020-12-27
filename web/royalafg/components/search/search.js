@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
-import useDebounce from '../../hooks/debounce';
+import useDebounce from "../../hooks/debounce";
 
-import SearchResultList from './resultList';
+import SearchResultList from "./resultList";
 
 function Search(query) {
     const queryString = `q=${query}`;
     return fetch(`http://localhost:8080/api/search?${queryString}`, {
-        mode: 'cors'
+        mode: "cors"
     })
         .then((r) => {
             return r.json();
@@ -19,7 +19,7 @@ function Search(query) {
 }
 
 const SearchInput = () => {
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [inputWidth, setInputWidth] = useState(0);

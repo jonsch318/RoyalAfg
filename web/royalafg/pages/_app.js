@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
-import { useStore } from '../redux/store';
-import '../styles/globals.css';
-import '../styles/tailwind.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { Provider } from "react-redux";
+import { useStore } from "../redux/store";
+import "../styles/globals.css";
+import "../styles/tailwind.css";
 
 function MyApp({ Component, pageProps }) {
     const store = useStore(pageProps.initialReduxState);

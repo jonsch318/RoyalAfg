@@ -1,6 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import Avatar from '../../components/header/id/avatar';
+import React from "react";
+import { useSelector } from "react-redux";
+import Avatar from "../../components/header/id/avatar";
 
 export default function IdNav() {
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
