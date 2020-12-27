@@ -21,3 +21,9 @@ push_user:
 
 push_auth:
 	bazel run //pkg/auth:push_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
+
+docker_build_search:
+	docker build -t ryl_search --build-arg service=./services/search/main.go .
+
+docker_build_user:
+	docker build -t ryl_user --build-arg service=./services/user/main.go .

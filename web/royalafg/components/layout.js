@@ -1,7 +1,7 @@
-import React from 'react';
-import Header from '../widgets/header';
-import Footer from '../widgets/footer';
-import PropTypes from 'prop-types';
+import React from "react";
+import Header from "../widgets/header";
+import Footer from "../widgets/footer";
+import PropTypes from "prop-types";
 
 const Layout = (props) => {
     const foot = <Footer absolute={props.footerAbsolute} />;

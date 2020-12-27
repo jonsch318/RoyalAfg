@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-const { default: FooterCard } = require('./card');
-const { default: FooterCardItem } = require('./cardItem');
+import React from "react";
+import PropTypes from "prop-types";
+const { default: FooterCard } = require("./card");
+const { default: FooterCardItem } = require("./cardItem");
 
 const Footer = (props) => {
-    let containerClass = 'w-full';
+    let containerClass = "w-full";
 
     if (props.absolute) {
-        containerClass += ' absolute bottom-0 top-auto';
+        containerClass += " absolute bottom-0 top-auto";
         console.log(containerClass);
     }
 

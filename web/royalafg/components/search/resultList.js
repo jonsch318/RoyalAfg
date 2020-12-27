@@ -1,6 +1,6 @@
-import React from 'react';
-import Result from './result';
-import PropTypes from 'prop-types';
+import React from "react";
+import Result from "./result";
+import PropTypes from "prop-types";
 
 const SearchResultList = (props) => {
     return (

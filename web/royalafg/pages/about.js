@@ -1,5 +1,5 @@
-import React from 'react';
-import Layout from '../components/layout';
+import React from "react";
+import Layout from "../components/layout";
 
 const About = () => {
     return (
@@ -13,7 +13,7 @@ const About = () => {
                         <div className="card bg-gray-300 rounded-lg p-12 flex flex-col hover:opacity-75 transition-opacity duration-150">
                             <div className="content text-center md:text-xl py-8 flex-auto font-sans">
                                 <span className="block">
-                                    Email:{' '}
+                                    Email:{" "}
                                     <a
                                         className="text-blue-700 hover:text-blue-800"
                                         href="jonas.max.schneider@gmail.com">
@@ -22,7 +22,7 @@ const About = () => {
                                 </span>
                                 <span className="block">Name: Jonas Schneider</span>
                                 <span className="block">
-                                    Github:{' '}
+                                    Github:{" "}
                                     <a href="github.com/JohnnyS318/RoyalAfgInGo">
                                         JohnnyS318/RoyalAfgInGo
                                     </a>
@@ -43,7 +43,7 @@ const About = () => {
                                     </a>
                                 </span>
                                 <span className="block">
-                                    Terms of Use:{' '}
+                                    Terms of Use:{" "}
                                     <a href="/terms" className="text-blue-700 hover:text-blue-800">
                                         Found here
                                     </a>
@@ -57,7 +57,7 @@ const About = () => {
                         special learning achievement
                     </h1>
                     <h2 className="text-center md:text-3xl text-2xl p-10 font-sans">
-                        It has not been subjected to stability and security testing!{' '}
+                        It has not been subjected to stability and security testing!{" "}
                         <span className="font-black ">Do Not Use In Production!</span>
                     </h2>
                 </div>
