@@ -32,6 +32,11 @@ func (h *Round) actions(preflop bool) {
 		}
 	}
 
+	if(len(blocking) < 0){
+		//Everything is handled no further actions from players necessary
+		return
+	}
+
 	h.recAction(blocking, startIndexBlocking%len(blocking), preflop, true, 0)
 }
 
@@ -238,5 +243,4 @@ func (h *Round) PlayerLeaves(id string) error {
 		h.End()
 	}
 	return nil
-
 }

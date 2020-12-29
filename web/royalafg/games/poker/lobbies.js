@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 const Lobbies = ({ onLobbySelect }) => {
     const [classes, setClasses] = useState([]);
     const [lobbies, setLobbies] = useState([]);
+    const [selectedLobby, setSelectedLobby] = useState(-1);
+    const [selectedClass, setSelectedClass] = useState(-1);
 
     const update = () => {
         fetch(`http://${window.location.hostname}:5000/options`, {
@@ -40,8 +42,8 @@ const Lobbies = ({ onLobbySelect }) => {
             if (lobbies[i]) {
                 const c = lobbies[i];
                 if (c.length > 0) {
-                    f.push(
-                        c.map((l) => (
+                    c.map((l, index) => {
+                        f.push(
                             <Lobby
                                 key={l.id}
                                 id={l.id}
@@ -50,10 +52,15 @@ const Lobbies = ({ onLobbySelect }) => {
                                 lobbyClass={l.lobbyClass}
                                 lobbyClasses={classes}
                                 smallBlind={l.smallBlind}
-                                onLobbySelect={onLobbySelect}
+                                selected={(i + 1) * (index + 1) === selectedLobby}
+                                onLobbySelect={(id, lobbyClass, classes) => {
+                                    console.log("Selected", (i + 1) * (index + 1));
+                                    setSelectedLobby((i + 1) * (index + 1));
+                                    onLobbySelect(id, lobbyClass, classes);
+                                }}
                             />
-                        ))
-                    );
+                        );
+                    });
                 }
             }
         }
@@ -69,7 +76,11 @@ const Lobbies = ({ onLobbySelect }) => {
                         min={c[0]}
                         max={c[1]}
                         smallBlind={c[2]}
-                        onSelect={() => onLobbySelect("", i, c)}
+                        selected={i === selectedClass}
+                        onSelect={() => {
+                            setSelectedClass(i);
+                            onLobbySelect("", i, c);
+                        }}
                     />
                 ))}
             </div>

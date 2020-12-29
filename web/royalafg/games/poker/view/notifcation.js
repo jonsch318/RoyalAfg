@@ -8,7 +8,8 @@ class Notification extends PIXI.Container {
         this.appWidth = appWidth;
         this.appHeight = appHeight;
 
-        this.label = new Text("Bye", { fill: 0xffffff });
+        this.label = new PIXI.Text("Bye", { fill: 0xffffff });
+        this.label.resolution = 2;
         this.bg = new PIXI.Graphics();
         this.textBg = new PIXI.Graphics();
 

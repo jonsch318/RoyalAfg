@@ -39,6 +39,7 @@ class Game {
         };
 
         this.ws.onerror = (e) => {
+            console.log(e)
             this.onClose();
         };
     }
