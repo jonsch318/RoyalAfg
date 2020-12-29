@@ -31,8 +31,6 @@ class GameState {
             notifications: []
         };
         this.name = "GameState test";
-        this.onNotification = (text, st) => {};
-        this.stateBuild = false;
 
         this.updateQueue = [];
     }
@@ -41,12 +39,12 @@ class GameState {
         this.onPossibleAction = onPossibleActions.bind(this);
     }
 
-    setOnGameStart(onGameStart) {
-        this.onGameStart = onGameStart.bind(this);
-    }
-
     setOnGameEnd(onGameEnd) {
         this.onGameEnd = onGameEnd.bind(this);
+    }
+
+    setOnGameStart(handler){
+        this.onGameStart = handler
     }
 
     setOnUpdate(onUpdate) {
@@ -70,19 +68,8 @@ class GameState {
                     ) {
                         continue;
                     }
-                    this.state.players.push(
-                        new Player(
-                            e.data.players[i].username,
-                            e.data.players[i].id,
-                            e.data.players[i].buyIn
-                        )
-                    );
-                    console.log(
-                        "In Lobby it [",
-                        e.data.players[i].username,
-                        "] joined: ",
-                        e.data.players[i].buyIn
-                    );
+                    this.state.players.push(new Player(e.data.players[i].username, e.data.players[i].id, e.data.players[i].buyIn));
+                    console.log("In Lobby it [", e.data.players[i].username, "] joined: ", e.data.players[i].buyIn);
                 }
                 this.stateBuild = true;
                 this.updateQueue.push({ event: UpdateEvents.lobbyJoin });
@@ -90,12 +77,8 @@ class GameState {
 
             case PLAYER_JOIN:
                 console.log("Player [", e.data.player.username, "] joined: ", e.data.player.buyIn);
-                this.state.players.push(
-                    new Player(e.data.player.username, e.data.player.id, e.data.player.buyIn)
-                );
-                if (
-                    this.updateQueue[this.updateQueue.length - 1]?.event !== UpdateEvents.playerList
-                ) {
+                this.state.players.push(new Player(e.data.player.username, e.data.player.id, e.data.player.buyIn));
+                if (this.updateQueue[this.updateQueue.length - 1]?.event !== UpdateEvents.playerList) {
                     this.updateQueue.push({ event: UpdateEvents.playerList });
                 }
                 break;

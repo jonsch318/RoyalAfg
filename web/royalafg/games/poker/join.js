@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 import PropTypes from "prop-types";
-import styles from "./join.module.css";
 
 const Subj = new BehaviorSubject(0);
 
@@ -12,6 +11,16 @@ const Join = ({ onJoin, lobbyId, buyInClass, minBuyIn, maxBuyIn }) => {
     const [buyIn, setBuyIn] = useState(0);
     const [lId, setLobbyId] = useState(lobbyId);
     const [lobbyClass, setLobbyClass] = useState(0);
+
+
+    useEffect(() => {
+        if (isNaN(minBuyIn)) {
+            minBuyIn = 0;
+        }
+        if (isNaN(maxBuyIn)) {
+            maxBuyIn = 0;
+        }
+    }, [minBuyIn, maxBuyIn]);
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -29,7 +38,6 @@ const Join = ({ onJoin, lobbyId, buyInClass, minBuyIn, maxBuyIn }) => {
     useEffect(() => {
         const subscription = Subj.pipe(debounceTime(700)).subscribe((v) => {
             let b = v;
-            console.log("minbuyin: ", minBuyIn, " max: ", maxBuyIn, " b: ", b);
             b = b < minBuyIn ? minBuyIn : b;
             b = b > maxBuyIn ? maxBuyIn : b;
             setBuyIn(b);
@@ -48,7 +56,6 @@ const Join = ({ onJoin, lobbyId, buyInClass, minBuyIn, maxBuyIn }) => {
 
     return (
         <div>
-            <h1 className="font-sans font-bold text-2xl text-center my-4">Join Poker</h1>
             <form
                 onSubmit={onSubmit}
                 className="flex justify-center items-center mx-auto my-5 bg-blue-600 w-screen px-1 py-2 rounded shadow-lg"

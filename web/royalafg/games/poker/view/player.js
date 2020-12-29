@@ -32,8 +32,11 @@ class Player extends PIXI.Container {
         }
 
         this.buyInLabel = new PIXI.Text("", { align: "center" });
+        this.buyInLabel.resolution = 2;
         this.betLabel = new PIXI.Text("", { align: "center" });
+        this.betLabel.resolution = 2;
         this.usernameLabel = new PIXI.Text("", { align: "center" });
+        this.usernameLabel.resolution = 2;
         this.avatar = new PIXI.Graphics();
         this.board = new Board(id, {
             paddingX: 8,
@@ -49,14 +52,7 @@ class Player extends PIXI.Container {
         this.dealerButton = new PIXI.Graphics();
 
         this.topRow = new PIXI.Container();
-        this.topRow.addChild(
-            this.avatar,
-            this.usernameLabel,
-            this.betLabel,
-            this.buyInLabel,
-            this.dealerButton,
-            this.waiting
-        );
+        this.topRow.addChild(this.avatar, this.usernameLabel, this.betLabel, this.buyInLabel, this.dealerButton, this.waiting);
         this.addChild(this.background, this.topRow, this.board, this.activeBackground);
 
         this.update(options);

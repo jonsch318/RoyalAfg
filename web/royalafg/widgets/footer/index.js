@@ -8,7 +8,6 @@ const Footer = (props) => {
 
     if (props.absolute) {
         containerClass += " absolute bottom-0 top-auto";
-        console.log(containerClass);
     }
 
     return (

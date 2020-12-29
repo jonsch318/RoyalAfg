@@ -21,7 +21,7 @@ Layout.propTypes = {
     disableNav: PropTypes.bool,
     enableAlternativNav: PropTypes.bool,
     alternativNav: PropTypes.elementType,
-    children: PropTypes.element,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
     disableFooter: PropTypes.bool
 };
 

@@ -39,7 +39,7 @@ const FooterCard = (props) => {
 
 FooterCard.propTypes = {
     title: PropTypes.string,
-    children: PropTypes.element.isRequired
+    children: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
 };
 
 export default FooterCard;

@@ -23,6 +23,7 @@ const SearchInput = () => {
     const [results, setResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [inputWidth, setInputWidth] = useState(0);
+    const [focused, setFocused] = useState(false);
 
     const debouncedQuery = useDebounce(query, 200);
 
@@ -44,7 +45,7 @@ const SearchInput = () => {
     }, [inputRef.current?.offsetWidth]);
 
     return (
-        <div className="relative h-full">
+        <div className="relative h-full mx-4">
             <input
                 type="text"
                 autoComplete="off"
@@ -53,8 +54,14 @@ const SearchInput = () => {
                 id="global-search-input"
                 placeholder="Search"
                 onChange={(e) => setQuery(e.target.value)}
+                onBlur={() => {
+                    setFocused(false);
+                }}
+                onFocus={() => {
+                    setFocused(true);
+                }}
             />
-            {query && (
+            {query && focused && (
                 <div>
                     <hr className="md:hidden bg-black h-1px opacity-50" />
                     <div

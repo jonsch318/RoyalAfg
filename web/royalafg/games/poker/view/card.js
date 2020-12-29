@@ -18,6 +18,7 @@ class Card extends PIXI.Container {
             this.sprite = new PIXI.Text(emptyCardText, {
                 fontSize: 10
             });
+            this.sprite.resolution = 2;
             this.addChild(this.sprite);
         } else {
             this.sprite = new PIXI.Sprite(PIXI.Texture.from("back.png"));
