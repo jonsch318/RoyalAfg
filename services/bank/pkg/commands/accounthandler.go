@@ -21,13 +21,13 @@ func NewAccountCommandHandlers(repo repositories.AccountRepository) *AccountComm
 func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 	accountName := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
 	switch cmd:= message.Command().(type) {
-	case CreateBankAccount:
+	case *CreateBankAccount:
 		item := aggregates.NewAccount(message.AggregateID())
 		if err := item.Create(); err != nil {
 			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
 		}
 		return h.repo.Save(item, ycq.Int(item.OriginalVersion()))
-	case Deposit:
+	case *Deposit:
 		item, err := h.repo.Load(accountName, message.AggregateID())
 		if err != nil {
 			return &ycq.ErrAggregateNotFound{
@@ -40,7 +40,7 @@ func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 		}
 
 		return h.repo.Save(item, ycq.Int(item.OriginalVersion()))
-	case Withdraw:
+	case *Withdraw:
 		item, err := h.repo.Load(accountName, message.AggregateID())
 		if err != nil {
 			return &ycq.ErrAggregateNotFound{

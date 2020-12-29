@@ -2,8 +2,11 @@ package aggregates
 
 import (
 	"errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
+	"fmt"
+
 	ycq "github.com/jetbasrawi/go.cqrs"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
 type Account struct {
@@ -18,7 +21,7 @@ func NewAccount(id string) *Account{
 	}
 }
 
-func (a Account) Create() error {
+func (a *Account) Create() error {
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.AccountCreated{
 		ID: a.AggregateID(),
 	}, ycq.Int(a.CurrentVersion())), true)
@@ -26,7 +29,7 @@ func (a Account) Create() error {
 	return nil
 }
 
-func (a Account) Deposit(amount int) error {
+func (a *Account) Deposit(amount int) error {
 	if amount <= 0 {
 		return errors.New("the amount has to be greater than 0")
 	}
@@ -38,13 +41,15 @@ func (a Account) Deposit(amount int) error {
 	return nil
 }
 
-func (a Account) Withdraw(amount int) error {
+func (a *Account) Withdraw(amount int) error {
+
+
 	if amount <= 0 {
 		return errors.New("the amount which is to withdraw has to be greater than 0")
 	}
 
 	if amount > a.Balance{
-		return errors.New("the user cannot withdraw the given amount")
+		return fmt.Errorf("the user cannot withdraw the given amount [%v] > [%v]", amount, a.Balance)
 	}
 
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Withdrawn{
@@ -55,16 +60,18 @@ func (a Account) Withdraw(amount int) error {
 	return nil
 }
 
-func (a Account) Apply(message ycq.EventMessage, isNew bool) {
+func (a *Account) Apply(message ycq.EventMessage, isNew bool) {
 	if isNew {
 		a.TrackChange(message)
 	}
 
 	switch ev := message.Event().(type) {
 	case *events.AccountCreated:
+		a.Balance = 0
 	case *events.Deposited:
-		a.Balance += ev.Amount
+		a.Balance = a.Balance +  ev.Amount
 	case *events.Withdrawn:
-		a.Balance -= ev.Amount
+		a.Balance = a.Balance - ev.Amount
+
 	}
 }

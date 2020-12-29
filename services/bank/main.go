@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg"
@@ -15,6 +16,13 @@ func main() {
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
+	//ConfigureViper(logger)
+
+	pkg.Start(logger)
+
+}
+
+func ConfigureViper(logger *zap.SugaredLogger)  {
 	configFile := ""
 	flag.StringVar(&configFile, "config", "", "config file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/bank_service.yaml)")
 
@@ -45,9 +53,6 @@ func main() {
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Fatalw("Error during config file parsing", "error", err)
 	}
-
 	logger.Infow("Parsed config file", "file", viper.ConfigFileUsed())
-
-	pkg.Start(logger)
 
 }
