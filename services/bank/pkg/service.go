@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"fmt"
+	goes "github.com/jetbasrawi/go.geteventstore"
 	"log"
 	"net/http"
 	"time"
@@ -23,6 +24,16 @@ import (
 func Start(logger *zap.SugaredLogger) {
 
 
+	//eventstore client config
+	eventStore, err := goes.NewClient(nil, "http://localhost:2113")
+
+	if err != nil {
+		log.Fatalf("eventstore err %v", err)
+	}
+
+
+
+
 	eventBus := ycq.NewInternalEventBus()
 
 	//Read Model declarations
@@ -31,14 +42,22 @@ func Start(logger *zap.SugaredLogger) {
 	eventBus.AddHandler(accountBalanceQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
 
 
-	repo := repositories.NewInMemoryAccount(eventBus)
+
+	repo, err := repositories.NewAccount(eventStore, eventBus)
+
+	//recreate state from eventStore
+	accountBalanceQuery.Load(repo)
+
+	if err != nil {
+		log.Fatalf("account repo err %v", err)
+	}
 
 	accountCommandHandler := commands.NewAccountCommandHandlers(repo)
 
 	dispatcher := ycq.NewInMemoryDispatcher()
 
 
-	err := dispatcher.RegisterHandler(accountCommandHandler, &commands.CreateBankAccount{}, &commands.Deposit{}, &commands.Withdraw{})
+	err = dispatcher.RegisterHandler(accountCommandHandler, &commands.CreateBankAccount{}, &commands.Deposit{}, &commands.Withdraw{})
 
 	if err != nil {
 		log.Fatal(err)

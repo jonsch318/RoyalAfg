@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"log"
 	"reflect"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
@@ -18,28 +19,31 @@ type Account struct {
 func NewAccount(eventStore *goes.Client, eventBus ycq.EventBus) (*Account, error) {
 	r, err := ycq.NewCommonDomainRepository(eventStore, eventBus)
 	if err != nil {
+		log.Printf("Error during CommonDomainRepository: %v", err)
 		return nil, err
+	}
+
+	ret := &Account{
+		repo: r,
 	}
 
 	aggregateFactory := ycq.NewDelegateAggregateFactory()
 	_ = aggregateFactory.RegisterDelegate(&aggregates.Account{}, func(id string) ycq.AggregateRoot { return aggregates.NewAccount(id) })
-	r.SetAggregateFactory(aggregateFactory)
+	ret.repo.SetAggregateFactory(aggregateFactory)
 
 	streamNameDelegate := ycq.NewDelegateStreamNamer()
 	_ = streamNameDelegate.RegisterDelegate(func(t string, id string) string {
 		return t + "-" + id
 	}, &aggregates.Account{})
-	r.SetStreamNameDelegate(streamNameDelegate)
+	ret.repo.SetStreamNameDelegate(streamNameDelegate)
 
 	eventFactory := ycq.NewDelegateEventFactory()
 	_ = eventFactory.RegisterDelegate(&events.AccountCreated{}, func() interface{} { return &events.AccountCreated{}})
 	_ = eventFactory.RegisterDelegate(&events.Deposited{}, func() interface{} { return &events.Deposited{}})
 	_ = eventFactory.RegisterDelegate(&events.Withdrawn{}, func() interface{} { return &events.Withdrawn{}})
-	r.SetEventFactory(eventFactory)
+	ret.repo.SetEventFactory(eventFactory)
 
-	return &Account{
-		repo: r,
-	}, nil
+	return ret, nil
 }
 
 func (r Account) Load(aggregateType, id string) (*aggregates.Account, error) {
@@ -57,5 +61,10 @@ func (r Account) Load(aggregateType, id string) (*aggregates.Account, error) {
 }
 
 func (r Account) Save(aggregate ycq.AggregateRoot, expectedVersion *int) error {
-	return r.repo.Save(aggregate, expectedVersion)
+	err := r.repo.Save(aggregate, expectedVersion)
+	if err != nil {
+		log.Printf("error during saving: %v", err)
+		return err
+	}
+	return nil
 }

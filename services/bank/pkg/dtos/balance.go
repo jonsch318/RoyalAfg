@@ -2,7 +2,10 @@ package dtos
 
 import (
 	"errors"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 	"log"
+	"reflect"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
@@ -59,4 +62,9 @@ func (q AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
 	}
 
 	return res, nil
+}
+
+func (q AccountBalanceQuery) Load(repo repositories.AccountRepository){
+	accountName := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
+	repo.Load(accountName, "")
 }
