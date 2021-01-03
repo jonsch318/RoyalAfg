@@ -48,8 +48,8 @@ func (h *Lobby) Join(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("joinEvent was invalid %v", err)
-		utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
-		conn.Close()
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
+		_ = conn.Close()
 		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
 		return
 	}
@@ -60,7 +60,10 @@ func (h *Lobby) Join(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-		playerConn.conn.Close()
+		err := playerConn.conn.Close()
+		if err != nil {
+			log.Printf("Error during closing %v", err )
+		}
 		return
 	}
 

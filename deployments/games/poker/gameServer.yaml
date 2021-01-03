@@ -1,0 +1,96 @@
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  name: royalafg-poker-5
+spec:
+  replicas: 2
+  template:
+    spec:
+      ports:
+        - name: default
+          containerPort: 7654
+      template:
+        spec:
+          containers:
+            - name: royalafg-poker
+              image: royalafg-poker
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "20m"
+---
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  name: royalafg-poker-25
+spec:
+  replicas: 2
+  template:
+    spec:
+      ports:
+        - name: default
+          containerPort: 7654
+      template:
+        spec:
+          containers:
+            - name: royalafg-poker
+              image: royalafg-poker
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "20m"
+---
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  name: royalafg-poker-100
+spec:
+  replicas: 2
+  template:
+    spec:
+      ports:
+        - name: default
+          containerPort: 7654
+      template:
+        spec:
+          containers:
+            - name: royalafg-poker
+              image: royalafg-poker
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "20m"
+
+---
+apiVersion: "agones.dev/v1"
+kind: Fleet
+metadata:
+  name: royalafg-poker-500
+spec:
+  replicas: 2
+  template:
+    spec:
+      ports:
+        - name: default
+          containerPort: 7654
+      template:
+        spec:
+          containers:
+            - name: royalafg-poker
+              image: royalafg-poker
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "20m"
