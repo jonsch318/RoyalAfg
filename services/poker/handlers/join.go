@@ -19,9 +19,16 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func (h *Lobby) Join(rw http.ResponseWriter, r *http.Request) {
-
+func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("/join called")
+
+
+	//Check if lobby is configured
+	if h.lby == nil {
+		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
+	}
+
+
 
 	conn, err := upgrader.Upgrade(rw, r, nil)
 
@@ -56,15 +63,6 @@ func (h *Lobby) Join(rw http.ResponseWriter, r *http.Request) {
 
 	player := models.NewPlayer(joinEvent.Username, joinEvent.ID, joinEvent.BuyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
-	_, err = h.Lobbies.DistributePlayer(player, joinEvent)
-
-	if err != nil {
-		log.Printf("Error: %v", err)
-		err := playerConn.conn.Close()
-		if err != nil {
-			log.Printf("Error during closing %v", err )
-		}
-		return
-	}
+	h.lby.Join(player)
 
 }

@@ -1,85 +1,110 @@
 package main
 
 import (
-	coresdk "agones.dev/agones/pkg/sdk"
-	sdk "agones.dev/agones/sdks/go"
+	"errors"
 	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobbies"
 	"log"
 	"net/http"
 	"strconv"
 
+	sdk "agones.dev/agones/sdks/go"
+	coresdk "agones.dev/agones/pkg/sdk"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
 )
 
+//main method is the entry point of the game server
 func main() {
-	go gameServer.DoSignal()
-
-
+	// configure configuration defaults (ports etc) with viper.
 	config.SetDefaults()
 
+	//Register stop signal
+	go gameServer.DoSignal()
 
+	//Creating agones sdk instance to communicate with the game server orchestrator
 	log.Println("Creating SDK instance")
 	s, err := sdk.NewSDK()
 	if err != nil {
 		log.Fatalf("Error during sdk connection, %v", err)
 	}
 
+	//Health ping to agones.
 	log.Println("Health Ping to agones server management")
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-	passthrough := true
+	var lobbyInstance *lobby.Lobby
+	err = s.WatchGameServer(func (gs *coresdk.GameServer){
+		err := SetLobby(lobbyInstance, gs, s)
+		if err != nil {
+			log.Fatalf("some information was not passed: %s", err)
+		}
+	})
+	if err != nil {
+		log.Fatalf("Error during sdk annotation subscription: %s", err)
+	}
+
+	//game
+	gameHandler := handlers.NewGame(lobbyInstance, s)
+
+	//gorilla router instance
+	r := mux.NewRouter()
+	gr := r.Methods(http.MethodPost).Subrouter()
+
+	gr.HandleFunc("/join", func(rw http.ResponseWriter, r *http.Request){
+		log.Printf("/join called from ip  %v", r.RemoteAddr)
+		gameHandler.Join(rw, r)
+	})
+
 
 	port := viper.GetString(config.Port)
+	log.Printf(http.ListenAndServe(fmt.Sprintf(":%s", port), r).Error())
+}
 
-	if passthrough{
-		var gs *coresdk.GameServer
-		gs, err = s.GameServer()
-		if err != nil {
-			log.Fatalf("Could not get gameserver port")
-		}
-		p := strconv.FormatInt(int64(gs.Status.Ports[0].Port), 10)
-		port = p
-	}
-
-	// Setup
-	r := mux.NewRouter()
-
-	// Setup Lobby map
-
-	classes := viper.Get(config.BuyInOptions).([][]int)
-	if classes == nil {
-		log.Fatal("No buy in classses given")
-		return
-	}
-	lobbyManager := lobbies.NewManager(10, classes)
-
-	// Setup Handlers
-	playerHandler := handlers.NewLobbyHandler(lobbyManager, s)
-
-	// each lobby creates a new game and waits for at least 3 players
-
-	// /join {PlayerId, PlayerUsername} searches through the lobby map or creates one if none are found and the maximum lobby count is not succeeded.
-	r.HandleFunc("/join", playerHandler.Join)
-	r.HandleFunc("/options", playerHandler.LobbyOptions)
-
-	// join upgrades connection to websocket
-
-	// game starts and communicates only via the websocket connection
-	log.Printf("Serve on Port %v", port)
-
-
-	err = s.Ready()
+func SetLobby(lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
+	labels := gs.GetObjectMeta().GetLabels()
+	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
-		log.Fatalf("Failed to mark Server as Ready")
+		return err
 	}
 
+	var max int
+	max, err = GetFromLabels("max-buy-in", labels)
+	if err != nil {
+		return err
+	}
 
-	log.Printf(http.ListenAndServe(":"+fmt.Sprint(port), r).Error())
+	var blind int
+	blind, err = GetFromLabels("blind", labels)
+	if err != nil {
+		return err
+	}
 
+	lobbyID, ok := labels["lobbyID"]
+	if !ok {
+		return errors.New("the lobbyId of the game server is required")
+	}
+
+	lobbyInstance = lobby.NewLobby(min, max, blind, lobbyID, sdk)
+	return nil
+}
+
+func GetFromLabels(key string, labels map[string]string) (int, error) {
+	valString, ok := labels[key]
+
+	if !ok {
+		return 0, fmt.Errorf("can not get the required information for the key [%s]", key)
+	}
+
+	val, err := strconv.Atoi(valString)
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
 }
