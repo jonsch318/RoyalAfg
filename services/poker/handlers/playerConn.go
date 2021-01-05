@@ -26,7 +26,7 @@ func NewPlayerConn(conn *websocket.Conn) *PlayerConn {
 
 func (p *PlayerConn) reader() {
 	defer func() {
-		p.conn.Close()
+		_ = p.conn.Close()
 	}()
 	for {
 		_, message, err := p.conn.ReadMessage()
@@ -61,8 +61,8 @@ func (p *PlayerConn) writer() {
 		case message, ok := <-p.Out:
 			if !ok {
 				log.Printf("Closing conn due to sending error")
-				p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
-				p.conn.Close()
+				_ = p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
+				_ = p.conn.Close()
 
 				p.Close <- true
 				return
@@ -70,15 +70,22 @@ func (p *PlayerConn) writer() {
 
 			w, err := p.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-				p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
-				p.conn.Close()
+				_ = p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
+				_ = p.conn.Close()
 				p.Close <- false
-				w.Close()
+				_ = w.Close()
 				return
 			}
 
-			w.Write(message)
-			w.Close()
+			_, err = w.Write(message)
+			if err != nil {
+				_ = p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
+				_ = p.conn.Close()
+				p.Close <- false
+				_ = w.Close()
+				return
+			}
+			_ = w.Close()
 		}
 	}
 }
