@@ -6,12 +6,11 @@ import (
 	fmt "fmt"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models"
 )
 
-func (m *Manager) Connect(lobby models.Lobby) (string, error) {
-	addr, err := m.rdg.Get(context.Background(), lobby.LobbyId).Result()
+func (m *Manager) Connect(id string) (string, error) {
+
+	addr, err := m.rdg.Get(context.Background(), id).Result()
 	if err != nil {
 		return "", err
 	}
@@ -20,7 +19,7 @@ func (m *Manager) Connect(lobby models.Lobby) (string, error) {
 	running, err = m.PingHealth(addr)
 
 	if err != nil || !running {
-		m.rdg.Del(context.Background(), lobby.LobbyId)
+		m.rdg.Del(context.Background(), id)
 		return "", fmt.Errorf("error during ping: %s", err)
 	}
 
@@ -29,11 +28,11 @@ func (m *Manager) Connect(lobby models.Lobby) (string, error) {
 }
 
 type HealthPingResponse struct {
-	Count int `json:"count"`
+	Count   int  `json:"count"`
 	Running bool `json:"running"`
 }
 
-func (m *Manager) PingHealth(addr string) (bool, error){
+func (m *Manager) PingHealth(addr string) (bool, error) {
 	res, err := http.Get(fmt.Sprintf("http://%v/api/poker/health", addr))
 
 	if err != nil {
@@ -46,7 +45,6 @@ func (m *Manager) PingHealth(addr string) (bool, error){
 		return false, err
 	}
 
-
 	var ping HealthPingResponse
 	err = json.Unmarshal(js, &ping)
 	if err != nil {
@@ -55,4 +53,3 @@ func (m *Manager) PingHealth(addr string) (bool, error){
 
 	return ping.Running, nil
 }
-

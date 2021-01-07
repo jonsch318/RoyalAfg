@@ -19,5 +19,6 @@ go_library(
         "//services/poker/round",
         "//services/poker/utils",
         "@com_github_spf13_viper//:go_default_library",
+        "@dev_agones_agones//sdks/go:go_default_library",
     ],
 )
