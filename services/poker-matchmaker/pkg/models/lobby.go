@@ -1,8 +1,8 @@
 package models
 
 type Lobby struct {
-	LobbyId string
-	class int
+	LobbyID string
+	Class   int
 	Players int
 }
 

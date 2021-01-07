@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "classes.go",
+        "handler.go",
+        "lobbies.go",
+        "ticket.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker-matchmaker/pkg/lobby:go_default_library",
+        "//services/poker-matchmaker/pkg/models:go_default_library",
+        "@com_github_go_redis_redis_v8//:go_default_library",
+        "@com_github_gorilla_mux//:go_default_library",
+        "@dev_agones_agones//pkg/client/clientset/versioned:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

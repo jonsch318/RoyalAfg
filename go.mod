@@ -7,6 +7,7 @@ require (
 	github.com/Kamva/mgm v1.2.3
 	github.com/Kamva/mgm/v3 v3.0.1
 	github.com/aws/aws-sdk-go v1.34.3 // indirect
+	github.com/bazelbuild/bazelisk v1.7.4 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20201216152027-57cb70149147
 	github.com/elithrar/simple-scrypt v1.3.0
@@ -15,7 +16,7 @@ require (
 	github.com/go-openapi/spec v0.19.9 // indirect
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
-	github.com/go-redis/redis/v8 v8.4.4 // indirect
+	github.com/go-redis/redis/v8 v8.4.4
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/schema v1.1.0
@@ -47,4 +48,6 @@ require (
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	honnef.co/go/tools v0.0.1-2020.1.5 // indirect
+	k8s.io/apimachinery v0.17.14
+	k8s.io/client-go v0.17.14
 )

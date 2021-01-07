@@ -1,44 +1,53 @@
 package lobby
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
 	allocationv1 "agones.dev/agones/pkg/apis/allocation/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	//"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models"
 )
 
-func (m *Manager) NewLobby(class int) (string, error) {
-	id := newId()
+//NewLobby allocates a new GameServer for a new Lobby
+func (m *Manager) NewLobby(classIndex int) (string, error) {
+
+	if classIndex < 0 || classIndex >= len(m.classes) {
+		return "", errors.New("the class index has to be a valid class registered at service start")
+	}
+
+	id := newID()
 	//model := models.NewLobby(id, class)
 
 	gsa := m.agonesClient.AllocationV1()
 
+	class := m.classes[classIndex]
+	serverLabels := make(map[string]string, 3)
+	serverLabels["lobbyId"] = id
+	serverLabels["min-buy-in"] = strconv.Itoa(class.Min)
+	serverLabels["max-buy-in"] = strconv.Itoa(class.Max)
+	serverLabels["Blid"] = strconv.Itoa(class.Blind)
 
 	alloc := &allocationv1.GameServerAllocation{
 		ObjectMeta: v1.ObjectMeta{
-			Name:                       id,
-			Namespace:                  "royalafg-poker",
+			Name:      id,
+			Namespace: "royalafg-poker",
 		},
-		Spec:       allocationv1.GameServerAllocationSpec{
-			MultiClusterSetting: allocationv1.MultiClusterSetting{
-				Enabled:        false,
-				PolicySelector: v1.LabelSelector{
-					MatchLabels:      nil,
-					MatchExpressions: nil,
+		Spec: allocationv1.GameServerAllocationSpec{
+			Required: v1.LabelSelector{
+				MatchLabels: map[string]string{
+					"game": "royalafg-poker",
 				},
-			},
-			Required:            v1.LabelSelector{
-				MatchLabels:      nil,
 				MatchExpressions: nil,
 			},
-			Preferred:           nil,
-			MetaPatch:           allocationv1.MetaPatch{
-				Labels:      nil,
+			Preferred: nil,
+			MetaPatch: allocationv1.MetaPatch{
+				Labels:      serverLabels,
 				Annotations: nil,
 			},
 		},
@@ -50,14 +59,24 @@ func (m *Manager) NewLobby(class int) (string, error) {
 		return "", err
 	}
 
-	addr := allocationResponse.Status.Address
+	ip := allocationResponse.Status.Address
 	port := allocationResponse.Status.Ports[0].Port
-	return fmt.Sprintf("%s:%v", addr, port), nil
+	addr := fmt.Sprintf("%s:%v", ip, port)
+
+	err = m.rdg.Set(context.Background(), id, addr, 0).Err()
+
+	if err != nil {
+		return "", err
+	}
+
+	return addr, nil
 }
 
 const idLength = 7
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-func newId() string {
+const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+//newID generates a new ID for a new Lobby. Lobby ID are composed of letters for easy share.
+func newID() string {
 	rand.Seed(time.Now().UnixNano())
 	sb := strings.Builder{}
 	sb.Grow(idLength)
