@@ -70,9 +70,9 @@ func Start() {
 
 	postRouter.Handle("/account/register", prChain.ThenFunc(userHandler.Register))
 	postRouter.Handle("/account/login", prChain.ThenFunc(userHandler.Login))
-	postRouter.Handle("/account/logout", prChain.Append(authMWHandler.AuthMW).ThenFunc(userHandler.Logout))
+	postRouter.Handle("/account/logout", prChain.Append(authMWHandler.AuthMWR).ThenFunc(userHandler.Logout))
 
-	getRouter.Handle("/account/verify", stdChain.Append(authMWHandler.AuthMW).ThenFunc(userHandler.VerifyLoggedIn))
+	getRouter.Handle("/account/verify", stdChain.Append(authMWHandler.AuthMWR).ThenFunc(userHandler.VerifyLoggedIn))
 
 	logger.Debug("Setup Routes")
 

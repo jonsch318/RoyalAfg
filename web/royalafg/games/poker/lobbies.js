@@ -3,6 +3,29 @@ import Lobby from "./join/lobby";
 import Chip from "./join/chip";
 import PropTypes from "prop-types";
 
+
+export async function getServerSideProps() {
+    const resClasses = await fetch("http://localhost:5000/api/poker/classes", {
+        mode: "cors"
+    })
+    const resLobbies = await fetch("http://localhost:5000/api/poker/lobbies", {
+        mode: "cors"
+    })
+    
+    const classes = await resClasses.json()
+
+
+    const lobbies = await resLobbies.json()
+
+
+    return {
+        props: {
+            classes,
+            lobbies
+        }
+    }
+}
+
 const Lobbies = ({ onLobbySelect }) => {
     const [classes, setClasses] = useState([]);
     const [lobbies, setLobbies] = useState([]);

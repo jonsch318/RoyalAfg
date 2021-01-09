@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/gorilla/websocket"
 )
@@ -20,15 +21,16 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
-	log.Printf("/join called")
-
 
 	//Check if lobby is configured
 	if h.lby == nil {
 		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
 	}
 
-
+	//Check if lobby is configured
+	if h.lby == nil {
+		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
+	}
 
 	conn, err := upgrader.Upgrade(rw, r, nil)
 

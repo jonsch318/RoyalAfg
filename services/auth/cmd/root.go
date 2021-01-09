@@ -43,7 +43,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/auth_service.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "serviceConfig", "", "serviceConfig file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/auth_service.yaml)")
 
 	rootCmd.Flags().Int("port", 8080, "Defines the port on which the github.com/JohnnyS318/RoyalAfgInGo server will listen for request")
 	//viper.BindPFlag("Port", rootCmd.Flags().Lookup("port"))
@@ -53,10 +53,10 @@ func init() {
 
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in serviceConfig file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
+		// Use serviceConfig file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
@@ -66,21 +66,21 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name "RoyalAfgInGo.d" (without extension).
+		// Search serviceConfig in home directory with name "RoyalAfgInGo.d" (without extension).
 		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
 		viper.AddConfigPath("./pkg/auth/")
 		viper.AddConfigPath("./.RoyalAfgInGo.d/")
 		viper.SetConfigName("auth_service")
-		viper.SetConfigFile("/etc/royalafg-auth/config.yaml")
+		viper.SetConfigFile("/etc/royalafg-auth/serviceConfig.yaml")
 	}
 	viper.SetEnvPrefix("ryl")
 	viper.BindEnv("jwtsigningkey")
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
+	// If a serviceConfig file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		fmt.Println("Using serviceConfig file:", viper.ConfigFileUsed())
 	}
 
 	viper.WatchConfig()
