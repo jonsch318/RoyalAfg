@@ -6,7 +6,7 @@ import (
 	sdk "agones.dev/agones/sdks/go"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/round"
@@ -108,7 +108,7 @@ func (l *Lobby) Join(player *models.Player) {
 
 		utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind))
 
-		if len(l.Players) >= viper.GetInt(config.PlayersRequiredForStart) && !gameStarted {
+		if len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) && !gameStarted {
 			l.Start()
 		}
 	} else {

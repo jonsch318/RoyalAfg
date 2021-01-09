@@ -76,10 +76,10 @@ spec:
             - containerPort: 9000
               protocol: TCP
           volumeMounts:
-            - name: royalafg-docs-config
+            - name: royalafg-docs-serviceConfig
               mountPath: "/etc/royalafg-docs"
 
       volumes:
-        - name: royalafg-docs-config
+        - name: royalafg-docs-serviceConfig
           configMap:
             name: royalafg-docs
