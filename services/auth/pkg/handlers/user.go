@@ -1,19 +1,21 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/interfaces"
-
 	"go.uber.org/zap"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/interfaces"
 )
 
-type User struct {
-	l           *zap.SugaredLogger
+//Auth is the user handler to handle authentication requests of users.
+type Auth struct {
 	Auth interfaces.AuthenticationService
+	l    *zap.SugaredLogger
 }
 
-func NewUserHandler(logger *zap.SugaredLogger, auth interfaces.AuthenticationService) *User {
-	return &User{
-		l:           logger,
+//NewAuth creates a new user handler with the specified dependencies.
+func NewAuth(logger *zap.SugaredLogger, auth interfaces.AuthenticationService) *Auth {
+	return &Auth{
 		Auth: auth,
+		l:    logger,
 	}
 }

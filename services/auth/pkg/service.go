@@ -1,25 +1,33 @@
 package pkg
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
 	"net/http"
 	"time"
+
+	"github.com/slok/go-http-metrics/metrics/prometheus"
+	metricsMW"github.com/slok/go-http-metrics/middleware"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
+
+	jwtMW "github.com/auth0/go-jwt-middleware"
+	"github.com/form3tech-oss/jwt-go"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/urfave/negroni"
+
+	"google.golang.org/grpc"
+
+	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
-	"google.golang.org/grpc"
 
-	"github.com/Kamva/mgm/v3"
 	"github.com/gorilla/mux"
-	"github.com/justinas/alice"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.uber.org/zap"
 )
 
 // Start starts the account service
@@ -35,11 +43,10 @@ func Start() {
 
 	// Grpc Setup
 
-	logger.Infof("User service url %v trying to connect", viper.GetString(config.UserServiceUrl))
-	connectAddrs := viper.GetString(config.UserServiceUrl)
-	conn, err := grpc.Dial(connectAddrs, grpc.WithInsecure())
+	logger.Infof("Auth service url %v trying to connect", viper.GetString(config.UserServiceUrl))
+	conn, err := grpc.Dial(viper.GetString(config.UserServiceUrl), grpc.WithInsecure())
 	if err != nil {
-		logger.Fatalw("Connection could not be established", "error", err, "target", connectAddrs)
+		logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString(config.UserServiceUrl))
 	}
 	state := conn.GetState()
 	logger.Infow("Calling state", "state", state.String())
@@ -48,31 +55,43 @@ func Start() {
 
 	userServiceClient := protos.NewUserServiceClient(conn)
 
-	//userDb := database.NewUserDatabase(logger)
 
-	// Register Middleware
-	loggerHandler := mw.NewLoggerHandler(logger)
-	stdChain := alice.New(loggerHandler.LogRoute)
+	//Middleware config
+	jwtMiddleware := jwtMW.New(jwtMW.Options{
+		Extractor:           jwtMW.FromFirst(mw.ExtractFromCookie, jwtMW.FromAuthHeader),
+		ValidationKeyGetter: mw.GetKeyGetter(viper.GetString(config.JwtSigningKey)),
+		SigningMethod:       jwt.SigningMethodHS256,
+		Debug:               true,
+	})
+
+	metricsMiddleware := metricsMW.New(metricsMW.Config{
+		Recorder:               prometheus.NewRecorder(prometheus.Config{	}),
+		Service:                "authHTTP",
+	})
 
 	//services
 	userRepo := user.NewUserService(userServiceClient)
 	authService := authentication.NewService(userRepo)
 
 	// Handlers
-	userHandler := handlers.NewUserHandler(logger, authService)
-	authMWHandler := mw.NewAuthMWHandler(logger, viper.GetString(config.JwtSigningKey))
+	authHandler := handlers.NewAuth(logger, authService)
 
 	// Get Subrouters
 	postRouter := r.Methods(http.MethodPost).Subrouter()
 	getRouter := r.Methods(http.MethodGet).Subrouter()
 
-	prChain := stdChain.Append(loggerHandler.ContentTypeJSON)
+	postRouter.HandleFunc("/account/register", authHandler.Register)
+	postRouter.HandleFunc("/account/login", authHandler.Login)
 
-	postRouter.Handle("/account/register", prChain.ThenFunc(userHandler.Register))
-	postRouter.Handle("/account/login", prChain.ThenFunc(userHandler.Login))
-	postRouter.Handle("/account/logout", prChain.Append(authMWHandler.AuthMWR).ThenFunc(userHandler.Logout))
+	//Required Authenticated Request
+	postRouter.Handle("/account/logout", requireAuth(jwtMiddleware, authHandler.Logout))
+	getRouter.Handle("/account/verify", requireAuth(jwtMiddleware, authHandler.VerifyLoggedIn))
 
-	getRouter.Handle("/account/verify", stdChain.Append(authMWHandler.AuthMWR).ThenFunc(userHandler.VerifyLoggedIn))
+	//Exposes metrics to prometheus
+	getRouter.Handle("/metrics", promhttp.Handler())
+
+	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	n.UseHandler(r)
 
 	logger.Debug("Setup Routes")
 
@@ -84,16 +103,14 @@ func Start() {
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      r,
+		Handler:      n,
 	}
 
 	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulTimeout))
 }
 
-func disconnectClient(logger *zap.SugaredLogger, client *mongo.Client) {
-	err := client.Disconnect(mgm.Ctx())
-	if err != nil {
-		logger.Error("MongoDB disconnect", "error", err)
-	}
-	logger.Warn("Mongodb disconnected")
+func requireAuth(mw *jwtMW.JWTMiddleware, f func(http.ResponseWriter, *http.Request)) http.Handler {
+	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
+	nAuth.UseHandlerFunc(f)
+	return nAuth
 }

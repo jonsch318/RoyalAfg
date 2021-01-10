@@ -41,7 +41,7 @@ func Validate(dto *dto.LoginDto) error {
 //	500: ErrorResponse
 //	200: UserResponse
 //
-func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
+func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -129,7 +129,7 @@ func (h *User) Login(rw http.ResponseWriter, r *http.Request) {
 //	default: ErrorResponse
 //	401: ErrorResponse
 //	200: NoContentResponse
-func (h *User) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
+func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 

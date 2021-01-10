@@ -6,19 +6,21 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 )
 
+const IdentityCookieKey = "Identity"
+
 type KeyJWTClaims struct{}
 type KeyUserId struct{}
 
-type UnauthorizedError struct{
+type UnauthorizedError struct {
 	Err error
 }
-type InvalidTokenError struct{
+type InvalidTokenError struct {
 	Err error
 }
 
@@ -35,7 +37,6 @@ type AuthMWHandler struct {
 	key string
 }
 
-
 //NewAuthMWHandler creates a new AuthMWR Handler
 func NewAuthMWHandler(logger *zap.SugaredLogger, key string) *AuthMWHandler {
 	return &AuthMWHandler{
@@ -49,7 +50,6 @@ func (h *AuthMWHandler) AuthMWR(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
 		claims, err := h.RequireAuthTokenHandler(rw, r)
-
 
 		if err != nil {
 			switch e := err.(type) {
@@ -77,7 +77,6 @@ func (h *AuthMWHandler) AuthMWO(next http.Handler) http.Handler {
 
 		claims, err := h.RequireAuthTokenHandler(rw, r)
 
-
 		if err != nil {
 			switch e := err.(type) {
 			case *InvalidTokenError:
@@ -96,7 +95,6 @@ func (h *AuthMWHandler) AuthMWO(next http.Handler) http.Handler {
 		next.ServeHTTP(rw, r)
 	})
 }
-
 
 func (h *AuthMWHandler) RequireAuthTokenHandler(rw http.ResponseWriter, r *http.Request) (jwt.MapClaims, error) {
 	cookie, err := r.Cookie("identity")
@@ -147,4 +145,26 @@ func ValidateJwt(bearer, key string) (jwt.MapClaims, error) {
 		return claims, nil
 	}
 	return nil, fmt.Errorf("The token validation failed")
+}
+
+//ExtractFromCookie extracts a jwt from the identtiy Cookie
+func ExtractFromCookie(r *http.Request) (string, error) {
+	cookie, err := r.Cookie(IdentityCookieKey)
+	if err != nil {
+		return "", &UnauthorizedError{Err: err}
+	}
+
+	return cookie.Value, nil
+}
+
+func GetKeyGetter(key string) jwt.Keyfunc {
+	return func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte(key), nil
+	}
 }

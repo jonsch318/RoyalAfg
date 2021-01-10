@@ -31,7 +31,7 @@ import (
 //	401: ErrorResponse
 //	200: NoContentResponse
 //
-func (h *User) Logout(rw http.ResponseWriter, r *http.Request) {
+func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 	id := r.Context().Value(mw.KeyUserId{}).(string)
