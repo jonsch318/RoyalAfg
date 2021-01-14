@@ -1,0 +1,49 @@
+.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    background: #eeeeee;
+    width: fit-content;
+    padding: 1em 2em;
+    border-radius: 5px;
+}
+
+.input {
+    margin: 10px 10px;
+}
+
+.number-input, .text-input {
+    background: #e0e0e0;
+    padding: 0.4em 0.75em;
+    border: none;
+    color: #000000;
+    font-family: "Source Sans Pro", serif;
+    font-size: 1rem;
+}
+
+.range-input {
+    margin-right: 0;
+}
+.number-range-input {
+    margin-left: 0;
+}
+.submit {
+    background: #e0e0e0;
+    border: none;
+    padding: 0.4em 0.75em;
+    font-family: "Source Sans Pro";
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #000000
+}
+
+.submit:hover {
+    background: #c5c5c5;
+}
+
+.submit:disabled{
+    background: #eeeeee;
+    color: #888888;
+}

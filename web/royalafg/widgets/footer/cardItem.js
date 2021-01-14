@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 const FooterCardItem = (props) => {
     if (props.href) {
@@ -16,7 +16,7 @@ const FooterCardItem = (props) => {
 
 FooterCardItem.propTypes = {
     href: PropTypes.string,
-    children: PropTypes.object
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.array])
 };
 
 export default FooterCardItem;

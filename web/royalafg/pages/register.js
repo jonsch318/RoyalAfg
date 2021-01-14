@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import FormItem from '../components/form/form-item';
-import Layout from '../components/layout';
+import React from "react";
+import { useForm } from "react-hook-form";
+import FormItem from "../components/form/form-item";
+import Layout from "../components/layout";
 
 const Submit = (data) => {
     console.log(JSON.stringify(data));
@@ -85,8 +85,8 @@ const Register = () => {
                                     className="block px-4 py-2 rounded w-full"
                                     ref={register({
                                         required: true,
-                                        minLength: '3',
-                                        maxLength: '100'
+                                        minLength: "3",
+                                        maxLength: "100"
                                     })}
                                     name="email"
                                     id="email"
@@ -105,11 +105,11 @@ const Register = () => {
                                     className="p-2 border-none form-checkbox mr-4 text-blue-700"
                                 />
                                 <span>
-                                    I consent to the{' '}
+                                    I consent to the{" "}
                                     <a href="/legal/terms" className="font-sans text-blue-800">
                                         terms and conditions
-                                    </a>{' '}
-                                    and our{' '}
+                                    </a>{" "}
+                                    and our{" "}
                                     <a href="/legal/privacy" className="font-sans text-blue-800">
                                         privacy statement
                                     </a>
@@ -122,10 +122,10 @@ const Register = () => {
                                 value="Register"
                             />
                             <span className="font-sans font-light text-sm mb-8">
-                                Or{' '}
+                                Or{" "}
                                 <a href="/login" className="font-sans text-blue-800">
                                     login
-                                </a>{' '}
+                                </a>{" "}
                                 if you already have an account
                             </span>
                             <span className="text-sm mb-8 font-sans font-light block text-ce">

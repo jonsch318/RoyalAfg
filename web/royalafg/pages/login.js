@@ -1,12 +1,12 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import Layout from '../components/layout';
+import React from "react";
+import { useForm } from "react-hook-form";
+import Layout from "../components/layout";
 
 export default function Login() {
     const { register, handleSubmit, watch, errors } = useForm();
     const onSubmit = (data) => console.log(JSON.stringify(data));
 
-    console.log(watch('username'));
+    console.log(watch("username"));
 
     return (
         <Layout disableFooter>
@@ -63,10 +63,10 @@ export default function Login() {
                                 value="Log in"
                             />
                             <span className="font-sans font-light text-sm mb-8">
-                                Or{' '}
+                                Or{" "}
                                 <a href="/register" className="font-sans text-blue-800">
                                     register
-                                </a>{' '}
+                                </a>{" "}
                                 a new account
                             </span>
                             <span className="text-sm mb-8 font-sans font-light block text-ce">

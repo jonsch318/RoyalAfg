@@ -73,9 +73,9 @@ spec:
                   name: royalafg-auth
                   key: jwt-signing-key
           volumeMounts:
-            - name: royalafg-auth-config
+            - name: royalafg-auth-serviceConfig
               mountPath: "/etc/royalafg-auth"
       volumes:
-        - name: royalafg-auth-config
+        - name: royalafg-auth-serviceConfig
           configMap:
             name: royalafg-auth

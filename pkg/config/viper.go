@@ -10,9 +10,9 @@ import (
 	"go.uber.org/zap"
 )
 
-func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger){
+func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger) {
 	configFile := ""
-	flag.StringVar(&configFile, "config", "", fmt.Sprintf("config file (default is /etc/royalafg-%v/config.yaml", serviceName))
+	flag.StringVar(&configFile, "serviceConfig", "", fmt.Sprintf("serviceConfig file (default is /etc/royalafg-%v/serviceConfig.yaml", serviceName))
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
@@ -32,16 +32,16 @@ func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger){
 
 		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
 		viper.AddConfigPath(".")
-		viper.SetConfigFile(fmt.Sprintf("/etc/royalafg-%v/config.yaml", serviceName))
+		viper.SetConfigFile(fmt.Sprintf("/etc/royalafg-%v/serviceConfig.yaml", serviceName))
 	}
 
 	viper.SetEnvPrefix("royalafg")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		logger.Fatalw("Error during config file parsing", "error", err)
+		logger.Fatalw("Error during serviceConfig file parsing", "error", err)
 	}
 
-	logger.Infow("Parsed config file", "file", viper.ConfigFileUsed())
+	logger.Infow("Parsed serviceConfig file", "file", viper.ConfigFileUsed())
 
 }

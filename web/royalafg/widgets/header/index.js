@@ -1,7 +1,7 @@
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import NavItems from './nav';
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import NavItems from "./nav";
 
 class Header extends React.Component {
     constructor(props) {
@@ -24,10 +24,10 @@ class Header extends React.Component {
     }
     componentDidMount() {
         this.updateDimensions();
-        window.addEventListener('resize', this.updateDimensions);
+        window.addEventListener("resize", this.updateDimensions);
     }
     componentWillUnmount() {
-        window.removeEventListener('resize', this.updateDimensions);
+        window.removeEventListener("resize", this.updateDimensions);
     }
 
     render() {

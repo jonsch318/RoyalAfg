@@ -1,7 +1,7 @@
-import React from 'react';
-import Header from '../widgets/header';
-import Footer from '../widgets/footer';
-import PropTypes from 'prop-types';
+import React from "react";
+import Header from "../widgets/header";
+import Footer from "../widgets/footer";
+import PropTypes from "prop-types";
 
 const Layout = (props) => {
     const foot = <Footer absolute={props.footerAbsolute} />;
@@ -21,7 +21,7 @@ Layout.propTypes = {
     disableNav: PropTypes.bool,
     enableAlternativNav: PropTypes.bool,
     alternativNav: PropTypes.elementType,
-    children: PropTypes.element,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
     disableFooter: PropTypes.bool
 };
 

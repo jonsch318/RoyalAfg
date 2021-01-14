@@ -1,13 +1,19 @@
 package handlers
 
-import "github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobbies"
+import (
+	sdk "agones.dev/agones/sdks/go"
 
-type Lobby struct {
-	Lobbies *lobbies.LobbyManager
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
+)
+
+type Game struct {
+	lby *lobby.Lobby
+	sdk *sdk.SDK
 }
 
-func NewLobbyHandler(lobbyManager *lobbies.LobbyManager) *Lobby {
-	return &Lobby{
-		Lobbies: lobbyManager,
+func NewGame(lobbyInstance *lobby.Lobby, sdk *sdk.SDK) *Game {
+	return &Game{
+		lby: lobbyInstance,
+		sdk: sdk,
 	}
 }

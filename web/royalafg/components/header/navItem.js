@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 const HeaderNavItem = (props) => {
     return (
@@ -13,7 +13,7 @@ const HeaderNavItem = (props) => {
 
 HeaderNavItem.propTypes = {
     href: PropTypes.string,
-    children: PropTypes.element
+    children: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.array])
 };
 
 export default HeaderNavItem;

@@ -2,8 +2,11 @@ package lobby
 
 import (
 	"errors"
+
+	sdk "agones.dev/agones/sdks/go"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/round"
@@ -18,11 +21,10 @@ import (
 //Lobby is the Parent structure for a poker lobby it handles the player joins and removals and the game starts.
 type Lobby struct {
 	lock          sync.RWMutex
-	LobbyID       string `json:"lobbyId"`
+	LobbyID	string
 	Players       []models.Player
 	PublicPlayers []models.PublicPlayer `json:"players"`
 	GameStarted   bool
-	LobbyClass    int
 	MinBuyIn      int
 	MaxBuyIn      int
 	SmallBlind    int
@@ -33,23 +35,24 @@ type Lobby struct {
 	dealer        int
 	round         *round.Round
 	c             chan bool
+	sdk *sdk.SDK
 }
 
 //NewLobby creates a new lobby object
-func NewLobby(min, max, smallBlind, lobbyClass int) *Lobby {
-	bank := bank.NewBank()
+func NewLobby(min, max, smallBlind int, lobbyID string, sdk *sdk.SDK) *Lobby {
+	b := bank.NewBank()
 	return &Lobby{
-		LobbyID:     GenerateLobbyID(),
+		LobbyID:     lobbyID,
 		Players:     make([]models.Player, 0),
 		ToBeRemoved: make([]int, 0),
 		PlayerQueue: make([]*models.Player, 0),
-		Bank:        bank,
+		Bank:        b,
 		dealer:      -1,
-		round:       round.NewHand(bank, smallBlind),
+		round:       round.NewHand(b, smallBlind),
 		c:           make(chan bool, 1),
 		MinBuyIn:    min,
 		MaxBuyIn:    max,
-		LobbyClass:  lobbyClass,
+		sdk:         sdk,
 	}
 }
 
@@ -63,34 +66,34 @@ func (l *Lobby) TotalPlayerCount() int {
 	return c
 }
 
-//GetGameStarted determins whether a game has already in this lobby started.
+//GetGameStarted determines whether a game has already in this lobby started.
 func (l *Lobby) GetGameStarted() bool {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 	return l.GameStarted
 }
 
-//HasToBeAdded determins whether there are any pending lobby joins
+//HasToBeAdded determines whether there are any pending lobby joins
 func (l *Lobby) HasToBeAdded() bool {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 	return len(l.ToBeAdded) > 0
 }
 
-//HasToBeRemoved determins whether there are any pending removals
+//HasToBeRemoved determines whether there are any pending removals
 func (l *Lobby) HasToBeRemoved() bool {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 	return len(l.ToBeRemoved) > 0
 }
 
-//HasCapacaty determins if the lobby has exceeded the maximum capacity
-func (l *Lobby) HasCapacaty() bool {
-	return len(l.Players) < 10
-}
-
 //Join adds the player to the lobby and starts the game if the minimum player count is exceeded
 func (l *Lobby) Join(player *models.Player) {
+
+	err := l.sdk.Allocate()
+	if err != nil {
+		log.Fatalf("Error during Allocation: %s", err)
+	}
 	le := len(l.Players) + len(l.ToBeAdded)
 	if le <= 10 {
 		l.lock.Lock()
@@ -105,7 +108,7 @@ func (l *Lobby) Join(player *models.Player) {
 
 		utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind))
 
-		if len(l.Players) >= viper.GetInt(config.PlayersRequiredForStart) && !gameStarted {
+		if len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) && !gameStarted {
 			l.Start()
 		}
 	} else {
@@ -198,4 +201,12 @@ func (l *Lobby) RemoveAfterGame() {
 		}
 	}
 	log.Printf("Updated Playerlist in Lobby: %v", l.Players)
+
+	log.Printf("Check if player count is 0")
+	if len(l.Players) < 1 {
+		err := l.sdk.Shutdown()
+		if err != nil {
+			log.Fatal("Error shutting down")
+		}
+	}
 }
