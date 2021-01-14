@@ -1,49 +1,138 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobbies"
-	"log"
 	"net/http"
+	"strconv"
 
+	coresdk "agones.dev/agones/pkg/sdk"
+	sdk "agones.dev/agones/sdks/go"
 	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
 	"github.com/spf13/viper"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 )
 
+//main method is the entry point of the game server
 func main() {
+	logger := log.RegisterService()
+	defer log.CleanLogger()
+
+	config.ReadStandardConfig("royalafg-poker", logger)
+
+	serviceConfig.SetDefaults()
+
+	//Register stop signal
+	go gameServer.DoSignal()
+
+	//Creating agones sdk instance to communicate with the game server orchestrator
+	logger.Info("Creating SDK instance")
+	s, err := sdk.NewSDK()
+	if err != nil {
+		logger.Fatalf("Error during sdk connection, %v", err)
+	}
+
+	//Health ping to agones.
+	logger.Info("Health Ping to agones server management")
+	stop := make(chan struct{})
+	go gameServer.DoHealthPing(s, stop)
+
+	var lobbyInstance *lobby.Lobby
+	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
+		err := SetLobby(lobbyInstance, gs, s)
+		if err != nil {
+			logger.Fatalf("some information was not passed: %s", err)
+		}
+	})
+	if err != nil {
+		logger.Fatalf("Error during sdk annotation subscription: %s", err)
+	}
 
 	config.SetDefaults()
 
-	// Setup
+	stdChain := alice.New(mw.NewLoggerHandler(logger).LogRouteWithIP)
+
+	jwtKey := viper.GetString("jwt_key")
+
+	//gorilla router instance
 	r := mux.NewRouter()
+	gr := r.Methods(http.MethodPost).Subrouter()
 
-	// Setup Lobby map
+	gr.Handle("/join", stdChain.Append(mw.NewAuthMWHandler(logger, jwtKey).AuthMWR).ThenFunc(gameHandler.Join))
 
-	classes := viper.Get(config.BuyInOptions).([][]int)
-	if classes == nil {
-		log.Fatal("No buy in classses given")
-		return
+	port := viper.GetString(config.Port)
+	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), r).Error())
+}
+
+	var lobbyInstance *lobby.Lobby
+	err = s.WatchGameServer(func (gs *coresdk.GameServer){
+		err := SetLobby(lobbyInstance, gs, s)
+		if err != nil {
+			logger.Fatalf("some information was not passed: %s", err)
+		}
+	})
+	if err != nil {
+		logger.Fatalf("Error during sdk annotation subscription: %s", err)
 	}
-	lobbyManager := lobbies.NewManager(10, classes)
 
-	// Setup Handlers
-	playerHandler := handlers.NewLobbyHandler(lobbyManager)
+	//game
+	gameHandler := handlers.NewGame(lobbyInstance, s)
 
-	// each lobby creates a new game and waits for at least 3 players
+	stdChain := alice.New(mw.NewLoggerHandler(logger).LogRouteWithIP)
 
-	// /join {PlayerId, PlayerUsername} searches through the lobby map or creates one if none are found and the maximum lobby count is not succeeded.
-	r.HandleFunc("/join", playerHandler.Join)
-	r.HandleFunc("/options", playerHandler.LobbyOptions)
+	jwtKey := viper.GetString("jwt_key")
 
-	// join upgrades connection to websocket
+	//gorilla router instance
+	r := mux.NewRouter()
+	gr := r.Methods(http.MethodPost).Subrouter()
 
-	// game starts and communicates only via the websocket connection
+	gr.Handle("/join", stdChain.Append(mw.NewAuthMWHandler(logger, jwtKey).AuthMWR).ThenFunc(gameHandler.Join))
 
-	port := viper.GetInt(config.Port)
-	log.Printf("Serve on Port %v", port)
+	port := viper.GetString(config.Port)
+	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), r).Error())
+}
 
-	log.Printf(http.ListenAndServe(":"+fmt.Sprint(port), r).Error())
+func SetLobby(lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
+	labels := gs.GetObjectMeta().GetLabels()
+	min, err := GetFromLabels("min-buy-in", labels)
+	if err != nil {
+		return err
+	}
 
+	var max int
+	max, err = GetFromLabels("max-buy-in", labels)
+	if err != nil {
+		return err
+	}
+
+	var blind int
+	blind, err = GetFromLabels("blind", labels)
+	if err != nil {
+		return err
+	}
+
+	return val, nil
+}
+
+func GetFromLabels(key string, labels map[string]string) (int, error) {
+	valString, ok := labels[key]
+
+	if !ok {
+		return 0, fmt.Errorf("can not get the required information for the key [%s]", key)
+	}
+
+	val, err := strconv.Atoi(valString)
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
 }

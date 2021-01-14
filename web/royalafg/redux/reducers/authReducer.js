@@ -1,4 +1,4 @@
-import { LOGIN_USER_SUCCESS } from '../types/authTypes';
+import { LOGIN_USER_SUCCESS } from "../types/authTypes";
 
 const intialState = {
     user: {},
