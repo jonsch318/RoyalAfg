@@ -13,6 +13,8 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.30",
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
         "@fortawesome/react-fontawesome": "^0.1.11",
+
+        "dinero.js": "^1.8.1",
         "eslint": "^7.16.0",
         "eslint-config-prettier": "^7.1.0",
         "eslint-plugin-jsx-a11y": "^6.4.1",
@@ -20,20 +22,27 @@
         "eslint-plugin-react": "^7.21.5",
         "eslint-plugin-react-hooks": "^4.2.0",
         "formik": "^2.2.6",
-        "next": "9.5.4",
+        "moment": "^2.29.1",
+        "next": "^10.0.5",
+        "next-auth": "^3.1.0",
         "next-i18next": "^6.0.3",
+        "normalize.css": "^8.0.1",
         "pixi.js": "^5.3.6",
+        "postcss": "^8.2.4",
         "prettier": "^2.2.1",
         "prop-types": "^15.7.2",
         "react": "16.13.1",
+        "react-currency-input-field": "^3.0.2",
         "react-dom": "16.13.1",
         "react-hook-form": "^6.8.4",
+        "react-intl": "^5.10.16",
         "react-redux": "^7.2.1",
         "redux": "^4.0.5",
         "redux-devtools-extension": "^2.13.8",
         "redux-thunk": "^2.3.0",
         "rxjs": "^6.6.3",
         "shortid": "^2.2.15",
+        "sprintf": "^0.1.5",
         "uuid": "^8.3.2"
     },
     "peerDependencies": {
@@ -41,8 +50,9 @@
     },
     "devDependencies": {
         "@tailwindcss/custom-forms": "^0.2.1",
-        "autoprefixer": "9.8.6",
+        "autoprefixer": "^10.2.1",
         "postcss-preset-env": "^6.7.0",
-        "tailwindcss": "^1.8.10"
+        "tailwindcss": "^2.0.2"
+
     }
 }
