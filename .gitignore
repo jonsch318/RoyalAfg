@@ -62,6 +62,7 @@ bazel-bin
 bazel-out
 bazel-RoyalAfgInGo
 bazel-testlogs
+minikube
 .env
 /.env
 /.env.local
