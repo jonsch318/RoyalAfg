@@ -4,18 +4,17 @@ go_library(
     name = "handlers",
     srcs = [
         "join.go",
-        "lobbyOptions.go",
         "player.go",
         "playerConn.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/responses",
         "//services/poker/events",
-        "//services/poker/lobbies",
+        "//services/poker/lobby",
         "//services/poker/models",
         "//services/poker/utils",
         "@com_github_gorilla_websocket//:go_default_library",
+        "@dev_agones_agones//sdks/go:go_default_library",
     ],
 )

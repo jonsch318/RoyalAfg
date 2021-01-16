@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-poker
+data:
+  config.yaml: |
+
+
+---
+apiVersion: "agones.dev/v1"
+kind: Fleet
+Namespace: royalafg-games
+Name: royalafg-poker
+metadata:
+  name: royalafg-poker
+  namespace: royalafg-games
+  labels:
+    name: "royalafg-poker"
+    game: "poker"
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: "royalafg-poker"
+        game: "poker"
+    spec:
+      ports:
+        - name: default
+          portPolicy: Dynamic
+          containerPort: 7654
+          protocol: TCP
+      health:
+        initialDelaySeconds: 60
+        periodSeconds: 60
+      
+      template:
+        spec:
+          containers:
+            - name: royalafg-poker
+              image: royalafg-poker
+              volumeMounts:
+                - name: royalafg-poker-serviceConfig
+                  mountPath: "/etc/royalafg-poker"
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "20m"
+        volumes:
+          - name: royalafg-poker-serviceConfig
+            configMap:
+              name: royalafg-poker

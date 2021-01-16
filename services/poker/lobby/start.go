@@ -3,7 +3,7 @@ package lobby
 import (
 	"bufio"
 	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"math/rand"
 	"os"
 	"time"
@@ -16,7 +16,7 @@ func (l *Lobby) Start() {
 
 	// SETUP
 	go func() {
-		for len(l.Players) >= viper.GetInt(config.PlayersRequiredForStart) {
+		for len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) {
 
 			// Protection against multiple games using a buffered channel
 			timer := time.NewTimer(5 * time.Second)
@@ -34,7 +34,7 @@ func (l *Lobby) Start() {
 			fmt.Printf("ENTER for game start \n")
 			reader.ReadLine()
 
-			if len(l.Players) < viper.GetInt(config.PlayersRequiredForStart) {
+			if len(l.Players) < viper.GetInt(serviceConfig.PlayersRequiredForStart) {
 				// Not enough players to start
 				return
 			}

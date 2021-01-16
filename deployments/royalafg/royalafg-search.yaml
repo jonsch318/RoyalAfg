@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-search
+  namespace: royalafg
+spec:
+  selector:
+    app: royalafg-search
+  ports:
+    - name: web
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royalafg-search
+  namespace: royalafg
+spec:
+  rules:
+    - host: troyalafg.games
+      http:
+        paths:
+          - path: /api/search
+            pathType: Prefix
+            backend:
+              service:
+                name: royalafg-search
+                port:
+                  number: 80
+    - host: royalafg.games
+      http:
+        paths:
+          - path: /api/search
+            pathType: Prefix
+            backend:
+              service:
+                name: royalafg-search
+                port:
+                  number: 80
+  tls:
+    - secretName: search-tls-cert
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: royalafg-search
+  namespace: royalafg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-search
+  namespace: royalafg
+spec:
+  selector:
+    matchLabels:
+      app: royalafg-search
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: royalafg-search
+    spec:
+      containers:
+        - name: royalafg-search
+          image: "docker.io/johnnys318/royalafg-search:latest"
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "250m"
+            requests:
+              memory: 10Mi
+              cpu: 100m
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: royalafg-search-serviceConfig
+              mountPath: "/etc/royalafg-search"
+
+      volumes:
+        - name: royalafg-search-serviceConfig
+          configMap:
+            name: royalafg-search

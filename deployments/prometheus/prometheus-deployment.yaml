@@ -19,12 +19,12 @@ spec:
         - name: prometheus
           image: prom/prometheus
           args:
-            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--serviceConfig.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
           ports:
             - containerPort: 9090
           volumeMounts:
-            - name: prometheus-config-volume
+            - name: prometheus-serviceConfig-volume
               mountPath: /etc/prometheus/
             - name: prometheus-storage-volume
               mountPath: /prometheus/
@@ -33,7 +33,7 @@ spec:
                 cpu: 150m
                 memory: 300Mi
       volumes:
-        - name: prometheus-config-volume
+        - name: prometheus-serviceConfig-volume
           configMap:
             defaultMode: 420
             name: prometheus-server-conf

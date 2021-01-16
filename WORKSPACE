@@ -67,9 +67,25 @@ container_pull(
     repository = "library/alpine",
     tag = "3.8",
 )
+load(
+    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure = "toolchain_configure",
+)
+
+docker_toolchain_configure(
+    name = "docker_config",
+    # OPTIONAL: Path to a directory which has a custom docker client config.json.
+    # See https://docs.docker.com/engine/reference/commandline/cli/#configuration-files
+    # for more details.
+    # client_config = "/home/jonas/.docker/config.json",
+    docker_flags = [
+        "--tls",
+        "--log-level=info",
+    ],
+)
+
 
 # Go rules
-
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "6f111c57fd50baf5b8ee9d63024874dd2a014b069426156c55adbf6d3d22cb7b",
@@ -87,24 +103,6 @@ http_archive(
         "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.22.2/bazel-gazelle-v0.22.2.tar.gz",
     ],
 )
-
-load(
-    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
-    docker_toolchain_configure = "toolchain_configure",
-)
-
-docker_toolchain_configure(
-    name = "docker_config",
-    # OPTIONAL: Path to a directory which has a custom docker client config.json.
-    # See https://docs.docker.com/engine/reference/commandline/cli/#configuration-files
-    # for more details.
-    client_config = "/home/jonas/.docker/config.json",
-    docker_flags = [
-        "--tls",
-        "--log-level=info",
-    ],
-)
-# End of OPTIONAL segment.
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")

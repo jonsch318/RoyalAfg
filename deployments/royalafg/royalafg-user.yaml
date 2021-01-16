@@ -62,10 +62,10 @@ spec:
                   key: user-pepper
                   name: royalafg-user
           volumeMounts:
-            - name: royalafg-user-config
+            - name: royalafg-user-serviceConfig
               mountPath: "/etc/royalafg-user" 
 
       volumes:
-        - name:  royalafg-user-config
+        - name:  royalafg-user-serviceConfig
           configMap:
               name: royalafg-user

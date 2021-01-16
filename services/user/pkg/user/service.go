@@ -50,7 +50,7 @@ func Start() {
 
 	userDatabase := database.NewUserDatabase(logger)
 
-	// grpc server config
+	// grpc server serviceConfig
 	gs := grpc.NewServer()
 
 	userServer := servers.NewUserServer(logger, userDatabase, metrics)

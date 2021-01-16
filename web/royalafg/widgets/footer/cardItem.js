@@ -1,3 +1,6 @@
+import React from "react";
+import PropTypes from "prop-types";
+
 const FooterCardItem = (props) => {
     if (props.href) {
         return (
@@ -6,10 +9,12 @@ const FooterCardItem = (props) => {
             </a>
         );
     }
-    return (
-        <span className="font-sans font-thin text-sm">{props.children}</span>
-    )
+    return <span className="font-sans font-thin text-sm">{props.children}</span>;
+};
 
-}
+FooterCardItem.propTypes = {
+    href: PropTypes.string,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.array])
+};
 
-export default FooterCardItem
+export default FooterCardItem;
