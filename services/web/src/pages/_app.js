@@ -2,11 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Provider } from "next-auth/client";
 import { IntlProvider } from "react-intl";
-import "../styles/globals.css";
-import "../styles/tailwind.css";
+import "../../styles/globals.css";
+import "../../styles/tailwind.css";
 
 import { useRouter } from "next/router";
-import { GetMessage } from "../i18n";
+import { GetMessage } from "../../i18n";
 
 function MyApp({ Component, pageProps }) {
     //const store = useStore(pageProps.initialReduxState);
