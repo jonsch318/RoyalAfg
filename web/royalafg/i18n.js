@@ -1,8 +1,15 @@
-const NextI18Next = require("next-i18next").default;
-require("next/serviceConfig").default().publicRuntimeConfig;
-const path = require("path");
+const locales = require("./content/locale/index");
 
-module.exports = new NextI18Next({
-    otherLanguages: ["de"],
-    localePath: path.resolve("./public/static/locales")
-});
+export const GetMessage = (defaultLocal, locale, pathname) => {
+    const localeMessages = locales[locale.replace("-", "")];
+
+    try {
+        return localeMessages[pathname];
+    } catch (error) {
+        try {
+            return locales[defaultLocal.replace("-", "")][pathname];
+        } catch (error) {
+            return null;
+        }
+    }
+};

@@ -62,3 +62,6 @@ bazel-bin
 bazel-out
 bazel-RoyalAfgInGo
 bazel-testlogs
+.env
+/.env
+/.env.local

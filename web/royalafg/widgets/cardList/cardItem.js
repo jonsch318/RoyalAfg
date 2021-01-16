@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 const CardListItem = ({ children, header }) => {
     return (
@@ -12,7 +12,7 @@ const CardListItem = ({ children, header }) => {
 
 CardListItem.propTypes = {
     header: PropTypes.string,
-    children: PropTypes.oneOf(PropTypes.string, PropTypes.element, PropTypes.array)
+    children: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.array])
 };
 
 export default CardListItem;
