@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/spf13/viper"
 	"net/http"
 	"time"
@@ -30,7 +30,7 @@ func GetJwt(user *models.User) (string, error) {
 	claims := jwt.StandardClaims{
 		Subject:   user.ID.Hex(),
 		Issuer:    viper.GetString(config.JwtIssuer),
-		Audience:  "github.com/JohnnyS318/RoyalAfgInGo.games",
+		Audience:  []string{"github.com/JohnnyS318/RoyalAfgInGo.games"},
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: viper.GetInt64(config.JwtExpiresAt),
 	}

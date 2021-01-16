@@ -32,7 +32,7 @@ import (
 //		500: ErrorResponse
 //		200: UserResponse
 //
-func (h *User) Register(rw http.ResponseWriter, r *http.Request) {
+func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")

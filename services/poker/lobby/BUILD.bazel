@@ -13,10 +13,10 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//services/poker/bank",
-        "//services/poker/config",
         "//services/poker/events",
         "//services/poker/models",
         "//services/poker/round",
+        "//services/poker/serviceConfig:go_default_library",
         "//services/poker/utils",
         "@com_github_spf13_viper//:go_default_library",
         "@dev_agones_agones//sdks/go:go_default_library",
