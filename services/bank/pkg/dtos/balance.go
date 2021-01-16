@@ -2,10 +2,7 @@ package dtos
 
 import (
 	"errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 	"log"
-	"reflect"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
@@ -23,7 +20,7 @@ func NewAccountBalanceQuery() *AccountBalanceQuery  {
 	}
 }
 
-func (q AccountBalanceQuery) Handle(message ycq.EventMessage)  {
+func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 
 	log.Printf("Read Model handle %v", message)
 
@@ -51,7 +48,7 @@ func (q AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 
 }
 
-func (q AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
+func (q *AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
 	res, ok := q.accounts[id]
 	if !ok {
 		return -1, errors.New("the account with the given id does not exist")
@@ -62,9 +59,4 @@ func (q AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
 	}
 
 	return res, nil
-}
-
-func (q AccountBalanceQuery) Load(repo repositories.AccountRepository){
-	accountName := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
-	repo.Load(accountName, "")
 }
