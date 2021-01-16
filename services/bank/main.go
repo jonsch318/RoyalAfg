@@ -22,6 +22,7 @@ func main() {
 
 }
 
+
 func ConfigureViper(logger *zap.SugaredLogger) {
 	configFile := ""
 	flag.StringVar(&configFile, "serviceConfig", "", "serviceConfig file (default is $HOME/.github.com/JohnnyS318/RoyalAfgInGoInGo.d/bank_service.yaml)")
@@ -53,9 +54,6 @@ func ConfigureViper(logger *zap.SugaredLogger) {
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Fatalw("Error during serviceConfig file parsing", "error", err)
 	}
-
-	logger.Infow("Parsed serviceConfig file", "file", viper.ConfigFileUsed())
-
-	pkg.Start(logger)
+	logger.Infow("Parsed config file", "file", viper.ConfigFileUsed())
 
 }

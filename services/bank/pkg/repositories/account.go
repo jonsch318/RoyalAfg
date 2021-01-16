@@ -1,70 +1,70 @@
 package repositories
 
 import (
-	"fmt"
+	"errors"
+	"log"
 	"reflect"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 	goes "github.com/jetbasrawi/go.geteventstore"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
-type AccountRepo struct {
+type Account struct {
 	repo *ycq.GetEventStoreCommonDomainRepo
 }
 
-func NewAccountRepo(eventStore *goes.Client, eventBus ycq.EventBus) (*AccountRepo, error) {
+func NewAccount(eventStore *goes.Client, eventBus ycq.EventBus) (*Account, error) {
 	r, err := ycq.NewCommonDomainRepository(eventStore, eventBus)
 	if err != nil {
+		log.Printf("Error during CommonDomainRepository: %v", err)
 		return nil, err
 	}
 
-	repo := &AccountRepo{repo: r}
+	ret := &Account{
+		repo: r,
+	}
 
 	aggregateFactory := ycq.NewDelegateAggregateFactory()
-	aggregateFactory.RegisterDelegate(&aggregates.Account{}, func(id string) ycq.AggregateRoot {
-		return aggregates.NewAccount(id)
-	})
-	repo.repo.SetAggregateFactory(aggregateFactory)
+	_ = aggregateFactory.RegisterDelegate(&aggregates.Account{}, func(id string) ycq.AggregateRoot { return aggregates.NewAccount(id) })
+	ret.repo.SetAggregateFactory(aggregateFactory)
 
 	streamNameDelegate := ycq.NewDelegateStreamNamer()
-	streamNameDelegate.RegisterDelegate(func(t string, id string) string {
-		return fmt.Sprintf("%v-%v", t, id)
+	_ = streamNameDelegate.RegisterDelegate(func(t string, id string) string {
+		return t + "-" + id
 	}, &aggregates.Account{})
-	repo.repo.SetStreamNameDelegate(streamNameDelegate)
+	ret.repo.SetStreamNameDelegate(streamNameDelegate)
 
 	eventFactory := ycq.NewDelegateEventFactory()
-	eventFactory.RegisterDelegate(&events.AccountCreated{}, func() interface{} {
-		return &events.AccountCreated{}
-	})
-	eventFactory.RegisterDelegate(&events.Purchased{}, func() interface{} {
-		return &events.Deposited{}
-	})
-	eventFactory.RegisterDelegate(&events.Deposited{}, func() interface{} {
-		return &events.Purchased{}
-	})
-	repo.repo.SetEventFactory(eventFactory)
-	return repo, nil
+	_ = eventFactory.RegisterDelegate(&events.AccountCreated{}, func() interface{} { return &events.AccountCreated{}})
+	_ = eventFactory.RegisterDelegate(&events.Deposited{}, func() interface{} { return &events.Deposited{}})
+	_ = eventFactory.RegisterDelegate(&events.Withdrawn{}, func() interface{} { return &events.Withdrawn{}})
+	ret.repo.SetEventFactory(eventFactory)
+
+	return ret, nil
 }
 
-func (r AccountRepo) Load(aggregateType, id string) (*aggregates.Account, error) {
+func (r Account) Load(aggregateType, id string) (*aggregates.Account, error) {
 	aggregate, err := r.repo.Load(reflect.TypeOf(&aggregates.Account{}).Elem().Name(), id)
-	if _, ok := err.(*ycq.ErrAggregateNotFound); ok {
-		return nil, nil
-	}
+
 	if err != nil {
 		return nil, err
 	}
-
-	if result, ok := aggregate.(*aggregates.Account); ok {
-		return result, nil
+	a, ok := aggregate.(*aggregates.Account)
+	if !ok {
+		return nil, errors.New("the loaded aggregate could not be casted to the correct type")
 	}
 
-	return nil, fmt.Errorf("could not cast aggregate returned to type of %s", reflect.TypeOf(&aggregates.Account{}).Elem().Name())
+	return a, nil
 }
 
-func (r AccountRepo) Save(aggregate ycq.AggregateRoot, expectedVersion *int) error {
-	return r.repo.Save(aggregate, expectedVersion)
+func (r Account) Save(aggregate ycq.AggregateRoot, expectedVersion *int) error {
+	err := r.repo.Save(aggregate, expectedVersion)
+	if err != nil {
+		log.Printf("error during saving: %v", err)
+		return err
+	}
+	return nil
 }

@@ -1,15 +1,20 @@
 package commands
 
-type CreateAccount struct {
-	UserId string
+type CreateBankAccount struct {
 }
 
 type Deposit struct {
 	Amount int
+	//Identification of Game
+	GameID string
+	//Identification in which round
+	RoundID string
 }
 
-type Purchase struct {
-	Amount  int
-	GameId  string
-	Details interface{}
+type Withdraw struct {
+	Amount int
+	//Identification of Game
+	GameID string
+	//Identification in which round
+	RoundID string
 }
