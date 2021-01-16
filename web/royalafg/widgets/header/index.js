@@ -33,20 +33,15 @@ class Header extends React.Component {
     render() {
         return (
             <div>
-                <header className="md:h-10 h-16 bg-blue-600 text-white">
+                <header className="md:h-10 h-16 bg-blue-600 text-white w-full" style={{ position: this.props.absolute ? "absolute" : "relative" }}>
                     <div className="flex h-full">
                         <button
                             className="hamburger md:hidden flex h-full items-center ml-6 z-10 cursor-pointer focus:outline-none w-6"
                             onClick={this.toggleMenu}>
-                            <FontAwesomeIcon
-                                icon={this.state.isOpen ? faTimes : faBars}
-                                size="lg"
-                            />
+                            <FontAwesomeIcon icon={this.state.isOpen ? faTimes : faBars} size="lg" />
                         </button>
                         <div className="logo md:ml-16 flex items-center md:h-full h-16 w-full md:w-auto justify-center md:relative absolute mt-0 mb-auto md:z-10 z-0">
-                            <a
-                                className="font-medium font-sans text-xl text-center cursor-pointer"
-                                href="/">
+                            <a className="font-medium font-sans text-xl text-center cursor-pointer" href="/">
                                 Royalafg
                             </a>
                         </div>

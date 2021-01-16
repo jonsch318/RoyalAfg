@@ -1,10 +1,14 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
+import { signIn } from "next-auth/client";
 
-export default function Login() {
+const Login = () => {
     const { register, handleSubmit, watch, errors } = useForm();
-    const onSubmit = (data) => console.log(JSON.stringify(data));
+    const onSubmit = (data) => {
+        console.log("Cred: ", data);
+        signIn("credentials", { username: data.username, password: data.password });
+    };
 
     console.log(watch("username"));
 
@@ -13,9 +17,7 @@ export default function Login() {
             <div className="w-full md:h-screen flex items-center justify-center md:absolute md:inset-0">
                 <div className="bg-gray-300 md:rounded-md shadow-md">
                     <div className="heading mx-16 my-8">
-                        <h1 className="text-center font-sans font-semibold text-3xl">
-                            Sign into your Account
-                        </h1>
+                        <h1 className="text-center font-sans font-semibold text-3xl">Sign into your Account</h1>
                     </div>
                     <div className="content md:px-24 px-4">
                         <form onSubmit={handleSubmit(onSubmit)}>
@@ -33,8 +35,7 @@ export default function Login() {
                                 />
                                 {errors.username && (
                                     <span className="text-sm text-red-700">
-                                        This field is required and can only be more than 3 and less
-                                        than 100!
+                                        This field is required and can only be more than 3 and less than 100!
                                     </span>
                                 )}
                             </div>
@@ -52,16 +53,15 @@ export default function Login() {
                                 />
                                 {errors.password && (
                                     <span className="text-sm text-red-700">
-                                        This field is required and can only be more than 3 and less
-                                        than 100!
+                                        This field is required and can only be more than 3 and less than 100!
                                     </span>
                                 )}
                             </div>
-                            <input
+                            <button
                                 className="block w-full px-4 py-2  bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-150 font-sans font-medium cursor-pointer"
-                                type="submit"
-                                value="Log in"
-                            />
+                                type="submit">
+                                Log In
+                            </button>
                             <span className="font-sans font-light text-sm mb-8">
                                 Or{" "}
                                 <a href="/register" className="font-sans text-blue-800">
@@ -69,13 +69,13 @@ export default function Login() {
                                 </a>{" "}
                                 a new account
                             </span>
-                            <span className="text-sm mb-8 font-sans font-light block text-ce">
-                                Textfields with a * are required
-                            </span>
+                            <span className="text-sm mb-8 font-sans font-light block text-ce">Textfields with a * are required</span>
                         </form>
                     </div>
                 </div>
             </div>
         </Layout>
     );
-}
+};
+
+export default Login;

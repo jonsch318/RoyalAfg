@@ -8,7 +8,7 @@ const Layout = (props) => {
 
     return (
         <div id="root" className="root">
-            {!props.disableNav && <Header />}
+            {!props.disableNav && <Header absolute={props.headerAbsolut} />}
             {props.enableAlternativNav && props.alternativNav}
             {props.children}
             {!props.disableFooter && foot}
@@ -22,7 +22,8 @@ Layout.propTypes = {
     enableAlternativNav: PropTypes.bool,
     alternativNav: PropTypes.elementType,
     children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
-    disableFooter: PropTypes.bool
+    disableFooter: PropTypes.bool,
+    headerAbsolut: PropTypes.bool
 };
 
 export default Layout;

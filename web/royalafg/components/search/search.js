@@ -50,7 +50,7 @@ const SearchInput = () => {
                 type="text"
                 autoComplete="off"
                 ref={inputRef}
-                className="relative font-sans md:py-0 py-2 bg-white w-full h-full text-black outline-none px-4"
+                className="relative font-sans md:py-0 py-2 bg-white w-full h-full text-black outline-none px-4 rounded"
                 id="global-search-input"
                 placeholder="Search"
                 onChange={(e) => setQuery(e.target.value)}
