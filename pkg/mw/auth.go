@@ -6,10 +6,14 @@ import (
 	"net/http"
 	"strings"
 
+	jwtMW "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
+	"github.com/spf13/viper"
+	"github.com/urfave/negroni"
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 )
 
 const IdentityCookieKey = "Identity"
@@ -31,6 +35,73 @@ func (err UnauthorizedError) Error() string {
 func (err InvalidTokenError) Error() string {
 	return "identity token is invalid"
 }
+
+type UserClaims struct {
+	Username string
+	ID string
+}
+
+//FromUserTokenContext creates a claims list of a user from a given jwt token given by the mw.
+//We trust the user parameter to be a valid jwt token with the claims username and id.
+func FromUserTokenContext(user interface{}) *UserClaims {
+	return &UserClaims{
+		Username: user.(*jwt.Token).Claims.(jwt.MapClaims)["username"].(string),
+		ID:       user.(*jwt.Token).Claims.(jwt.MapClaims)["id"].(string),
+	}
+}
+
+func RequireAuth(f func(http.ResponseWriter, *http.Request)) http.Handler {
+	mw := GetJWTMW()
+	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
+	nAuth.UseHandlerFunc(f)
+	return nAuth
+}
+
+func OptionalAuth(f func(w http.ResponseWriter, r *http.Request)) http.Handler{
+	mw := GetJWTMW()
+	mw.Options.CredentialsOptional = true
+	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
+	nAuth.UseHandlerFunc(f)
+	return nAuth
+}
+
+func GetJWTMW() *jwtMW.JWTMiddleware {
+	return jwtMW.New(jwtMW.Options{
+		ValidationKeyGetter: GetKeyGetter(viper.GetString(config.JWTSigningKey)),
+		UserProperty:        "user",
+		Extractor:           jwtMW.FromFirst(ExtractFromCookie, jwtMW.FromAuthHeader),
+		Debug:               !viper.GetBool(config.Prod),
+		SigningMethod:       jwt.SigningMethodHS256,
+	})
+}
+
+//ExtractFromCookie extracts a jwt from the identtiy Cookie
+func ExtractFromCookie(r *http.Request) (string, error) {
+	cookie, err := r.Cookie(IdentityCookieKey)
+	if err != nil {
+		return "", &UnauthorizedError{Err: err}
+	}
+
+	return cookie.Value, nil
+}
+
+func GetKeyGetter(key string) jwt.Keyfunc {
+	return func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte(key), nil
+	}
+}
+
+
+
+
+
+
 
 type AuthMWHandler struct {
 	l   *zap.SugaredLogger
@@ -147,24 +218,3 @@ func ValidateJwt(bearer, key string) (jwt.MapClaims, error) {
 	return nil, fmt.Errorf("The token validation failed")
 }
 
-//ExtractFromCookie extracts a jwt from the identtiy Cookie
-func ExtractFromCookie(r *http.Request) (string, error) {
-	cookie, err := r.Cookie(IdentityCookieKey)
-	if err != nil {
-		return "", &UnauthorizedError{Err: err}
-	}
-
-	return cookie.Value, nil
-}
-
-func GetKeyGetter(key string) jwt.Keyfunc {
-	return func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(key), nil
-	}
-}

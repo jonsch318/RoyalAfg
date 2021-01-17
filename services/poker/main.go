@@ -9,12 +9,12 @@ import (
 	coresdk "agones.dev/agones/pkg/sdk"
 	sdk "agones.dev/agones/sdks/go"
 	"github.com/gorilla/mux"
-	"github.com/justinas/alice"
 	"github.com/spf13/viper"
+	"github.com/urfave/negroni"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
@@ -29,6 +29,16 @@ func main() {
 	config.ReadStandardConfig("royalafg-poker", logger)
 
 	serviceConfig.SetDefaults()
+
+	//connect to rabbitmq to send user commands
+
+	b := bank.NewBank()
+
+
+
+
+
+
 
 	//Register stop signal
 	go gameServer.DoSignal()
@@ -45,36 +55,13 @@ func main() {
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-	var lobbyInstance *lobby.Lobby
-	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
-		err := SetLobby(lobbyInstance, gs, s)
-		if err != nil {
-			logger.Fatalf("some information was not passed: %s", err)
-		}
-	})
-	if err != nil {
-		logger.Fatalf("Error during sdk annotation subscription: %s", err)
-	}
+	serviceConfig.SetDefaults()
 
-	config.SetDefaults()
 
-	stdChain := alice.New(mw.NewLoggerHandler(logger).LogRouteWithIP)
 
-	jwtKey := viper.GetString("jwt_key")
-
-	//gorilla router instance
-	r := mux.NewRouter()
-	gr := r.Methods(http.MethodPost).Subrouter()
-
-	gr.Handle("/join", stdChain.Append(mw.NewAuthMWHandler(logger, jwtKey).AuthMWR).ThenFunc(gameHandler.Join))
-
-	port := viper.GetString(config.Port)
-	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), r).Error())
-}
-
-	var lobbyInstance *lobby.Lobby
+	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func (gs *coresdk.GameServer){
-		err := SetLobby(lobbyInstance, gs, s)
+		err := SetLobby(b, lobbyInstance, gs, s)
 		if err != nil {
 			logger.Fatalf("some information was not passed: %s", err)
 		}
@@ -86,21 +73,22 @@ func main() {
 	//game
 	gameHandler := handlers.NewGame(lobbyInstance, s)
 
-	stdChain := alice.New(mw.NewLoggerHandler(logger).LogRouteWithIP)
-
-	jwtKey := viper.GetString("jwt_key")
-
 	//gorilla router instance
 	r := mux.NewRouter()
-	gr := r.Methods(http.MethodPost).Subrouter()
+	r.HandleFunc("/join", gameHandler.Join).Methods(http.MethodPost)
 
-	gr.Handle("/join", stdChain.Append(mw.NewAuthMWHandler(logger, jwtKey).AuthMWR).ThenFunc(gameHandler.Join))
+	recoverMW := negroni.NewRecovery()
+	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation){
+		s.Shutdown()
+	}
+	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery())
+	n.UseHandler(r)
 
 	port := viper.GetString(config.Port)
-	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), r).Error())
+	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), n).Error())
 }
 
-func SetLobby(lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
 	labels := gs.GetObjectMeta().GetLabels()
 	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
@@ -119,7 +107,14 @@ func SetLobby(lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) 
 		return err
 	}
 
-	return val, nil
+	lobbyId, ok := labels["lobbyId"]
+	if !ok {
+		return errors.New("can not get the required information for the key lobbyId", )
+	}
+	b.RegisterLobby(lobbyId)
+
+	lobbyInstance.RegisterLobbyValue(min, max, blind)
+	return nil
 }
 
 func GetFromLabels(key string, labels map[string]string) (int, error) {

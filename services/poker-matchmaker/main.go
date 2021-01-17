@@ -6,8 +6,12 @@ import (
 	"agones.dev/agones/pkg/client/clientset/versioned"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
-	"github.com/justinas/alice"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/slok/go-http-metrics/metrics/prometheus"
+	metricsMW "github.com/slok/go-http-metrics/middleware"
+	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
 	"github.com/spf13/viper"
+	"github.com/urfave/negroni"
 	"k8s.io/client-go/rest"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
@@ -28,11 +32,6 @@ func main() {
 	//configuration
 	//serviceConfig.ReadStandardConfig("search", logger)
 
-	//Gorilla Routing
-
-	loggerHandler := mw.NewLoggerHandler(logger)
-	stdChain := alice.New(loggerHandler.LogRoute)
-
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -51,13 +50,25 @@ func main() {
 	manager := lobby.NewManager(agonesClient, classes)
 	ticketHandler := handlers.NewTicket(logger, rdb, agonesClient, manager)
 
+
+
 	r := mux.NewRouter()
-	r.Handle("/api/poker/ticket", stdChain.ThenFunc(ticketHandler.GetTicketWithParams)).Methods(http.MethodGet).Queries("class", "{class:[0-9]+}")
-	r.Handle("/api/poker/ticket/{id}", stdChain.ThenFunc(ticketHandler.GetTicketWithID)).Methods(http.MethodGet)
+	r.Handle("/api/poker/ticket", mw.RequireAuth(ticketHandler.GetTicketWithParams)).Methods(http.MethodGet).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
+	r.Handle("/api/poker/ticket/{id}", mw.RequireAuth(ticketHandler.GetTicketWithID)).Methods(http.MethodGet).Queries("buyIn", "{buyIn:[0-9]+}")
+	r.Handle("/metrics", promhttp.Handler())
+
+	metricsMiddleware := metricsMW.New(metricsMW.Config{
+		Recorder: prometheus.NewRecorder(prometheus.Config{
+		}),
+		Service:                "PokerMatchMaker",
+	})
+	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	n.UseHandler(r)
+
 	// Start Application
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: r,
+		Handler: n,
 	}
 
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))

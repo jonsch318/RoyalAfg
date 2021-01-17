@@ -1,12 +1,17 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/form3tech-oss/jwt-go"
+	"github.com/spf13/viper"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/gorilla/websocket"
@@ -16,6 +21,7 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
+		//TODO: CheckOrigin function with configured accepted origins
 		return true
 	},
 }
@@ -53,8 +59,10 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Join Timeout. The joining process has timed out.", http.StatusBadRequest)
 		return
 	}
-	joinEvent, err := events.ToJoinEvent(raw)
 
+	//Get all relevant info from jwt token (signed jwt because we do not validate anything here)
+
+	joinEvent, err := events.ToJoinEvent(raw)
 	if err != nil {
 		log.Printf("joinEvent was invalid %v", err)
 		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
@@ -63,8 +71,33 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	player := models.NewPlayer(joinEvent.Username, joinEvent.ID, joinEvent.BuyIn, playerConn.In, playerConn.Out, playerConn.Close)
+	token, err := jwt.Parse(joinEvent.Token, func(token *jwt.Token) (interface{}, error){
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte(viper.GetString(serviceConfig.MatchMakerJWTKey)), nil
+	})
+
+	var username, id string
+	var buyIn int
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
+		username = claims["username"].(string)
+		id = claims["id"].(string)
+		buyIn = claims["buyIn"].(int)
+	} else {
+		log.Printf("joinEvent was invalid %v", err)
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
+		_ = conn.Close()
+		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
+		return
+	}
+
+
+
+	player := models.NewPlayer(username, id, buyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
 	h.lby.Join(player)
-
 }

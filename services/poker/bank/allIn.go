@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-//MustAllIn determins whether a player has to bet all the buyin because the maximum bet is already past his amount
+//MustAllIn determins whether a player has to bet all the buyin because the maximum bet is already past his Amount
 func (b *Bank) MustAllIn(id string) (bool, error) {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
@@ -20,7 +20,7 @@ func (b *Bank) MustAllIn(id string) (bool, error) {
 	return b.MaxBet >= (p + bet), nil
 }
 
-//AllIn gives the all in amount the player has to bet
+//AllIn gives the all in Amount the player has to bet
 func (b *Bank) AllIn(id string) int {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
@@ -36,7 +36,7 @@ func (b *Bank) AllIn(id string) int {
 	return bet + p
 }
 
-//IsAllIn determins whether a given player has already placed all his wallet. He can be excluded from the blocking list
+//IsAllIn determines whether a given player has already placed all his wallet. He can be excluded from the blocking list
 func (b *Bank) IsAllIn(id string) bool {
 	b.lock.RLock()
 	defer b.lock.RUnlock()

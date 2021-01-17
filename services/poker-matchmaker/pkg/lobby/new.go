@@ -14,11 +14,11 @@ import (
 	//"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models"
 )
 
-//NewLobby allocates a new GameServer for a new Lobby
-func (m *Manager) NewLobby(classIndex int) (string, error) {
+//NewLobby allocates a new GameServer for a new RoundId
+func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 
 	if classIndex < 0 || classIndex >= len(m.classes) {
-		return "", errors.New("the class index has to be a valid class registered at service start")
+		return nil, errors.New("the class index has to be a valid class registered at service start")
 	}
 
 	id := newID()
@@ -31,7 +31,7 @@ func (m *Manager) NewLobby(classIndex int) (string, error) {
 	serverLabels["lobbyId"] = id
 	serverLabels["min-buy-in"] = strconv.Itoa(class.Min)
 	serverLabels["max-buy-in"] = strconv.Itoa(class.Max)
-	serverLabels["Blid"] = strconv.Itoa(class.Blind)
+	serverLabels["blind"] = strconv.Itoa(class.Blind)
 
 	alloc := &allocationv1.GameServerAllocation{
 		ObjectMeta: v1.ObjectMeta{
@@ -56,7 +56,7 @@ func (m *Manager) NewLobby(classIndex int) (string, error) {
 	allocationResponse, err := gsa.GameServerAllocations("royalafg-poker").Create(alloc)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	ip := allocationResponse.Status.Address
@@ -66,16 +66,19 @@ func (m *Manager) NewLobby(classIndex int) (string, error) {
 	err = m.rdg.Set(context.Background(), id, addr, 0).Err()
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return addr, nil
+	return &TicketRequestResult{
+		Address: addr,
+		LobbyId: id,
+	}, nil
 }
 
 const idLength = 7
 const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-//newID generates a new ID for a new Lobby. Lobby ID are composed of letters for easy share.
+//newID generates a new ID for a new RoundId. RoundId ID are composed of letters for easy share.
 func newID() string {
 	rand.Seed(time.Now().UnixNano())
 	sb := strings.Builder{}

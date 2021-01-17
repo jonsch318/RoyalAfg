@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func (m *Manager) Connect(id string) (string, error) {
+func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 
 	addr, err := m.rdg.Get(context.Background(), id).Result()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	running := false
@@ -20,11 +20,11 @@ func (m *Manager) Connect(id string) (string, error) {
 
 	if err != nil || !running {
 		m.rdg.Del(context.Background(), id)
-		return "", fmt.Errorf("error during ping: %s", err)
+		return nil, fmt.Errorf("error during ping: %s", err)
 	}
 
 	//GameServer pointed by addr is healthy
-	return addr, err
+	return &TicketRequestResult{Address: addr, LobbyId: id}, err
 }
 
 type HealthPingResponse struct {

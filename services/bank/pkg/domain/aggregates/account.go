@@ -3,6 +3,7 @@ package aggregates
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
@@ -29,19 +30,22 @@ func (a *Account) Create() error {
 	return nil
 }
 
-func (a *Account) Deposit(amount int) error {
+func (a *Account) Deposit(amount int, gameId, roundId string, time time.Time) error {
 	if amount <= 0 {
 		return errors.New("the amount has to be greater than 0")
 	}
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Deposited{
-		ID: a.AggregateID(),
-		Amount: amount,
+		ID:      a.AggregateID(),
+		Amount:  amount,
+		GameId:  gameId,
+		RoundId: roundId,
+		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
 
 	return nil
 }
 
-func (a *Account) Withdraw(amount int) error {
+func (a *Account) Withdraw(amount int, gameId, roundId string, time time.Time) error {
 
 
 	if amount <= 0 {
@@ -53,8 +57,11 @@ func (a *Account) Withdraw(amount int) error {
 	}
 
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Withdrawn{
-		ID: a.AggregateID(),
-		Amount: amount,
+		ID:      a.AggregateID(),
+		Amount:  amount,
+		GameId:  gameId,
+		RoundId: roundId,
+		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
 
 	return nil

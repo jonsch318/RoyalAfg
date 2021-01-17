@@ -35,7 +35,7 @@ func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 				AggregateType: accountName,
 			}
 		}
-		if err:= item.Deposit(cmd.Amount); err != nil {
+		if err:= item.Deposit(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
 			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
 		}
 
@@ -48,7 +48,7 @@ func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 				AggregateType: accountName,
 			}
 		}
-		if err:= item.Withdraw(cmd.Amount); err != nil {
+		if err:= item.Withdraw(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
 			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
 		}
 
