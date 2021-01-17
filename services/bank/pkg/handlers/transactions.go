@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
@@ -44,7 +45,12 @@ func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Deposit{Amount: dto.Amount}))
+	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Deposit{
+		Amount:  dto.Amount,
+		GameId:  "",
+		RoundId: "",
+		Time:    time.Now(),
+	}))
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
@@ -61,7 +67,12 @@ func (h Account) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Withdraw{Amount: dto.Amount}))
+	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Withdraw{
+		Amount:  dto.Amount,
+		GameId:  "",
+		RoundId: "",
+		Time:    time.Now(),
+	}))
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return

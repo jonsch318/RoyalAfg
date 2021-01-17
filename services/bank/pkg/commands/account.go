@@ -1,20 +1,26 @@
 package commands
 
+import (
+	"time"
+)
+
 type CreateBankAccount struct {
 }
 
 type Deposit struct {
 	Amount int
 	//Identification of Game
-	GameID string
+	GameId string
 	//Identification in which round
-	RoundID string
+	RoundId string
+	Time    time.Time
 }
 
 type Withdraw struct {
 	Amount int
 	//Identification of Game
-	GameID string
+	GameId string
 	//Identification in which round
-	RoundID string
+	RoundId string
+	Time    time.Time
 }

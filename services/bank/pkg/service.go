@@ -1,13 +1,13 @@
 package pkg
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"os"
+	"os/signal"
 
-	jwtMW "github.com/auth0/go-jwt-middleware"
-	"github.com/form3tech-oss/jwt-go"
 	goes "github.com/jetbasrawi/go.geteventstore"
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	metricsMW "github.com/slok/go-http-metrics/middleware"
@@ -19,13 +19,13 @@ import (
 	ycq "github.com/jetbasrawi/go.cqrs"
 	"go.uber.org/zap"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )
 
@@ -72,37 +72,32 @@ func Start(logger *zap.SugaredLogger) {
 	}
 
 	//TODO: bank message consume.
+	bankConsumer, err := rabbit.NewBankConsumer(logger, eventBus, dispatcher)
 
 	//TODO: grpc bank client.
 
 
-	jwtMiddleware := jwtMW.New(jwtMW.Options{
-		Extractor:           jwtMW.FromFirst(mw.ExtractFromCookie, jwtMW.FromAuthHeader),
-		ValidationKeyGetter: mw.GetKeyGetter(viper.GetString(config.JwtSigningKey)),
-		SigningMethod:       jwt.SigningMethodHS256,
-		Debug:               true,
-	})
+
+
+
+
+	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
+	r := mux.NewRouter()
+	gr := r.Methods(http.MethodGet).Subrouter()
+	pr := r.Methods(http.MethodPost).Subrouter()
+
+	gr.Handle("/api/bank/balance", mw.RequireAuth(accountHandler.QueryBalance)).Queries("userId", "")
+	gr.Handle("/api/bank/history", mw.RequireAuth(accountHandler.QueryHistory)).Queries("userId", "", "i", "{i:[0-9]+}")
+	pr.HandleFunc("/api/bank/create", accountHandler.Create)
+	pr.Handle("/api/bank/deposit", mw.RequireAuth(accountHandler.Deposit))
+	pr.Handle("/api/bank/withdraw", mw.RequireAuth(accountHandler.Withdraw))
+
+	gr.HandleFunc("/api/bank/verifyAmount", accountHandler.VerifyAmount).Queries("userId", "", "amount", "{i:[0-9]+}")
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service: "bankHTTP",
 	})
-
-
-	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
-
-
-	r := mux.NewRouter()
-	gr := r.Methods(http.MethodGet).Subrouter()
-	pr := r.Methods(http.MethodPost).Subrouter()
-
-	gr.Handle("/api/bank/balance", requireAuth(jwtMiddleware, accountHandler.QueryBalance)).Queries("userId", "")
-	gr.Handle("/api/bank/history", requireAuth(jwtMiddleware, accountHandler.QueryHistory)).Queries("userId", "", "i", "{i:[0-9]+}")
-	pr.HandleFunc("/api/bank/create", accountHandler.Create)
-	pr.Handle("/api/bank/deposit", requireAuth(jwtMiddleware, accountHandler.Deposit))
-	pr.Handle("/api/bank/withdraw", requireAuth(jwtMiddleware, accountHandler.Withdraw))
-
-
 	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 	n.UseHandler(r)
 
@@ -112,11 +107,34 @@ func Start(logger *zap.SugaredLogger) {
 		Handler: n,
 	}
 
-	utils.StartGracefully(logger, server, time.Second * 10)
-}
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			logger.Fatalw("Http server counld not listen and serve", "error", err)
+		}
+	}()
+	logger.Warnf("Http server Listening on address %v", server.Addr)
 
-func requireAuth(mw *jwtMW.JWTMiddleware, f func(http.ResponseWriter, *http.Request)) http.Handler {
-	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
-	nAuth.UseHandlerFunc(f)
-	return nAuth
+
+	go func() {
+		if err := bankConsumer.Start(); err != nil {
+			logger.Fatalw("Error during Consuming", "error", err)
+		}
+	}()
+
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+
+	bankConsumer.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration(config.GracefulShutdownTimeout))
+	defer cancel()
+	err = server.Shutdown(ctx)
+
+	if err != nil {
+		logger.Fatalw("Http server encountered an error while shutting down", "error", err)
+	}
+
+	logger.Warn("Http server shutting down")
 }
