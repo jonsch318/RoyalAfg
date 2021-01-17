@@ -39,21 +39,23 @@ type Lobby struct {
 }
 
 //NewLobby creates a new lobby object
-func NewLobby(min, max, smallBlind int, lobbyID string, sdk *sdk.SDK) *Lobby {
-	b := bank.NewBank()
+func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
 	return &Lobby{
-		LobbyID:     lobbyID,
 		Players:     make([]models.Player, 0),
 		ToBeRemoved: make([]int, 0),
 		PlayerQueue: make([]*models.Player, 0),
-		Bank:        b,
+		Bank:        bank,
 		dealer:      -1,
-		round:       round.NewHand(b, smallBlind),
 		c:           make(chan bool, 1),
-		MinBuyIn:    min,
-		MaxBuyIn:    max,
 		sdk:         sdk,
 	}
+}
+
+func (l *Lobby) RegisterLobbyValue(min, max, blind int)  {
+	l.MinBuyIn = min
+	l.MaxBuyIn = max
+	l.SmallBlind = blind
+	l.round = round.NewHand(l.Bank, blind)
 }
 
 //TotalPlayerCount returns the total player count in queue and already joined
@@ -200,7 +202,7 @@ func (l *Lobby) RemoveAfterGame() {
 
 		}
 	}
-	log.Printf("Updated Playerlist in Lobby: %v", l.Players)
+	log.Printf("Updated Playerlist in RoundId: %v", l.Players)
 
 	log.Printf("Check if player count is 0")
 	if len(l.Players) < 1 {

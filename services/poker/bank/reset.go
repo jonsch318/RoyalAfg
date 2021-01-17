@@ -15,6 +15,8 @@ func (b *Bank) ConcludeRound(winners []string) int {
 
 	for _, n := range winners {
 		b.PlayerWallet[n] += share
+
+		b.AddWinEvent(n, share)
 		log.Printf("User [%v] wins share %d", n, share)
 	}
 

@@ -8,11 +8,7 @@ import (
 )
 
 type JoinEvent struct {
-	Username   string `json:"username" mapstructure:"username"`
-	ID         string `json:"id" mapstructure:"id"`
-	BuyIn      int    `json:"buyin" mapstructure:"buyin"`
-	LobbyID    string `json:"lobbyID" mapstructure:"lobbyId"`
-	BuyInClass int    `json:"buyInClass" mapstructure:"buyInClass"`
+	Token string `json:"token"`
 }
 
 func ToJoinEvent(raw *models.Event) (*JoinEvent, error) {

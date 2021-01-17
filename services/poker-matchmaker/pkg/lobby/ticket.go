@@ -2,16 +2,21 @@ package lobby
 
 import "errors"
 
+type TicketRequestResult struct {
+	Address string
+	LobbyId string
+}
+
 //RequestTicket requests a ticket of a available game server from the manger.
-func (m *Manager) RequestTicket(class int) (string, error) {
+func (m *Manager) RequestTicket(class int) (*TicketRequestResult, error) {
 	if class < 0 || class >= len(m.classes) {
-		return "", errors.New("must be a valid class")
+		return nil, errors.New("must be a valid class")
 	}
 
 	res, err := m.SearchWithClass(class)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if res == nil {
@@ -20,10 +25,9 @@ func (m *Manager) RequestTicket(class int) (string, error) {
 	}
 
 	for i := len(res); i >= 0; i-- {
-		addr := ""
-		addr, err = m.Connect(res[i].LobbyID)
+		res, err := m.Connect(res[i].LobbyID)
 		if err == nil {
-			return addr, nil
+			return res, nil
 		}
 	}
 

@@ -2,6 +2,9 @@ package bank
 
 import (
 	"sync"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
 )
 
 //Bank  handles the bets and wallets of players.
@@ -11,6 +14,9 @@ type Bank struct {
 	PlayerBets   map[string]int
 	Pot          int
 	MaxBet       int
+	eventBus *rabbit.RabbitMessageBroker
+	eventQueue []bank.Command
+	LobbyId string
 }
 
 //NewBank creates a new bank to handle the bets and wallets of players.
@@ -18,7 +24,12 @@ func NewBank() *Bank {
 	return &Bank{
 		PlayerWallet: make(map[string]int),
 		PlayerBets:   make(map[string]int),
+		eventQueue: make([]bank.Command, 0),
 	}
+}
+
+func (b *Bank) RegisterLobby(lobbyId string) {
+	b.LobbyId = lobbyId
 }
 
 //GetMaxBet returns the highest bet in the current round
