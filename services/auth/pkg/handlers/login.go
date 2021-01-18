@@ -17,7 +17,7 @@ func Validate(dto *dto.LoginDto) error {
 }
 
 // Login authenticates the user and generates a cookie remember this .
-// swagger:route POST /account/login authentication loginUser
+// swagger:route POST /api/auth/login authentication loginUser
 //
 // Login to a user account
 //
@@ -29,6 +29,9 @@ func Validate(dto *dto.LoginDto) error {
 //
 // 	Produces:
 //	-	application/json
+//
+//	Security:
+//	-	api_key
 //
 //	Schemes: http, https
 //

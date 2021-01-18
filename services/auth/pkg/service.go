@@ -80,12 +80,13 @@ func Start() {
 	postRouter := r.Methods(http.MethodPost).Subrouter()
 	getRouter := r.Methods(http.MethodGet).Subrouter()
 
-	postRouter.HandleFunc("/account/register", authHandler.Register)
-	postRouter.HandleFunc("/account/login", authHandler.Login)
+	postRouter.HandleFunc("/api/auth/register", authHandler.Register)
+	postRouter.HandleFunc("/api/auth/login", authHandler.Login)
 
 	//Required Authenticated Request
-	postRouter.Handle("/account/logout", requireAuth(jwtMiddleware, authHandler.Logout))
-	getRouter.Handle("/account/verify", requireAuth(jwtMiddleware, authHandler.VerifyLoggedIn))
+	postRouter.Handle("/api/auth/logout", mw.RequireAuth(authHandler.Logout))
+	getRouter.Handle("/api/auth/verify", mw.RequireAuth(authHandler.VerifyLoggedIn))
+	getRouter.HandleFunc("/api/auth/session", authHandler.Session)
 
 	//Exposes metrics to prometheus
 	getRouter.Handle("/metrics", promhttp.Handler())
@@ -107,10 +108,4 @@ func Start() {
 	}
 
 	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulTimeout))
-}
-
-func requireAuth(mw *jwtMW.JWTMiddleware, f func(http.ResponseWriter, *http.Request)) http.Handler {
-	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
-	nAuth.UseHandlerFunc(f)
-	return nAuth
 }

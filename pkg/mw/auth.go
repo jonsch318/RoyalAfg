@@ -16,7 +16,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 )
 
-const IdentityCookieKey = "Identity"
+const IdentityCookieKey = "RYL_Session"
 
 type KeyJWTClaims struct{}
 type KeyUserId struct{}
@@ -46,7 +46,7 @@ type UserClaims struct {
 func FromUserTokenContext(user interface{}) *UserClaims {
 	return &UserClaims{
 		Username: user.(*jwt.Token).Claims.(jwt.MapClaims)["username"].(string),
-		ID:       user.(*jwt.Token).Claims.(jwt.MapClaims)["id"].(string),
+		ID:       user.(*jwt.Token).Claims.(jwt.MapClaims)["sub"].(string),
 	}
 }
 
