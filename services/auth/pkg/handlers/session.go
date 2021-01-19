@@ -7,10 +7,10 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
@@ -32,24 +32,28 @@ import (
 //	401: ErrorResponse
 //	200: UserResponse
 func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(viper.GetString(config.IdentityCookieKey))
+	cookie, err := r.Cookie(viper.GetString(config.SessionCookieName))
 	if err != nil || cookie.Value == "" {
+		h.l.Errorw("Cookie Extraction", "error", err, "cookieName" )
 		responses.Unauthorized(rw)
 		return
 	}
 
+	h.l.Errorf("Signing Key %s", viper.GetString(config.JWTSigningKey))
 	parsed, token, err := services.ExtendToken(cookie.Value)
 
 	if err != nil {
-		switch _ := err.(type) {
+		switch e := err.(type) {
 		case *errors.InvalidTokenError:
 			cookie = services.GenerateCookie("", false)
 			cookie.Expires = time.Unix(0,0)
 			http.SetCookie(rw, cookie)
+			h.l.Errorw("Error token invalid", "error", err, "wrapped", e.Err)
 			responses.Error(rw, "token could not be parsed. This removes the session", http.StatusUnauthorized)
 			http.Error(rw,"token could not be parsed", http.StatusUnauthorized)
 			return
 		default:
+			h.l.Errorw("Error token parsing", "error", err)
 			responses.Unauthorized(rw)
 			return
 		}
@@ -61,10 +65,7 @@ func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(rw, cookie)
 	rw.WriteHeader(http.StatusOK)
-	err = ToJSON(dto.UserDTO{
-		ID:        user.ID,
-		Username:  user.Username,
-	}, rw)
+	err = ToJSON(dtos.SessionResponse{User: &dtos.SessionUser{Username: user.Username, Name: user.Name, Id: user.ID}}, rw)
 
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)

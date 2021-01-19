@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/slok/go-http-metrics/metrics/prometheus"
-	metricsMW"github.com/slok/go-http-metrics/middleware"
+	metricsMW "github.com/slok/go-http-metrics/middleware"
+	"go.uber.org/zap"
 
+	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
 
-	jwtMW "github.com/auth0/go-jwt-middleware"
-	"github.com/form3tech-oss/jwt-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/negroni"
 
@@ -20,7 +20,6 @@ import (
 
 	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
@@ -28,16 +27,12 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+
+	"github.com/rs/cors"
 )
 
 // Start starts the account service
-func Start() {
-	logger := log.NewLogger()
-	logger.Warn("Application started. Router will be configured next")
-	defer logger.Warn("Application shut down")
-	defer logger.Desugar().Sync()
-
-	config.ConfigureDefaults()
+func Start(logger *zap.SugaredLogger) {
 
 	r := mux.NewRouter()
 
@@ -57,12 +52,6 @@ func Start() {
 
 
 	//Middleware config
-	jwtMiddleware := jwtMW.New(jwtMW.Options{
-		Extractor:           jwtMW.FromFirst(mw.ExtractFromCookie, jwtMW.FromAuthHeader),
-		ValidationKeyGetter: mw.GetKeyGetter(viper.GetString(config.JwtSigningKey)),
-		SigningMethod:       jwt.SigningMethodHS256,
-		Debug:               true,
-	})
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder:               prometheus.NewRecorder(prometheus.Config{	}),
@@ -91,13 +80,21 @@ func Start() {
 	//Exposes metrics to prometheus
 	getRouter.Handle("/metrics", promhttp.Handler())
 
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	cors := cors.New(cors.Options{
+		AllowedOrigins:         []string{"http://localhost:3000"},
+		AllowCredentials:       true,
+		Debug:                  false,
+	})
+
+	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
 	n.UseHandler(r)
 
 	logger.Debug("Setup Routes")
 
 	// SERVER SETUP
-	port := viper.GetString(config.Port)
+	port := viper.GetString(gConfig.HTTPPort)
+
+	logger.Warnf("HTTP Port set to %v",port)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
@@ -107,5 +104,5 @@ func Start() {
 		Handler:      n,
 	}
 
-	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulTimeout))
+	utils.StartGracefully(logger, srv, viper.GetDuration(gConfig.GracefulShutdownTimeout))
 }

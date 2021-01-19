@@ -12,7 +12,7 @@ import (
 
 func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger) {
 	configFile := ""
-	flag.StringVar(&configFile, "serviceConfig", "", fmt.Sprintf("serviceConfig file (default is /etc/royalafg-%v/serviceConfig.yaml", serviceName))
+	flag.StringVar(&configFile, "config", "", fmt.Sprintf("config file (default is /etc/royalafg-%v/config.yaml", serviceName))
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
@@ -43,5 +43,7 @@ func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger) {
 	}
 
 	logger.Infow("Parsed serviceConfig file", "file", viper.ConfigFileUsed())
+
+	RegisterDefaults()
 
 }

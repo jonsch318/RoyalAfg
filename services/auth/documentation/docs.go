@@ -1,6 +1,7 @@
 package documentation
 
 import (
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
 )
@@ -51,4 +52,13 @@ type loginUserParamsWrapper struct {
 	// in: body
 	// required: true
 	Body handlers.LoginUser
+}
+
+// swagger:parameters sessionUser
+type sessionUser struct {
+
+	// Credentials verify
+	// in: body
+	// required: true
+	Body dtos.SessionUser
 }

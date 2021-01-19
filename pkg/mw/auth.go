@@ -12,8 +12,8 @@ import (
 	"github.com/urfave/negroni"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 )
 
 const IdentityCookieKey = "RYL_Session"
@@ -39,6 +39,7 @@ func (err InvalidTokenError) Error() string {
 type UserClaims struct {
 	Username string
 	ID string
+	Name string
 }
 
 //FromUserTokenContext creates a claims list of a user from a given jwt token given by the mw.
@@ -47,6 +48,7 @@ func FromUserTokenContext(user interface{}) *UserClaims {
 	return &UserClaims{
 		Username: user.(*jwt.Token).Claims.(jwt.MapClaims)["username"].(string),
 		ID:       user.(*jwt.Token).Claims.(jwt.MapClaims)["sub"].(string),
+		Name: user.(*jwt.Token).Claims.(jwt.MapClaims)["name"].(string),
 	}
 }
 
@@ -70,14 +72,15 @@ func GetJWTMW() *jwtMW.JWTMiddleware {
 		ValidationKeyGetter: GetKeyGetter(viper.GetString(config.JWTSigningKey)),
 		UserProperty:        "user",
 		Extractor:           jwtMW.FromFirst(ExtractFromCookie, jwtMW.FromAuthHeader),
-		Debug:               !viper.GetBool(config.Prod),
+		Debug:               true,
+		EnableAuthOnOptions: true,
 		SigningMethod:       jwt.SigningMethodHS256,
 	})
 }
 
-//ExtractFromCookie extracts a jwt from the identtiy Cookie
+//ExtractFromCookie extracts a jwt from the session Cookie
 func ExtractFromCookie(r *http.Request) (string, error) {
-	cookie, err := r.Cookie(IdentityCookieKey)
+	cookie, err := r.Cookie(viper.GetString(config.SessionCookieName))
 	if err != nil {
 		return "", &UnauthorizedError{Err: err}
 	}

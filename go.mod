@@ -18,10 +18,8 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
 	github.com/go-redis/redis/v8 v8.4.4
-	github.com/go-swagger/go-swagger v0.25.0 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.1
-	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/websocket v1.4.2
@@ -30,12 +28,12 @@ require (
 	github.com/jetbasrawi/go.geteventstore.testfeed v0.0.0-20160808110805-4e3be493c211 // indirect
 	github.com/justinas/alice v1.2.0
 	github.com/klauspost/compress v1.10.10 // indirect
-	github.com/kr/pretty v0.2.1 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/prometheus/client_golang v1.9.0
+	github.com/rs/cors v1.7.0
 	github.com/slok/go-http-metrics v0.9.0
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -49,9 +47,11 @@ require (
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/mod v0.4.1 // indirect
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.0.0-20210115202250-e0d201561e39 // indirect
+	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 // indirect
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.25.0

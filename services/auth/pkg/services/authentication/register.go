@@ -20,7 +20,7 @@ func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error)
 		return nil, "", err
 	}
 
-	token, err := services.GenerateBearerToken(user)
+	token, err := services.GetJwt(user)
 
 	return user, token, err
 }

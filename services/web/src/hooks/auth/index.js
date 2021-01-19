@@ -4,9 +4,13 @@
 import { createContext, createElement, useContext, useEffect, useState } from "react";
 
 const __AUTH = {
-    baseUrl: process.env.API_URL || process.env.VERCEL_URL,
-    basePath: "/api/auth/",
+    baseUrl: "http://localhost:8080",
+    basePath: "/api/auth",
     session: undefined,
+    clientMaxAge: 0, // 0 == disabled (only use cache); 60 == sync if last checked > 60 seconds ago
+    _clientLastSync: 0, // used for timestamp since last synced (in seconds)
+    _clientSyncTimer: null, // stores timer for poll interval
+    _clientSession: undefined, // stores last session response from hook,
     // Used to store to function export by getSession() hook
     _getSession: () => {}
 };
@@ -16,9 +20,14 @@ export const getSession = async ({ req, ctx } = {}) => {
         req = ctx.req;
     }
 
-    const options = req ? { headers: { cookie: req.headers.cookie } } : {};
     try {
-        const res = await fetch(`${_apiBaseUrl()}/session`, options);
+        const res = await fetch(`${_apiBaseUrl()}/session`, {
+            credentials: "include",
+            headers: req?.headers.cookie,
+            method: "get",
+            mode: "cors"
+        });
+        if (!res.ok) throw res.statusCode;
         return await res.json();
     } catch (error) {
         console.log("error during fetch", `${_apiBaseUrl()}/session`, error);
@@ -34,6 +43,7 @@ export const useSession = (session) => {
     return value === undefined ? _useSessionHook(session) : value;
 };
 
+// Internal hook for getting session from the api.
 const _useSessionHook = (session) => {
     const [data, setData] = useState(session);
     const [loading, setLoading] = useState(true);
@@ -41,20 +51,33 @@ const _useSessionHook = (session) => {
     useEffect(() => {
         const _getSession = async () => {
             try {
-                if (__AUTH.session === undefined) {
+                const clientMaxAge = __AUTH.clientMaxAge;
+                const clientLastSync = parseInt(__AUTH._clientLastSync);
+                const currentTime = Math.floor(new Date().getTime() / 1000);
+                const clientSession = __AUTH.session;
+
+                if (clientSession !== undefined && clientMaxAge > 0 && currentTime < clientLastSync + clientMaxAge) {
+                    return;
+                }
+
+                if (clientSession !== undefined && clientMaxAge === 0) {
+                    return;
+                }
+
+                if (clientSession === undefined) {
                     __AUTH.session = null;
                 }
 
+                __AUTH._clientLastSync = Math.floor(new Date().getTime() / 1000);
+
                 const newClientSessionData = await getSession();
 
-                // Save session state internally, just so we can track that we've checked
-                // if a session exists at least once.
                 __AUTH.session = newClientSessionData;
 
                 setData(newClientSessionData);
                 setLoading(false);
             } catch (error) {
-                console.log("error during session", error);
+                console.log("session error", error);
             }
         };
 
@@ -65,32 +88,33 @@ const _useSessionHook = (session) => {
     return [data, loading];
 };
 
-export const signIn = async (provider, args = {}) => {
+export const signIn = async (args = {}) => {
+    console.log("signin: ", args);
     const options = {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/json"
         },
-        body: _encodedForm({
-            ...args,
-            json: true
-        })
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify({ ...args })
     };
-    await fetch(`${_apiBaseUrl()}/login`, options);
+
+    return _fetch(`${_apiBaseUrl()}/login`, options);
 };
 
 export const signOut = async () => {
     const options = {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/json"
         },
-        body: _encodedForm({
-            json: true
-        })
+        credentials: "include",
+        mode: "cors",
+        body: {}
     };
 
-    await fetch(`${_apiBaseUrl()}/signout`, options);
+    return _fetch(`${_apiBaseUrl()}/logout`, options);
 };
 
 // eslint-disable-next-line react/prop-types
@@ -98,16 +122,9 @@ export const Provider = ({ children, session }) => {
     return createElement(SessionContext.Provider, { value: useSession(session) }, children);
 };
 
-const _encodedForm = (formData) => {
-    return Object.keys(formData)
-        .map((key) => {
-            return encodeURIComponent(key) + "=" + encodeURIComponent(formData[key]);
-        })
-        .join("&");
-};
-
 const _apiBaseUrl = () => {
-    if (typeof window === "undefined") {
+    return "http://localhost:8080/api/auth";
+    /*    if (typeof window === "undefined") {
         if (!process.env.API_URL) {
             console.log("API_URL", "API_URL environment variable not set");
         }
@@ -117,6 +134,17 @@ const _apiBaseUrl = () => {
     } else {
         // Return relative path when called client side
         return __AUTH.basePath;
+    }*/
+};
+
+const _fetch = async (url, options) => {
+    try {
+        await fetch(url, options);
+        window.location = "/";
+        return Promise.resolve();
+    } catch (error) {
+        console.log("error during fetch", url, error);
+        return Promise.reject(error);
     }
 };
 
