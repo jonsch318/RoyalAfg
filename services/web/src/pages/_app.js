@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Provider } from "next-auth/client";
 import { IntlProvider } from "react-intl";
+import { Provider } from "../hooks/auth";
 import "../../styles/globals.css";
 import "../../styles/tailwind.css";
 

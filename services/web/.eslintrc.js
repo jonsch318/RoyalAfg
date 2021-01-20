@@ -4,7 +4,8 @@ module.exports = {
         ecmaVersion: 2020, // Use the latest ecmascript standard
         sourceType: "module", // Allows using import/export statements
         ecmaFeatures: {
-            jsx: true // Enable JSX since we're using React
+            jsx: true, // Enable JSX since we're using React
+            modules: true
         }
     },
     settings: {
@@ -13,6 +14,7 @@ module.exports = {
         }
     },
     env: {
+        es6: true,
         browser: true, // Enables browser globals like window and document
         amd: true, // Enables require() and define() as global variables as per the amd spec.
         node: true // Enables Node.js global variables and Node.js scoping.

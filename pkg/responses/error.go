@@ -34,3 +34,11 @@ func JSONError(w http.ResponseWriter, err interface{}, code int) {
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(err)
 }
+
+func Error(rw http.ResponseWriter, err string, code int){
+	JSONError(rw, &ErrorResponse{Error: err}, code)
+}
+
+func Unauthorized(rw http.ResponseWriter){
+	JSONError(rw, &ErrorResponse{Error: "unauthorized"}, http.StatusUnauthorized)
+}

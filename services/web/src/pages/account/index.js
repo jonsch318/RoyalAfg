@@ -1,10 +1,10 @@
 import React from "react";
 import Layout from "../../components/layout";
-import { useSession } from "next-auth/client";
 import Front from "../../components/layout/front";
 import ActionMenu from "../../components/actionMenu";
 import ActionMenuLink from "../../components/actionMenu/link";
 import { useRouter } from "next/router";
+import { useSession } from "../../hooks/auth";
 
 const Account = () => {
     const [session, loading] = useSession();

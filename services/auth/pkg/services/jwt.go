@@ -2,37 +2,44 @@ package services
 
 import (
 	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
-	"github.com/form3tech-oss/jwt-go"
-	"github.com/spf13/viper"
 	"net/http"
 	"time"
+
+	"github.com/form3tech-oss/jwt-go"
+	"github.com/google/uuid"
+	"github.com/spf13/viper"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
 
 func GenerateCookie(token string, persistent bool) *http.Cookie {
 	cookie := &http.Cookie{
-		Name:     viper.GetString(config.CookieName),
+		Name:     viper.GetString(config.SessionCookieName),
 		Value:    token,
 		HttpOnly: true,
 		Path:     "/",
 	}
 
-	if persistent {
-		cookie.Expires = viper.GetTime(config.CookieExpires)
+	if !persistent {
+		cookie.Expires = getExpiration(config.SessionCookieExpiration)
 	}
 
 	return cookie
 }
 
 func GetJwt(user *models.User) (string, error) {
-	signingKey := []byte(viper.GetString(config.JwtSigningKey))
-	claims := jwt.StandardClaims{
-		Subject:   user.ID.Hex(),
-		Issuer:    viper.GetString(config.JwtIssuer),
-		Audience:  []string{"github.com/JohnnyS318/RoyalAfgInGo.games"},
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: viper.GetInt64(config.JwtExpiresAt),
+	signingKey := []byte(viper.GetString(config.JWTSigningKey))
+
+	claims := jwt.MapClaims{
+		"sub": user.ID,
+		"iss": viper.GetString(config.JWTIssuer),
+		"aud": []string{"royalafg.games", "localhost:3000"},
+		"exp": time.Now().Add(viper.GetDuration(config.JWTExpiresAt)),
+		"jti": uuid.New().String(),
+		"username": user.Username,
+		"name": user.FullName,
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -54,4 +61,23 @@ func GenerateBearerToken(user *models.User) (string, error) {
 	}
 
 	return fmt.Sprintf("Bearer %v", token), nil
+}
+
+func ExtendToken(val string) (*jwt.Token, string, error) {
+	token, err := jwt.Parse(val, mw.GetKeyGetter(viper.GetString(config.JWTSigningKey)))
+
+	if err != nil || !token.Valid {
+		return nil, "", err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["exp"] = getExpiration(config.JWTExpiresAt)
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := at.SignedString([]byte(viper.GetString(config.JWTSigningKey)))
+	return token, tokenString, err
+}
+
+func getExpiration(key string) time.Time {
+	return time.Now().Add(viper.GetDuration(config.JWTExpiresAt))
 }

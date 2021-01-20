@@ -24,7 +24,7 @@ func main() {
 	defer log.CleanLogger()
 
 	//configuration
-	//serviceConfig.ReadStandardConfig("search", logger)
+	//config.ReadStandardConfig("search", logger)
 
 	//Gorilla Routing
 	r := mux.NewRouter()

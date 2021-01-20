@@ -1,21 +1,18 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/layout";
-import { signIn } from "next-auth/client";
+import { signIn } from "../../hooks/auth";
 
 const Login = () => {
-    const { register, handleSubmit, watch, errors } = useForm();
-    const onSubmit = (data) => {
-        console.log("Cred: ", data);
-        signIn("credentials", { username: data.username, password: data.password });
+    const { register, handleSubmit, errors } = useForm();
+    const onSubmit = async (data) => {
+        await signIn({ username: data.username, password: data.password });
     };
-
-    console.log(watch("username"));
 
     return (
         <Layout disableFooter>
-            <div className="w-full md:h-screen flex items-center justify-center md:absolute md:inset-0">
-                <div className="bg-gray-300 md:rounded-md shadow-md">
+            <div className="w-full md:h-screen grid items-center justify-center mt-24 md:mt-0 md:absolute md:inset-0">
+                <div className="bg-gray-200 md:rounded-md shadow-md">
                     <div className="heading mx-16 my-8">
                         <h1 className="text-center font-sans font-semibold text-3xl">Sign into your Account</h1>
                     </div>

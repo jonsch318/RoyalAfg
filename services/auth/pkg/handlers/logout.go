@@ -34,11 +34,10 @@ import (
 func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
-	id := r.Context().Value(mw.KeyUserId{}).(string)
-
+	user := mw.FromUserTokenContext(r.Context().Value("user"))
 	cookie := services.GenerateCookie("", false)
 
-	err := h.Auth.Logout(id)
+	err := h.Auth.Logout(user.ID)
 
 	if err != nil {
 		h.l.Errorw("error during logout process", "error", err)
@@ -50,7 +49,7 @@ func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(rw, cookie)
 
-	h.l.Debugw("logged out user", "sub", id)
+	h.l.Debugw("logged out user", "id", user.ID)
 
 	rw.WriteHeader(http.StatusOK)
 	err = ToJSON(&noContentResponse{}, rw)

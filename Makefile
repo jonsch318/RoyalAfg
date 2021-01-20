@@ -2,7 +2,7 @@ check_swagger_install:
 	which swagger || go get -u github.com/go-swagger/go-swagger/cmd/swagger
 
 swagger: check_swagger_install
-	swagger generate spec -o ./pkg/docs/swagger.yaml --scan-models
+	swagger generate spec -o ./services/docs/swagger.yaml --scan-models
 
 update_go_deps: 
 	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies

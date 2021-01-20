@@ -3,58 +3,11 @@ consumes:
 - application/json
 - application/x-www-form-urlencoded
 definitions:
-  ErrorResponse:
-    description: ErrorResponse is a generic response containing an error
-    properties:
-      error:
-        description: The error
-        type: string
-        x-go-name: Error
-    type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses
-  LoginUser:
-    description: LoginUser defines the object for the api login request
-    properties:
-      password:
-        type: string
-        x-go-name: Password
-      rememberme:
-        type: boolean
-        x-go-name: RememberMe
-      username:
-        type: string
-        x-go-name: Username
-    type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
-  RegisterUser:
-    description: RegisterUser defines the dto for the user account registration
-    properties:
-      birthdate:
-        format: int64
-        type: integer
-        x-go-name: Birthdate
-      email:
-        type: string
-        x-go-name: Email
-      fullName:
-        type: string
-        x-go-name: FullName
-      password:
-        type: string
-        x-go-name: Password
-      rememberme:
-        type: boolean
-        x-go-name: RememberMe
-      username:
-        type: string
-        x-go-name: Username
-    type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
   UserDTO:
     description: UserDTO is the data transfer object of the internal user object
     properties:
       birthdate:
-        description: The unix bithdate of the user
+        description: The unix birthdate of the user
         format: int64
         type: integer
         x-go-name: Birthdate
@@ -98,17 +51,7 @@ definitions:
     - fullName
     - birthdate
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/auth/pkg/auth/handlers
-  ValidationError:
-    description: Each form property that has missing requirements is listet under Errors (validationErrors)
-    properties:
-      validationErrors:
-        description: The missing requirements
-        type: object
-        x-go-name: Errors
-    title: ValidationError shows the failed validation requirements.
-    type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/shared/pkg/responses
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto
 host: github.com/JohnnyS318/RoyalAfgInGo.games
 info:
   contact:
@@ -144,43 +87,6 @@ paths:
       - api_key: []
       tags:
       - account
-  /account/login:
-    post:
-      consumes:
-      - application/json
-      - application/x-www-form-urlencoded
-      description: After matching credentials, this will generate a jwt and pass it on as a cookie
-      operationId: loginUser
-      parameters:
-      - description: Credentials verify the user
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/LoginUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          $ref: '#/responses/UserResponse'
-        "400":
-          $ref: '#/responses/ErrorResponse'
-        "401":
-          $ref: '#/responses/ErrorResponse'
-        "404":
-          $ref: '#/responses/ErrorResponse'
-        "422":
-          $ref: '#/responses/ValidationErrorResponse'
-        "500":
-          $ref: '#/responses/ErrorResponse'
-        default:
-          $ref: '#/responses/ErrorResponse'
-      schemes:
-      - http
-      - https
-      summary: Login to a user account
-      tags:
-      - authentication
   /account/logout:
     post:
       description: This will remove the identity cookie
@@ -208,13 +114,6 @@ paths:
       - application/json
       description: This will register a new user with the provided details
       operationId: registerUser
-      parameters:
-      - description: User to register and save
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/RegisterUser'
       produces:
       - application/json
       responses:
@@ -236,7 +135,8 @@ paths:
       - authentication
   /account/verify:
     get:
-      description: This will return either status code 401 Unauthorized if user is not signed in and 200 when the login token is valid
+      description: This will return either status code 401 Unauthorized if user is
+        not signed in and 200 when the login token is valid
       operationId: verifyLoggedIn
       produces:
       - application/json
@@ -254,25 +154,57 @@ paths:
       tags:
       - authentication
       - account
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      - application/x-www-form-urlencoded
+      description: After matching credentials, this will generate a jwt and pass it
+        on as a cookie
+      operationId: loginUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/UserResponse'
+        "400":
+          $ref: '#/responses/ErrorResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        "404":
+          $ref: '#/responses/ErrorResponse'
+        "422":
+          $ref: '#/responses/ValidationErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      summary: Login to a user account
+      tags:
+      - authentication
+  /api/auth/session:
+    get:
+      description: After verification the extended jwt will be passed as a cookie
+        and the user id and username will be returned
+      operationId: session
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/UserResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      summary: Session verifies the session and extends the jwt token if valid.
 produces:
 - application/json
-responses:
-  ErrorResponse:
-    description: ErrorResponse is a generic error response
-    schema:
-      $ref: '#/definitions/ErrorResponse'
-  NoContentResponse:
-    description: NoContentResponse is an empty object with no content
-  UserResponse:
-    description: UserResponse represents a user
-    schema:
-      $ref: '#/definitions/UserDTO'
-  ValidationErrorResponse:
-    description: |-
-      ValidationError shows the failed validation requirements.
-      Each form field that has missing requirements is listet under validationErrors
-    schema:
-      $ref: '#/definitions/ValidationError'
 schemes:
 - http
 - https

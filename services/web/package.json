@@ -13,7 +13,6 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.30",
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
         "@fortawesome/react-fontawesome": "^0.1.11",
-
         "dinero.js": "^1.8.1",
         "eslint": "^7.16.0",
         "eslint-config-prettier": "^7.1.0",
@@ -24,7 +23,6 @@
         "formik": "^2.2.6",
         "moment": "^2.29.1",
         "next": "^10.0.5",
-        "next-auth": "^3.1.0",
         "next-i18next": "^6.0.3",
         "normalize.css": "^8.0.1",
         "pixi.js": "^5.3.6",
@@ -53,6 +51,5 @@
         "autoprefixer": "^10.2.1",
         "postcss-preset-env": "^6.7.0",
         "tailwindcss": "^2.0.2"
-
     }
 }

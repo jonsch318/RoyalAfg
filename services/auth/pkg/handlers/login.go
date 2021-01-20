@@ -1,15 +1,17 @@
 package handlers
 
 import (
+	"net/http"
+
+	"github.com/go-ozzo/ozzo-validation"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
-	"github.com/go-ozzo/ozzo-validation"
-	"net/http"
 )
 
 // Validate validates the LoginDto dto to conform to the api's expectation
-func Validate(dto *dto.LoginDto) error {
+func Validate(dto dto.LoginDto) error {
 	return validation.ValidateStruct(&dto,
 		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
 		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
@@ -17,7 +19,7 @@ func Validate(dto *dto.LoginDto) error {
 }
 
 // Login authenticates the user and generates a cookie remember this .
-// swagger:route POST /account/login authentication loginUser
+// swagger:route POST /api/auth/login authentication loginUser
 //
 // Login to a user account
 //
@@ -29,6 +31,9 @@ func Validate(dto *dto.LoginDto) error {
 //
 // 	Produces:
 //	-	application/json
+//
+//	Security:
+//	-	api_key
 //
 //	Schemes: http, https
 //
@@ -76,7 +81,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate dto
-	err := Validate(loginDto)
+	err := Validate(*loginDto)
 	if err != nil {
 		h.l.Errorw("Validation login dto", "error", err)
 		responses.JSONError(rw, &responses.ValidationError{Errors: err}, http.StatusUnprocessableEntity)
