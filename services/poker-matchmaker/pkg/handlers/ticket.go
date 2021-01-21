@@ -21,7 +21,7 @@ import (
 //TicketResponse is the successful response of a ticket request
 type TicketResponse struct {
 	Address string `json:"address"`
-	Token string `json:"token"`
+	Token   string `json:"token"`
 }
 
 //GetTicketWithParams requests a ticket with lobby params
@@ -54,7 +54,7 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId,buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
+	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
 
 	json.NewEncoder(rw).Encode(&TicketResponse{Address: res.Address, Token: token})
 
@@ -71,10 +71,10 @@ func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
+	/* if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
 		http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
 		return
-	}
+	} */
 
 	id, ok := vars["id"]
 	if !ok || id == "" {
@@ -98,7 +98,7 @@ func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
 //VerifyBuyIn verifies the buy in amount against the user wallet using the bank service
 func VerifyBuyIn(userId string, buyIn int) error {
 	client := &http.Client{
-		Timeout:       25 * time.Second,
+		Timeout: 25 * time.Second,
 	}
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://%s/api/bank/verifyAmount", viper.GetString(serviceConfig.BankServiceUrl)), nil)
 

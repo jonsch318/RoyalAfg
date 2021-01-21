@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis:5.0.4
+    command:
+      - redis-server
+      - "/redis-master/redis.conf"
+    env:
+    - name: MASTER
+      value: "true"
+    ports:
+    - containerPort: 6379
+    resources:
+      limits:
+        cpu: "0.1"
+        memory: "150m"
+    volumeMounts:
+    - mountPath: /redis-master-data
+      name: data
+    - mountPath: /redis-master
+      name: config
+  volumes:
+    - name: data
+      emptyDir: {}
+    - name: config
+      configMap:
+        name: example-redis-config
+        items:
+        - key: redis-config
+          path: redis.conf
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-poker-matchmaker
+data:
+  config.yaml: |
+  jwt_signing_key: "testsecret"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  rules:
+    - host: royalafg.games
+      http:
+          paths:
+            - path: "/api/poker"
+              backend:
+                service:
+                  name: royalafg-poker-matchmaker
+                  port:
+                    number: 80
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  selector:
+    app: royalafg-poker-matchmaker
+  ports:
+  - port: 80
+    targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: royalafg-poker-matchmaker
+  template:
+    metadata:
+      labels:
+        app: royalafg-poker-matchmaker
+    spec:
+      containers:
+      - name: royalafg-poker-matchmaker
+        image: docker.io/johnnys318/royalafg-poker-matchmaker:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        ports:
+          - protocol: TCP
+            containerPort: 8080 
+        volumeMounts:
+          - mountPath: "/etc/royalafg-poker"
+            name: royalafg-poker-matchmaker-config
+      volumes:
+        - name: royalafg-poker-matchmaker-config
+          configMap:
+              name: royalafg-poker
+

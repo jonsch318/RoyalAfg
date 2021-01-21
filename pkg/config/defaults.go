@@ -23,7 +23,7 @@ func RegisterDefaults() {
 
 	viper.SetDefault(HTTPPort, 8080)
 
-	viper.SetDefault(JWTIssuer, "github.com/JohnnyS318/RoyalAfgInGo.games")
+	viper.SetDefault(JWTIssuer, "royalafg.games")
 	viper.SetDefault(JWTExpiresAt, time.Hour*24*7)
 
 	viper.SetDefault(SessionCookieName, "royalafg.session")

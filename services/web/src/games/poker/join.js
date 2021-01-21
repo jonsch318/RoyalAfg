@@ -61,14 +61,6 @@ const Join = ({ onJoin, lobbyId, buyInClass, minBuyIn, maxBuyIn }) => {
                 className="flex justify-center items-center mx-auto my-5 bg-blue-600 w-screen px-1 py-2 rounded shadow-lg"
                 style={{ width: "fit-content" }}>
                 <input
-                    className="mx-4 p-1 pl-3 rounded outline-none"
-                    name="username"
-                    id="username"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
                     className="mx-4 p-1 pl-3 text-white rounded outline-none bg-yellow-500 fill-current stroke-current"
                     name="buyIn"
                     type="range"

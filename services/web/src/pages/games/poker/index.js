@@ -3,8 +3,6 @@ import Layout from "../../../components/layout";
 import Join from "../../../games/poker/join";
 import Lobbies from "../../../games/poker/lobbies";
 import { useRouter } from "next/router";
-import Actions from "../../../games/poker/actions";
-
 const Poker = () => {
     const router = useRouter();
 
@@ -16,8 +14,6 @@ const Poker = () => {
                 pathname: "/games/poker/play",
                 query: {
                     lobbyId: params.lobbyId,
-                    id: params.id,
-                    username: params.username,
                     buyInClass: params.buyInClass,
                     buyIn: params.buyin
                 }

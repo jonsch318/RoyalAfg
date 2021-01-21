@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"agones.dev/agones/pkg/client/clientset/versioned"
@@ -21,6 +22,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/serviceconfig"
 )
 
 func main() {
@@ -30,11 +32,12 @@ func main() {
 	defer log.CleanLogger()
 
 	//configuration
-	//serviceConfig.ReadStandardConfig("search", logger)
+	config.ReadStandardConfig("search", logger)
+	serviceconfig.RegisterDefaults()
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
+		Addr:     viper.GetString(serviceconfig.ReddisUrl),
+		Password: viper.GetString(serviceconfig.ReddisCred),
 		DB:       0,
 	})
 
@@ -50,24 +53,21 @@ func main() {
 	manager := lobby.NewManager(agonesClient, classes)
 	ticketHandler := handlers.NewTicket(logger, rdb, agonesClient, manager)
 
-
-
 	r := mux.NewRouter()
 	r.Handle("/api/poker/ticket", mw.RequireAuth(ticketHandler.GetTicketWithParams)).Methods(http.MethodGet).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
 	r.Handle("/api/poker/ticket/{id}", mw.RequireAuth(ticketHandler.GetTicketWithID)).Methods(http.MethodGet).Queries("buyIn", "{buyIn:[0-9]+}")
 	r.Handle("/metrics", promhttp.Handler())
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
-		Recorder: prometheus.NewRecorder(prometheus.Config{
-		}),
-		Service:                "PokerMatchMaker",
+		Recorder: prometheus.NewRecorder(prometheus.Config{}),
+		Service:  "PokerMatchMaker",
 	})
 	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 	n.UseHandler(r)
 
 	// Start Application
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%v", viper.GetInt(config.HTTPPort)),
 		Handler: n,
 	}
 

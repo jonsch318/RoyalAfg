@@ -34,23 +34,22 @@ import (
 func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(viper.GetString(config.SessionCookieName))
 	if err != nil || cookie.Value == "" {
-		h.l.Errorw("Cookie Extraction", "error", err, "cookieName" )
+		h.l.Errorw("Cookie Extraction", "error", err, "cookieName")
 		responses.Unauthorized(rw)
 		return
 	}
 
-	h.l.Errorf("Signing Key %s", viper.GetString(config.JWTSigningKey))
 	parsed, token, err := services.ExtendToken(cookie.Value)
 
 	if err != nil {
 		switch e := err.(type) {
 		case *errors.InvalidTokenError:
 			cookie = services.GenerateCookie("", false)
-			cookie.Expires = time.Unix(0,0)
+			cookie.Expires = time.Unix(0, 0)
 			http.SetCookie(rw, cookie)
 			h.l.Errorw("Error token invalid", "error", err, "wrapped", e.Err)
 			responses.Error(rw, "token could not be parsed. This removes the session", http.StatusUnauthorized)
-			http.Error(rw,"token could not be parsed", http.StatusUnauthorized)
+			http.Error(rw, "token could not be parsed", http.StatusUnauthorized)
 			return
 		default:
 			h.l.Errorw("Error token parsing", "error", err)

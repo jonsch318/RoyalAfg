@@ -58,9 +58,9 @@ spec:
       serviceAccountName: royalafg-auth
       containers:
         - name: royalafg-auth
-          image: docker.io/johnnys318/royalafg-auth:latest
+          image: localhost:5000/royalafg_auth:latest
           resources:
-            requests:
+              requests:
               memory: 10Mi
               cpu: 100m
           ports:
@@ -76,6 +76,6 @@ spec:
             - name: royalafg-auth-serviceConfig
               mountPath: "/etc/royalafg-auth"
       volumes:
-        - name: royalafg-auth-serviceConfig
+        - name: royalafg-auth-config
           configMap:
             name: royalafg-auth
