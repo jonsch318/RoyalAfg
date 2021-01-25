@@ -11,7 +11,8 @@ import (
 
 	allocationv1 "agones.dev/agones/pkg/apis/allocation/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 )
 
 //NewLobby allocates a new GameServer for a new RoundId
@@ -32,16 +33,17 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	serverLabels["min-buy-in"] = strconv.Itoa(class.Min)
 	serverLabels["max-buy-in"] = strconv.Itoa(class.Max)
 	serverLabels["blind"] = strconv.Itoa(class.Blind)
+	serverLabels["class-index"] = strconv.Itoa(classIndex)
 
 	alloc := &allocationv1.GameServerAllocation{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      id,
-			Namespace: "royalafg-poker",
+			Namespace: "default",
 		},
 		Spec: allocationv1.GameServerAllocationSpec{
 			Required: v1.LabelSelector{
 				MatchLabels: map[string]string{
-					"game": "royalafg-poker",
+					"game": "poker",
 				},
 				MatchExpressions: nil,
 			},
@@ -50,13 +52,18 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 				Labels:      serverLabels,
 				Annotations: nil,
 			},
-		},
-	}
+		}}
 
-	allocationResponse, err := gsa.GameServerAllocations("royalafg-poker").Create(alloc)
+	allocationResponse, err := gsa.GameServerAllocations("default").Create(alloc)
+
+	m.logger.Warnw("Allocation", "error", err, "response", allocationResponse)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if allocationResponse.Status.GameServerName == "" || len(allocationResponse.Status.Ports) <= 0 {
+		return nil, errors.New("No new server can be allocated")
 	}
 
 	ip := allocationResponse.Status.Address
@@ -68,6 +75,13 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
+		LobbyID: id,
+		Class:   &m.classes[classIndex],
+		ClassIndex: classIndex,
+		PlayerCount: 0,
+	})
 
 	return &TicketRequestResult{
 		Address: addr,
