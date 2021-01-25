@@ -64,5 +64,6 @@ bazel-RoyalAfgInGo
 bazel-testlogs
 minikube
 .env
+.env.local
 /.env
 /.env.local
