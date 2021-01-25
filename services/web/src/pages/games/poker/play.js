@@ -8,6 +8,7 @@ import { Game } from "../../../games/poker/connection/socket.js";
 
 import "../poker.module.css";
 import { useRouter } from "next/router";
+import { usePokerTicketRequest } from "../../../hooks/games/poker/connect";
 
 const View = dynamic(import("../../../games/poker/view"), { ssr: false });
 
@@ -16,30 +17,27 @@ const Play = () => {
     const [joined, setJoined] = useState(false);
     const [actions, setActions] = useState({});
     const router = useRouter();
-    const { lobbyId, id, username, buyInClass, buyIn } = router.query;
+    const { id, buyInClass, buyIn } = router.query;
 
     useEffect(() => {
-        let gameState = new GameState();
-        gameState.setOnPossibleActions((actions) => {
-            setActions(actions);
-        });
-        let game = new Game(
-            gameState,
-            {
-                lobbyId: lobbyId,
-                id: id,
-                username: username,
-                buyin: parseInt(buyIn),
-                buyInClass: parseInt(buyInClass)
-            },
-            () => {
+        usePokerTicketRequest({ id: id, class: buyInClass, buyIn: buyIn }).then((ticket) => {
+            console.log("Ticket: ", ticket);
+            if (!ticket.address || !ticket.token) {
                 router.push("/games/poker").then();
             }
-        );
-        game.start();
-        console.log("Starting");
-        setGame(game);
-        setJoined(true);
+
+            let gameState = new GameState();
+            gameState.setOnPossibleActions((actions) => {
+                setActions(actions);
+            });
+            let game = new Game(gameState, ticket, () => {
+                router.push("/games/poker").then();
+            });
+            game.start();
+            console.log("Starting");
+            setGame(game);
+            setJoined(true);
+        });
     }, []);
 
     return (
