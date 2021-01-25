@@ -2,12 +2,12 @@ package serviceconfig
 
 import "github.com/spf13/viper"
 
-const ReddisUrl = "reddis_url"
-const ReddisCred = "reddis_credentials"
+const RedisUrl = "redis_url"
+const RedisCred = "redis_credentials"
 
 const BankServiceUrl = "bank_service_url"
 
 func RegisterDefaults() {
-	viper.SetDefault(ReddisUrl, "localhost:6379")
-	viper.SetDefault(ReddisCred, "")
+	viper.SetDefault(RedisUrl, "localhost:6379")
+	viper.SetDefault(RedisCred, "")
 }

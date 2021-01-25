@@ -4,7 +4,7 @@
 import { createContext, createElement, useContext, useEffect, useState } from "react";
 
 const __AUTH = {
-    baseUrl: "http://localhost:8080",
+    baseUrl: process.env.NEXT_PUBLIC_AUTH_HOST,
     basePath: "/api/auth",
     session: undefined,
     clientMaxAge: 0, // 0 == disabled (only use cache); 60 == sync if last checked > 60 seconds ago
@@ -89,6 +89,7 @@ const _useSessionHook = (session) => {
 };
 
 export const signIn = async (args = {}) => {
+    console.log("LOGIN: ", `${_apiBaseUrl()}/login`);
     console.log("signin: ", args);
     const options = {
         method: "POST",
@@ -99,7 +100,6 @@ export const signIn = async (args = {}) => {
         mode: "cors",
         body: JSON.stringify({ ...args })
     };
-
     return _fetch(`${_apiBaseUrl()}/login`, options);
 };
 
@@ -123,24 +123,12 @@ export const Provider = ({ children, session }) => {
 };
 
 const _apiBaseUrl = () => {
-    return "http://localhost:8080/api/auth";
-    /*    if (typeof window === "undefined") {
-        if (!process.env.API_URL) {
-            console.log("API_URL", "API_URL environment variable not set");
-        }
-
-        // Return absolute path when called server side
-        return `${__AUTH.baseUrl}${__AUTH.basePath}`;
-    } else {
-        // Return relative path when called client side
-        return __AUTH.basePath;
-    }*/
+    return `${process.env.NEXT_PUBLIC_AUTH_HOST}/api/auth`;
 };
 
 const _fetch = async (url, options) => {
     try {
         await fetch(url, options);
-        window.location = "/";
         return Promise.resolve();
     } catch (error) {
         console.log("error during fetch", url, error);

@@ -13,11 +13,10 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",
-        "//services/auth/config",
         "//services/auth/pkg/dto",
         "//services/auth/pkg/interfaces",
         "//services/auth/pkg/security",
         "//services/auth/pkg/services",
-        "@com_github_spf13_viper//:go_default_library",
+        "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
     ],
 )

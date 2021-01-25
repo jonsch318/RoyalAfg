@@ -1,38 +1,47 @@
 apiVersion: v1
-kind: Pod
+kind: Service
 metadata:
   name: redis
 spec:
-  containers:
-  - name: redis
-    image: redis:5.0.4
-    command:
-      - redis-server
-      - "/redis-master/redis.conf"
-    env:
-    - name: MASTER
-      value: "true"
-    ports:
-    - containerPort: 6379
-    resources:
-      limits:
-        cpu: "0.1"
-        memory: "150m"
-    volumeMounts:
-    - mountPath: /redis-master-data
-      name: data
-    - mountPath: /redis-master
-      name: config
-  volumes:
-    - name: data
-      emptyDir: {}
-    - name: config
-      configMap:
-        name: example-redis-config
-        items:
-        - key: redis-config
-          path: redis.conf
-
+  type: ClusterIP
+  selector:
+    app: redis
+    role: master
+    tier: backend
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: client
+---
+apiVersion: apps/v1  # API version
+kind: Deployment
+metadata:
+  name: redis-master # Unique name for the deployment
+  labels:
+    app: redis       # Labels to be applied to this deployment
+spec:
+  selector:
+    matchLabels:     # This deployment applies to the Pods matching these labels
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1        # Run a single pod in the deployment
+  template:          # Template for the pods that will be created by this deployment
+    metadata:
+      labels:        # Labels to be applied to the Pods in this deployment
+        app: redis
+        role: master
+        tier: backend
+    spec:            # Spec for the container which will be run inside the Pod.
+      containers:
+      - name: master
+        image: redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -40,7 +49,9 @@ metadata:
   name: royalafg-poker-matchmaker
 data:
   config.yaml: |
-  jwt_signing_key: "testsecret"
+    jwt_signing_key: testsecret
+    redis_url: redis.default.svc.cluster.local:6379
+    matchmaker_signing_key: pokertest
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -52,6 +63,7 @@ spec:
       http:
           paths:
             - path: "/api/poker"
+              pathType: Exact
               backend:
                 service:
                   name: royalafg-poker-matchmaker
@@ -64,12 +76,29 @@ kind: Service
 metadata:
   name: royalafg-poker-matchmaker
 spec:
+  type: ClusterIP
   selector:
     app: royalafg-poker-matchmaker
   ports:
-  - port: 80
+  - port: 8081
     targetPort: 8080
-
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: 
+  name: royalafg-poker-matchmaker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: royalafg-poker-matchmaker-access
+subjects:
+  - kind: User
+    name: system:serviceaccount:default:royalafg-poker-matchmaker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones-allocator
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,9 +114,10 @@ spec:
       labels:
         app: royalafg-poker-matchmaker
     spec:
+      serviceAccountName: royalafg-poker-matchmaker
       containers:
       - name: royalafg-poker-matchmaker
-        image: docker.io/johnnys318/royalafg-poker-matchmaker:latest
+        image: docker.io/johnnys318/royalafg_poker_match:latest
         resources:
           limits:
             memory: "128Mi"
@@ -96,10 +126,10 @@ spec:
           - protocol: TCP
             containerPort: 8080 
         volumeMounts:
-          - mountPath: "/etc/royalafg-poker"
+          - mountPath: "/etc/royalafg-poker-matchmaker"
             name: royalafg-poker-matchmaker-config
       volumes:
         - name: royalafg-poker-matchmaker-config
           configMap:
-              name: royalafg-poker
+              name: royalafg-poker-matchmaker
 

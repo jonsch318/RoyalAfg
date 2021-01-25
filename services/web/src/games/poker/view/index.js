@@ -151,7 +151,7 @@ class View extends React.Component {
 View.propTypes = {
     game: PropTypes.instanceOf(Game),
     loader: PropTypes.object,
-    router: PropTypes.oneOf([Router])
+    router: PropTypes.object
 };
 
 export default withRouter(View);

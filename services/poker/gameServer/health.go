@@ -1,22 +1,23 @@
 package gameServer
 
 import (
-	"agones.dev/agones/pkg/util/signals"
-	sdk "agones.dev/agones/sdks/go"
 	"log"
 	"os"
 	"time"
+
+	"agones.dev/agones/pkg/util/signals"
+	sdk "agones.dev/agones/sdks/go"
 )
 
-func DoSignal(){
+func DoSignal() {
 	stop := signals.NewStopChannel()
-	<- stop
+	<-stop
 	log.Println("Exit signal received. Shutting down")
 	os.Exit(0)
 }
 
-func DoHealthPing(sdk *sdk.SDK, stop <-chan struct{}){
-	tick := time.Tick(2 * time.Second)
+func DoHealthPing(sdk *sdk.SDK, stop <-chan struct{}) {
+	tick := time.Tick(15 * time.Second)
 	for {
 		log.Print("Health Ping")
 		err := sdk.Health()
@@ -27,7 +28,7 @@ func DoHealthPing(sdk *sdk.SDK, stop <-chan struct{}){
 		case <-stop:
 			log.Println("Stop health ping")
 			return
-		case <- tick:
+		case <-tick:
 		}
 	}
 }

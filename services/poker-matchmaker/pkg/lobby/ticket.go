@@ -20,15 +20,20 @@ func (m *Manager) RequestTicket(class int) (*TicketRequestResult, error) {
 	}
 
 	if res == nil {
+		m.logger.Warnw("no logger", "results", res)
 		//No lobby is found
 		return m.NewLobby(class)
 	}
 
-	for i := len(res); i >= 0; i-- {
-		res, err := m.Connect(res[i].LobbyID)
+	m.logger.Infow("Search result ranking", "results", res)
+
+	for i := len(res) - 1; i >= 0; i-- {
+		ret, err := m.Connect(res[i].LobbyID)
 		if err == nil {
-			return res, nil
+			m.logger.Infof("Connection success [%v]", res[i].LobbyID)
+			return ret, nil
 		}
+		m.logger.Errorw("Error during search connection testing", "error", err)
 	}
 
 	return m.NewLobby(class)

@@ -2,11 +2,11 @@ import { JOIN } from "../events/constants";
 import { SendCreateEvent, SendEvent } from "../events/event";
 
 class Game {
-    constructor(state, entry, onClose) {
+    constructor(state, ticket, onClose) {
         this.state = state;
-        this.credentials = entry;
+        this.ticket = ticket;
         this.onClose = onClose;
-        this.started = new Promise((resolve, reject) => {
+        this.started = new Promise((resolve) => {
             this.state.setOnGameStart(() => {
                 console.log("Resolving game start");
                 resolve();
@@ -15,7 +15,8 @@ class Game {
     }
 
     start() {
-        this.ws = new WebSocket("ws://" + window.location.hostname + ":5000/join");
+        console.log("Connect to webserver: ", `ws://${this.ticket.address}/api/poker/join`);
+        this.ws = new WebSocket(`ws://${this.ticket.address}/api/poker/join`);
         this.ws.onclose = (e) => {
             console.log("close", e);
             this.onClose();
@@ -35,11 +36,11 @@ class Game {
             }
 
             // Join event
-            this.ws.send(SendCreateEvent(JOIN, this.credentials));
+            this.ws.send(SendCreateEvent(JOIN, { token: this.ticket.token }));
         };
 
         this.ws.onerror = (e) => {
-            console.log(e)
+            console.log(e);
             this.onClose();
         };
     }

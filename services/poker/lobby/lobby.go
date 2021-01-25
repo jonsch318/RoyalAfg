@@ -5,6 +5,7 @@ import (
 
 	sdk "agones.dev/agones/sdks/go"
 
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
@@ -20,14 +21,11 @@ import (
 
 //Lobby is the Parent structure for a poker lobby it handles the player joins and removals and the game starts.
 type Lobby struct {
+	pokerModels.LobbyBase
 	lock          sync.RWMutex
-	LobbyID	string
 	Players       []models.Player
 	PublicPlayers []models.PublicPlayer `json:"players"`
 	GameStarted   bool
-	MinBuyIn      int
-	MaxBuyIn      int
-	SmallBlind    int
 	ToBeRemoved   []int
 	ToBeAdded     []*models.Player
 	PlayerQueue   []*models.Player
@@ -51,11 +49,9 @@ func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
 	}
 }
 
-func (l *Lobby) RegisterLobbyValue(min, max, blind int)  {
-	l.MinBuyIn = min
-	l.MaxBuyIn = max
-	l.SmallBlind = blind
-	l.round = round.NewHand(l.Bank, blind)
+func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int)  {
+	l.Class = class
+	l.round = round.NewHand(l.Bank, class.Blind)
 }
 
 //TotalPlayerCount returns the total player count in queue and already joined
@@ -108,7 +104,12 @@ func (l *Lobby) Join(player *models.Player) {
 
 		l.EmptyToBeAdded()
 
-		utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind))
+		utils.SendToPlayer(player, events.NewJoinSuccessEvent(
+			l.LobbyID,
+			l.PublicPlayers,
+			l.GetGameStarted(),
+			0,
+			len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.Class.Max, l.Class.Min, l.Class.Blind))
 
 		if len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) && !gameStarted {
 			l.Start()
@@ -136,6 +137,7 @@ func (l *Lobby) EmptyToBeAdded() {
 			}
 			j := len(l.Players)
 			l.Players = append(l.Players, *player)
+			l.PlayerCount++
 			l.PublicPlayers = append(l.PublicPlayers, *public)
 
 			go func() {
@@ -150,7 +152,7 @@ func (l *Lobby) EmptyToBeAdded() {
 			time.Sleep(100)
 
 			l.lock.Unlock()
-			utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind))
+			utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.Class.Max, l.Class.Min, l.Class.Blind))
 			//l.ToBeAdded[i].Out <- events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind).ToRaw()
 
 			log.Printf("Player joined lobby [%v] count: %v", l.LobbyID, len(l.Players))
@@ -197,6 +199,7 @@ func (l *Lobby) RemoveAfterGame() {
 				}
 			} else {
 				l.Players = append(l.Players[:i], l.Players[i+1:]...)
+				l.PlayerCount--
 				l.PublicPlayers = append(l.PublicPlayers[:i], l.PublicPlayers[i+1:]...)
 			}
 

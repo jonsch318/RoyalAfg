@@ -14,6 +14,7 @@ func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	m.logger.Infof("Address lookup: %v", addr)
 
 	running := false
 	running, err = m.PingHealth(addr)

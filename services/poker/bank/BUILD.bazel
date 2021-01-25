@@ -6,10 +6,15 @@ go_library(
         "allIn.go",
         "bank.go",
         "betting.go",
+        "commands.go",
         "players.go",
         "reset.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank",
     visibility = ["//visibility:public"],
-    deps = ["//services/poker/models"],
+    deps = [
+        "//pkg/bank:go_default_library",
+        "//services/poker/models",
+        "//services/poker/rabbit:go_default_library",
+    ],
 )

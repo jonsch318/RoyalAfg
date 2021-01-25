@@ -71,7 +71,7 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := jwt.Parse(joinEvent.Token, func(token *jwt.Token) (interface{}, error){
+	token, err := jwt.Parse(joinEvent.Token, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -95,9 +95,11 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-
 	player := models.NewPlayer(username, id, buyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
 	h.lby.Join(player)
+
+	if len(h.lby.Players) == 0 {
+		h.stopShutdown <- true
+	}
 }

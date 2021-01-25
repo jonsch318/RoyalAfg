@@ -46,6 +46,26 @@ module.exports = {
             }
         }
     },
-    variants: {},
+    variants: {
+        variantOrder: [
+            "first",
+            "last",
+            "odd",
+            "even",
+            "visited",
+            "checked",
+            "group-hover",
+            "group-focus",
+            "focus-within",
+            "hover",
+            "focus",
+            "focus-visible",
+            "active",
+            "disabled"
+        ],
+        extend: {
+            opacity: ["disabled"]
+        }
+    },
     plugins: [require("@tailwindcss/custom-forms")]
 };

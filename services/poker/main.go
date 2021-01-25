@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	coresdk "agones.dev/agones/pkg/sdk"
 	sdk "agones.dev/agones/sdks/go"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/urfave/negroni"
+	"golang.org/x/net/context"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
@@ -26,19 +30,13 @@ func main() {
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
-	config.ReadStandardConfig("royalafg-poker", logger)
+	config.ReadStandardConfig("poker", logger)
 
 	serviceConfig.SetDefaults()
 
 	//connect to rabbitmq to send user commands
 
 	b := bank.NewBank()
-
-
-
-
-
-
 
 	//Register stop signal
 	go gameServer.DoSignal()
@@ -57,35 +55,45 @@ func main() {
 
 	serviceConfig.SetDefaults()
 
-
-
 	lobbyInstance := lobby.NewLobby(b, s)
-	err = s.WatchGameServer(func (gs *coresdk.GameServer){
+	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
 		err := SetLobby(b, lobbyInstance, gs, s)
-		if err != nil {
-			logger.Fatalf("some information was not passed: %s", err)
+		if err == nil {
+			logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
 		}
 	})
 	if err != nil {
 		logger.Fatalf("Error during sdk annotation subscription: %s", err)
 	}
 
+	shutDownStop := make(chan interface{})
+
 	//game
-	gameHandler := handlers.NewGame(lobbyInstance, s)
+	gameHandler := handlers.NewGame(lobbyInstance, s, shutDownStop)
 
 	//gorilla router instance
 	r := mux.NewRouter()
-	r.HandleFunc("/join", gameHandler.Join).Methods(http.MethodPost)
+	r.HandleFunc("/api/poker/join", gameHandler.Join).Methods(http.MethodGet)
+	r.HandleFunc("/api/poker/health", gameHandler.Health).Methods(http.MethodGet)
 
 	recoverMW := negroni.NewRecovery()
-	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation){
+	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation) {
 		s.Shutdown()
 	}
 	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery())
 	n.UseHandler(r)
 
-	port := viper.GetString(config.Port)
-	logger.Warn(http.ListenAndServe(fmt.Sprintf(":%s", port), n).Error())
+	s.Ready()
+
+	logger.Info("SDK Ready called")
+
+	go StartShutdownTimer(shutDownStop, s)
+
+	port := viper.GetString(config.HTTPPort)
+	utils.StartGracefully(logger, &http.Server{
+		Addr:    fmt.Sprintf(":%v", port),
+		Handler: n,
+	}, viper.GetDuration(config.GracefulShutdownTimeout))
 }
 
 func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
@@ -95,25 +103,32 @@ func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, 
 		return err
 	}
 
-	var max int
-	max, err = GetFromLabels("max-buy-in", labels)
+	max, err := GetFromLabels("max-buy-in", labels)
 	if err != nil {
 		return err
 	}
 
-	var blind int
-	blind, err = GetFromLabels("blind", labels)
+	blind, err := GetFromLabels("blind", labels)
+	if err != nil {
+		return err
+	}
+
+	index, err := GetFromLabels("class-index", labels)
 	if err != nil {
 		return err
 	}
 
 	lobbyId, ok := labels["lobbyId"]
 	if !ok {
-		return errors.New("can not get the required information for the key lobbyId", )
+		return errors.New("can not get the required information for the key lobbyId")
 	}
 	b.RegisterLobby(lobbyId)
 
-	lobbyInstance.RegisterLobbyValue(min, max, blind)
+	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{
+		Min:   min,
+		Max:   max,
+		Blind: blind,
+	}, index)
 	return nil
 }
 
@@ -121,7 +136,7 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	valString, ok := labels[key]
 
 	if !ok {
-		return 0, fmt.Errorf("can not get the required information for the key [%s]", key)
+		return 0, errors.New("key needed")
 	}
 
 	val, err := strconv.Atoi(valString)
@@ -130,4 +145,15 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	}
 
 	return val, nil
+}
+
+func StartShutdownTimer(stop chan interface{}, s *sdk.SDK) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(2*time.Minute))
+	select {
+	case _ = <-stop:
+		cancel()
+		//Cancel shutdown
+	case <-ctx.Done():
+		s.Shutdown()
+	}
 }

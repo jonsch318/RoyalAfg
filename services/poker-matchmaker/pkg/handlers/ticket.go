@@ -15,7 +15,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/pokerConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticketToken"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/serviceconfig"
 )
 
 //TicketResponse is the successful response of a ticket request
@@ -41,11 +41,11 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
-		http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
-		return
-	}
-
+	/* 	if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
+	   		http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
+	   		return
+	   	}
+	*/
 	res, err := h.manager.RequestTicket(class)
 
 	if err != nil {
@@ -86,10 +86,11 @@ func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		h.logger.Errorw("error during connection", "error", err)
-		http.Error(rw, "a lobby iwth the given id is not found", http.StatusNotFound)
+		http.Error(rw, "a lobby with the given id is not found", http.StatusNotFound)
 		return
 	}
 
+	h.logger.Infof("Creating token for [%v;%v] to join lobby[%v] with %v", claims.Username, claims.ID, res.LobbyId, buyIn)
 	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
 
 	json.NewEncoder(rw).Encode(&TicketResponse{Address: res.Address, Token: token})
@@ -100,7 +101,7 @@ func VerifyBuyIn(userId string, buyIn int) error {
 	client := &http.Client{
 		Timeout: 25 * time.Second,
 	}
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://%s/api/bank/verifyAmount", viper.GetString(serviceConfig.BankServiceUrl)), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://%s/api/bank/verifyAmount", viper.GetString(serviceconfig.BankServiceUrl)), nil)
 
 	q := req.URL.Query()
 	q.Add("userId", userId)

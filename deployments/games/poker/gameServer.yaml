@@ -4,21 +4,31 @@ metadata:
   name: royalafg-poker
 data:
   config.yaml: |
-
-
+    matchmaker_signing_key: pokertest
+    http_port: 7654
+---
+apiVersion: autoscaling.agones.dev/v1
+kind: FleetAutoscaler
+metadata:
+  name: royalafg-poker-autoscaler
+spec:
+  fleetName: royalafg-poker
+  policy:
+    type: Buffer
+    buffer:
+      bufferSize: 1
+      minReplicas: 1
+      maxReplicas: 5 
 ---
 apiVersion: "agones.dev/v1"
 kind: Fleet
-Namespace: royalafg-games
-Name: royalafg-poker
 metadata:
   name: royalafg-poker
-  namespace: royalafg-games
   labels:
     name: "royalafg-poker"
     game: "poker"
 spec:
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -31,16 +41,17 @@ spec:
           containerPort: 7654
           protocol: TCP
       health:
-        initialDelaySeconds: 60
+        initialDelaySeconds: 20
         periodSeconds: 60
-      
+        failureThreshold: 10
+          
       template:
         spec:
           containers:
             - name: royalafg-poker
-              image: royalafg-poker
+              image: docker.io/johnnys318/royalafg_poker:latest
               volumeMounts:
-                - name: royalafg-poker-serviceConfig
+                - name: royalafg-poker-config
                   mountPath: "/etc/royalafg-poker"
               resources:
                 requests:
@@ -48,8 +59,9 @@ spec:
                   cpu: "20m"
                 limits:
                   memory: "64Mi"
-                  cpu: "20m"
-        volumes:
-          - name: royalafg-poker-serviceConfig
-            configMap:
-              name: royalafg-poker
+                  cpu: "20m"                       
+          volumes:
+            - name: royalafg-poker-config
+              configMap:
+                name: royalafg-poker
+        

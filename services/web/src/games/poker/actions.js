@@ -55,7 +55,7 @@ const Actions = ({ game, actions }) => {
 
 Actions.propTypes = {
     game: PropTypes.object,
-    actions: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    actions: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object])
 };
 
 export default Actions;
