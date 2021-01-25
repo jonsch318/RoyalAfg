@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "handlers",
     srcs = [
+        "health.go",
         "join.go",
         "player.go",
         "playerConn.go",
@@ -10,11 +11,15 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers",
     visibility = ["//visibility:public"],
     deps = [
+        "//services/poker-matchmaker/pkg/lobby:go_default_library",
         "//services/poker/events",
         "//services/poker/lobby",
         "//services/poker/models",
+        "//services/poker/serviceConfig:go_default_library",
         "//services/poker/utils",
+        "@com_github_form3tech_oss_jwt_go//:go_default_library",
         "@com_github_gorilla_websocket//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
         "@dev_agones_agones//sdks/go:go_default_library",
     ],
 )
