@@ -6,6 +6,6 @@ go_library(
         "class.go",
         "lobby.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/models",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models",
     visibility = ["//visibility:public"],
 )
