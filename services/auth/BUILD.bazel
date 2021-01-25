@@ -5,7 +5,12 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth",
     visibility = ["//visibility:private"],
-    deps = ["//services/auth/cmd"],
+    deps = [
+        "//pkg/config:go_default_library",
+        "//pkg/log",
+        "//services/auth/config",
+        "//services/auth/pkg",
+    ],
 )
 
 go_binary(

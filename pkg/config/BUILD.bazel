@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "constants.go",
         "defaults.go",
+        "queues.go",
         "viper.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/config",

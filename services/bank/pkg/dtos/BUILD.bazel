@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "balance.go",
+        "errors.go",
+        "history.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/bank/pkg/events:go_default_library",
+        "@com_github_jetbasrawi_go_cqrs//:go_default_library",
+    ],
+)
