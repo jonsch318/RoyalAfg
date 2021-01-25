@@ -1,2 +1,2 @@
-# RoyalAfgInGo
-Converted the RoyalAfg server into go and later into a working microservice using kubernetes
+# RoyalAfg 
+RoyalAfg is a online casino developed using react (nextjs) and go as a microservice architecture for a special learning archievement.
