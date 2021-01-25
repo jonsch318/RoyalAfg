@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: royalafg-auth
-  namespace: royalafg
 spec:
   rules:
     - host: troyalafg.games
@@ -15,13 +14,11 @@ spec:
                 name: royalafg-auth
                 port:
                   number: 80
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: royalafg-auth
-  namespace: royalafg
 spec:
   selector:
     app: royalafg-auth
@@ -35,13 +32,20 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: royalafg-auth
-  namespace: royalafg
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-auth
+data:
+  config.yaml: |
+    jwt_signing_key: testsecret
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: royalafg-auth
-  namespace: royalafg
 spec:
   replicas: 1
   selector:
@@ -54,26 +58,21 @@ spec:
         "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:8080"
       labels:
         app: royalafg-auth
+        service: auth
     spec:
       serviceAccountName: royalafg-auth
       containers:
         - name: royalafg-auth
-          image: localhost:5000/royalafg_auth:latest
+          image: docker.io/johnnys318/royalafg_auth:latest
           resources:
               requests:
-              memory: 10Mi
-              cpu: 100m
+                memory: 10Mi
+                cpu: 80m
           ports:
             - protocol: TCP
               containerPort: 8080
-          env:
-            - name: RYL_JWTSIGNINGKEY
-              valueFrom:
-                secretKeyRef:
-                  name: royalafg-auth
-                  key: jwt-signing-key
           volumeMounts:
-            - name: royalafg-auth-serviceConfig
+            - name: royalafg-auth-config
               mountPath: "/etc/royalafg-auth"
       volumes:
         - name: royalafg-auth-config
