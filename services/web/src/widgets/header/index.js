@@ -43,9 +43,7 @@ class Header extends React.Component {
                         </button>
                         <div className="logo md:ml-16 flex items-center md:h-full h-16 w-full md:w-auto justify-center md:relative absolute mt-0 mb-auto md:z-10 z-0">
                             <Link href="/">
-                                <span className="font-medium font-sans text-xl text-center cursor-pointer">
-                                    Royalafg
-                                </span>
+                                <span className="font-medium font-sans text-xl text-center cursor-pointer">RoyalAfg</span>
                             </Link>
                         </div>
                         {this.state.width <= 768 && !this.state.isOpen ? (

@@ -2,18 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: royalafg-auth
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: troyalafg.games
-      http:
+    - http:
         paths:
-          - path: /account
+          - path: /api/auth
             pathType: Prefix
             backend:
               service:
                 name: royalafg-auth
                 port:
-                  number: 80
+                  number: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -24,7 +25,7 @@ spec:
     app: royalafg-auth
   ports:
     - name: web
-      port: 80
+      port: 8080
       targetPort: 8080
 
 ---
@@ -55,7 +56,6 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:8080"
       labels:
         app: royalafg-auth
         service: auth
