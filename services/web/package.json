@@ -50,6 +50,7 @@
         "@tailwindcss/custom-forms": "^0.2.1",
         "autoprefixer": "^10.2.1",
         "postcss-preset-env": "^6.7.0",
+        "purgecss": "^4.0.0",
         "tailwindcss": "^2.0.2"
     }
 }

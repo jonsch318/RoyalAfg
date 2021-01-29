@@ -1,19 +1,32 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: royalafg-auth
 spec:
-  rules:
-    - host: troyalafg.games
-      http:
-        paths:
-          - path: /account
-            pathType: Prefix
-            backend:
-              service:
-                name: royalafg-auth
-                port:
-                  number: 80
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/auth`)
+      kind: Rule
+      services:
+        - name: royalafg-auth
+          port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-authtls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/api/auth`)
+      kind: Rule
+      services:
+        - name: royalafg-auth
+          port: 8080
+  tls:
+    certResolver: myresolver
 ---
 apiVersion: v1
 kind: Service
@@ -24,7 +37,7 @@ spec:
     app: royalafg-auth
   ports:
     - name: web
-      port: 80
+      port: 8080
       targetPort: 8080
 
 ---
@@ -55,7 +68,6 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:8080"
       labels:
         app: royalafg-auth
         service: auth

@@ -1,11 +1,11 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
+    purge: ["./src/**/*.html", "./src/**/*.jsx", "./src/**/*.js"],
     future: {
         removeDeprecatedGapUtilities: true,
         purgeLayersByDefault: true
     },
-    purge: [],
     theme: {
         fontFamily: { sans: ["Poppins", "sans-serif"] },
         colors: {
