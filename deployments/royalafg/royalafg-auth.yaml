@@ -1,20 +1,32 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: royalafg-auth
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  rules:
-    - http:
-        paths:
-          - path: /api/auth
-            pathType: Prefix
-            backend:
-              service:
-                name: royalafg-auth
-                port:
-                  number: 8080
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/auth`)
+      kind: Rule
+      services:
+        - name: royalafg-auth
+          port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-authtls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/api/auth`)
+      kind: Rule
+      services:
+        - name: royalafg-auth
+          port: 8080
+  tls:
+    certResolver: myresolver
 ---
 apiVersion: v1
 kind: Service

@@ -67,6 +67,12 @@ This will create the Docker image with the tag of `royalafg_auth`. Run `docker r
 I publish each service as a docker container in my [docker hub page](https://hub.docker.com/u/johnnys318). This is used by the deployment scripts aswell.
 
 
+To deploy the application please refer to the [DEPLOY.md](https://github.com/JohnnyS318/RoyalAfg/tree/master/deployments/DEPLOY.md) under /deployments
+
+### The following script is not ready yet.
+
+</br>
+
 To deploy the application on linux simply run
 	
 	make deploy
