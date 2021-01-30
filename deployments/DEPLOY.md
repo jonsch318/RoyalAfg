@@ -34,9 +34,7 @@ Finally run
 To update the local repo.
 
 ## 3: Configure Vault and create Cluster CA
-At first the Vault service will be installed which will be configured to serve as a certificate authority for the server to enable secure TLS and mTLS communication. 
-
-### Installation and Unsealing of Vault
+At first the Vault Secret Service get installed which will be configured to serve as a certificate authority for the server to enable secure TLS and mTLS communication. 
 
 ```bash
 helm install vault hashicorp/vault
@@ -66,4 +64,97 @@ Now login to vault using the `root_token` value from `init-keys.json`.
 
 Vault is now initialized and ready for configuration.
 
-### Login
+### Configure PKI secret engine
+Start an interactive shell session in the `vault-0` pod
+```bash
+kubectl exec --stdin=true --tty=true vault-0 -- /bin/sh
+---
+/ $
+```
+with the new prompt enable the pki secret engine
+
+```bash
+vault secrets enable pki
+---
+Success! Enabled the pki secret engine at: pki/
+```
+
+Next configure the max lease time for certificates to 1 year 8760h.
+
+```bash
+vault secrets tune -max-lease-ttl=8760h pki
+---
+Success! Tuned the secrets engine at: /pki
+```
+
+Now generate the root key pairs for the certificate authority and configure the pki secret engine to the vault service.
+
+```bash
+vault write pki/root/generate/internal \ 
+	common_name=example.com \ 
+	ttl=8760h
+```
+
+```bash
+vault write pki/config/urls \
+	issuing_certificates="http://vault.default:8200/v1/pki/ca" \
+	crl_distribution_points="http://vault.default:8200/v1/pki/crl"
+```
+Then create a `royalafg-dot-games` role that enables the create of certificates of `royalafg.games` domain with any subdomains.
+
+```bash
+vault write pki/roles/royalafg-dot-games \ 
+	allowed_domains=royalafg.games \ 
+	allow_subdomains=true \ 
+	max_ttl=72h
+```
+Then finally create a policy for the pki engine.
+
+```bash
+vault policy write pki - <<EOF 
+path "pki*" { capabilities = ["read", "list"] } 
+path "pki/roles/royalafg-dot-games" { capabilities = ["create", "update"] } 
+path "pki/sign/royalafg-dot-games" { capabilities = ["create", "update"] } 
+path "pki/issue/royalafg-dot-games" { capabilities = ["create"] } 
+EOF
+```
+
+### Configure Vault Kubernetes authentication
+To access and authenticate to the vault service use the Kubernetes authentication method of vault that will use Service Account Tokens to authenticate a service. 
+
+Use the interactive shell from before, or create a new session
+```bash
+kubectl exec --stdin=true --tty=true vault-0 -- /bin/sh
+```
+Enable the kubernetes auth method
+```bash
+vault auth enable kubernetes
+```
+and configure it.
+```bash
+vault write auth/kubernetes/config \ 
+	token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \ 
+	kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \ 
+	kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+```
+ Finally create a auth role that binds the pki policy.
+```bash
+vault write auth/kubernetes/role/issuer \ 
+	bound_service_account_names=issuer \ 
+	bound_service_account_namespaces=default \ 
+	policies=pki \ 
+	ttl=20m
+```
+Then exit the shell session
+```bash
+exit
+```
+## Installation of Cert-Manager
+To install the cert-manager run:
+```bash
+helm install \
+  cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --version v1.1.0 \
+  --set installCRDs=true
+```
