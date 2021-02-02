@@ -9,8 +9,6 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/user"
 )
 
 var cfgFile string
@@ -22,7 +20,6 @@ var rootCmd = &cobra.Command{
 	Long:  `The user service is all about the user. It includes registration, signin, authentication`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Starting the user service... \n Logging will be initialized in a bit.")
-		user.Start()
 	},
 }
 
