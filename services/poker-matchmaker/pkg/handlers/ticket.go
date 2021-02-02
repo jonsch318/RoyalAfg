@@ -31,21 +31,26 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 
 	class, err := strconv.Atoi(vals.Get("class"))
 	if err != nil {
+		h.logger.Errorw("Invalid Class", "error", err)
 		http.Error(rw, "Either a valid class or a lobby class has to be given", http.StatusBadRequest)
 		return
 	}
 
 	buyIn, err := strconv.Atoi(vals.Get("buyIn"))
 	if err != nil {
+		h.logger.Errorw("Invalid BuyIn", "error", err)
 		http.Error(rw, "the buyIn has to be valid", http.StatusBadRequest)
 		return
 	}
 
-	/* 	if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
-	   		http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
-	   		return
-	   	}
-	*/
+	if viper.GetBool("include_bank_service_validation") {
+		if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
+			h.logger.Errorw("Error during bank service validation", "error", err)
+			http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
+			return
+		}
+	}
+
 	res, err := h.manager.RequestTicket(class)
 
 	if err != nil {
@@ -54,10 +59,10 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.logger.Infow("Generate Ticket", "username", claims.Username, "id", claims.ID, "lobbyId", res.LobbyId, "buyIn", buyIn )
 	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
 
 	json.NewEncoder(rw).Encode(&TicketResponse{Address: res.Address, Token: token})
-
 }
 
 //GetTicketWithID requests a ticket with lobby id
@@ -67,14 +72,18 @@ func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
 
 	buyIn, err := strconv.Atoi(r.URL.Query().Get("buyIn"))
 	if err != nil {
+		h.logger.Errorw("Invalid BuyIn", "error", err)
 		http.Error(rw, "the buyIn has to be valid", http.StatusBadRequest)
 		return
 	}
 
-	/* if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
-		http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
-		return
-	} */
+	if viper.GetBool("include_bank_service_validation") {
+		if err = VerifyBuyIn(claims.ID, buyIn); err != nil {
+			h.logger.Errorw("Error during bank service validation", "error", err)
+			http.Error(rw, "the buyIn has to be lower that the users wallet", http.StatusUnprocessableEntity)
+			return
+		}
+	}
 
 	id, ok := vars["id"]
 	if !ok || id == "" {

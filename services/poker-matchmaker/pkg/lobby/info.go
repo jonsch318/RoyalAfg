@@ -1,6 +1,11 @@
 package lobby
 
 import (
+	"fmt"
+	"strconv"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 )
 
@@ -33,26 +38,72 @@ func (m *Manager) GetRegisteredLobbiesOfClass(index, count, class int) []models.
 }
 
 func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
-	if len(m.lobbies) <= 0 {
+
+	if m.classes == nil {
+		m.logger.Errorf("No registered classes")
 		return nil
 	}
 
-	classCount := count / len(m.classes)
+	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+		TypeMeta:            metav1.TypeMeta{
+			Kind:       "agones.dev/v1",
+			APIVersion: "GameServer",
+		},
+		LabelSelector:       fmt.Sprintf("game=poker"),
+		Watch:               false,
+		AllowWatchBookmarks: false,
+		Limit: int64(count),
+	})
 
-	//This would be extended with filter parameters and maybe divided into multiple services
-	filtered := make([][]models.LobbyBase, len(m.classes))
-	for i, lobby := range m.lobbies {
-
-		//resize array once not for every lobby
-		filtered[i] = make([]models.LobbyBase, classCount)
-
-		for j := 0; j < classCount; j++ {
-			if j >= len(lobby) {
-				break
-			}
-			filtered[i][j] = lobby[j]
-		}
+	if err != nil  {
+		return nil
 	}
 
-	return filtered
+	lobbies := make([][]models.LobbyBase, len(m.classes))
+	for _, gs := range list.Items {
+		players, err := strconv.Atoi(gs.Labels["players"])
+		if err != nil {
+			continue
+		}
+
+		class, err := strconv.Atoi(gs.Labels["class"])
+		if err != nil {
+			continue
+		}
+
+		if lobbies[class] == nil {
+			lobbies[class] = make([]models.LobbyBase, 0)
+		}
+		lobbies[class] = append(lobbies[class], models.LobbyBase{
+			LobbyID:     gs.Labels["lobbyId"],
+			Class:       &m.classes[class],
+			ClassIndex:  class,
+			PlayerCount: players,
+		})
+	}
+
+	//if len(m.lobbies) <= 0 {
+	//	return nil
+	//}
+	//
+	//classCount := count / len(m.classes)
+	//
+	////This would be extended with filter parameters and maybe divided into multiple services
+	//filtered := make([][]models.LobbyBase, len(m.classes))
+	//for i, lobby := range m.lobbies {
+	//
+	//	//resize array once not for every lobby
+	//	filtered[i] = make([]models.LobbyBase, classCount)
+	//
+	//	for j := 0; j < classCount; j++ {
+	//		if j >= len(lobby) {
+	//			break
+	//		}
+	//		filtered[i][j] = lobby[j]
+	//	}
+	//}
+	//
+	//return filtered
+
+	return lobbies
 }

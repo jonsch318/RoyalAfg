@@ -56,14 +56,14 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 
 	allocationResponse, err := gsa.GameServerAllocations("default").Create(alloc)
 
-	m.logger.Warnw("Allocation", "error", err, "response", allocationResponse)
+	m.logger.Warnw("Allocation", "error", err, "lobbyId", id)
 
 	if err != nil {
 		return nil, err
 	}
 
 	if allocationResponse.Status.GameServerName == "" || len(allocationResponse.Status.Ports) <= 0 {
-		return nil, errors.New("No new server can be allocated")
+		return nil, errors.New("no new server can be allocated")
 	}
 
 	ip := allocationResponse.Status.Address

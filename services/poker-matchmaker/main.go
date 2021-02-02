@@ -47,7 +47,7 @@ func main() {
 	if err := ping(rdb); err != nil {
 		logger.Fatalw("Redis ping failed", "error", err)
 	}
-	logger.Info("Redis ping sucess")
+	logger.Info("Redis ping success")
 
 	kubeConfig, _ := rest.InClusterConfig()
 	agonesClient, _ := versioned.NewForConfig(kubeConfig)
@@ -89,7 +89,6 @@ func main() {
 	}
 
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))
-
 }
 
 func ping(client *redis.Client) error {
