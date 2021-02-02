@@ -12,19 +12,11 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/mongodata"
-
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name:  royalafg
-  namespace: mongodb
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name:  mongo
-  namespace: mongodb
 spec:
   selector:
     role: mongo
@@ -39,7 +31,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: royalafg-user-mongo
-  namespace: mongodb
 spec:
   selector:
     matchLabels:
@@ -49,6 +40,8 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
       labels:
         role: mongo
         app: royalafg-user
@@ -60,7 +53,7 @@ spec:
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: admin
-            - name: MONGO_INTIDB_ROOT_PASSWORD
+            - name: MONGO_INITDB_ROOT_PASSWORD  
               value: admin
           ports:
             - containerPort: 27017

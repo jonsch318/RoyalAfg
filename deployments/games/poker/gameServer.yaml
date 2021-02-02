@@ -6,6 +6,7 @@ data:
   config.yaml: |
     matchmaker_signing_key: pokertest
     http_port: 7654
+    rabbitmq_url: rabbitmq.service.dc1.consul
 ---
 apiVersion: autoscaling.agones.dev/v1
 kind: FleetAutoscaler
@@ -55,6 +56,17 @@ spec:
           containers:
             - name: royalafg-poker
               image: docker.io/johnnys318/royalafg_poker:latest
+              env:
+                - name: POKER_RABBITMQ_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: royalafg-rabbitmq-default-user
+                - name: POKER_RABBITMQ_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: royalafg-rabbitmq-default-user
               volumeMounts:
                 - name: royalafg-poker-config
                   mountPath: "/etc/royalafg-poker"

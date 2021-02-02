@@ -25,6 +25,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo add agones https://agones.dev/chart/stable
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm repo add elastic https://helm.elastic.co
+helm repo add eventstore https://eventstore.github.io/EventStore.Charts
 ```
 
 Finally run 

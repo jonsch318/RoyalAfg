@@ -15,6 +15,7 @@ controller:
 
 client:
   enabled: true
+  grpc: true
 
 server:
   replicas: 1

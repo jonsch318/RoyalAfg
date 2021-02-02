@@ -1,24 +1,40 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: royalafg-auth
+  name: royalafg-bank
 spec:
   entryPoints:
     - web
   routes:
-    - match: PathPrefix(`/api/auth`)
+    - match: PathPrefix(`/api/bank`)
       kind: Rule
       services:
-        - name: royalafg-auth
+        - name: royalafg-bank
           port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-banktls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/api/bank`)
+      kind: Rule
+      services:
+        - name: royalafg-bank
+          port: 8080
+  tls:
+    certResolver: myresolver
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: royalafg-auth
+  name: royalafg-bank
 spec:
   selector:
-    app: royalafg-auth
+    app: royalafg-bank
   ports:
     - name: web
       port: 8080
@@ -28,55 +44,50 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: royalafg-auth
+  name: royalafg-bank
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: royalafg-auth
+  name: royalafg-bank
 data:
   config.yaml: |
     jwt_signing_key: testsecret
-    userservice_url: localhost:5200
-    cors_enabled: false
+    eventstore_url: http://localhost:2113?tls=false
     rabbitmq_url: rabbitmq.service.dc1.consul
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: royalafg-auth
+  name: royalafg-bank
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: royalafg-auth
+      app: royalafg-bank
   template:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:5200"
+        "consul.hashicorp.com/connect-service-upstreams": "eventstore:2113"
       labels:
-        app: royalafg-auth
-        service: auth
+        app: royalafg-bank
+        service: bank
     spec:
-      serviceAccountName: royalafg-auth
+      serviceAccountName: royalafg-bank
       containers:
-        - name: royalafg-auth
-          image: docker.io/johnnys318/royalafg_auth:latest
+        - name: royalafg-bank
+          image: docker.io/johnnys318/royalafg_bank:latest
           env:
-            - name: GRPC_GO_LOG_VERBOSITY_LEVEL
-              value: "99"
-            - name: GRPC_GO_LOG_SEVERITY_LEVEL
-              value: info
-            - name: AUTH_RABBITMQ_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: password
-                  name: royalafg-rabbitmq-default-user
-            - name: AUTH_RABBITMQ_USERNAME
+            - name: BANK_RABBITMQ_USERNAME
               valueFrom:
                 secretKeyRef:
                   key: username
+                  name: royalafg-rabbitmq-default-user
+            - name: BANK_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
                   name: royalafg-rabbitmq-default-user
           resources:
               requests:
@@ -89,9 +100,9 @@ spec:
             - protocol: TCP
               containerPort: 8080
           volumeMounts:
-            - name: royalafg-auth-config
-              mountPath: "/etc/royalafg-auth"
+            - name: royalafg-bank-config
+              mountPath: "/etc/royalafg-bank"
       volumes:
-        - name: royalafg-auth-config
+        - name: royalafg-bank-config
           configMap:
-            name: royalafg-auth
+            name: royalafg-bank

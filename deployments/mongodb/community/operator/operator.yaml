@@ -9,16 +9,24 @@ spec:
       name: mongodb-kubernetes-operator
   template:
     metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
       labels:
         name: mongodb-kubernetes-operator
     spec:
       serviceAccountName: mongodb-kubernetes-operator
       containers:
         - name: mongodb-kubernetes-operator
-          image: quay.io/mongodb/mongodb-kubernetes-operator:0.2.0
+          image: quay.io/mongodb/mongodb-kubernetes-operator:0.4.0
           command:
             - mongodb-kubernetes-operator
-          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1000Mi
+            limits:
+              cpu: 1500m
+              memory: 1700Mi
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
@@ -38,10 +46,3 @@ spec:
               value: "library/mongo"
             - name: MONGODB_REPO_URL
               value: "registry.hub.docker.com"
-          resources:
-            limits:
-              cpu: 200m
-              memory: 150Mi
-            requests:
-              cpu: 50m
-              memory: 100Mi

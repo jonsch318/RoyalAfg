@@ -28,6 +28,10 @@ spec:
   replicas: 1        # Run a single pod in the deployment
   template:          # Template for the pods that will be created by this deployment
     metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service": "redis"
+        "consul.hashicorp.com/connect-service-protocol": "tcp"
       labels:        # Labels to be applied to the Pods in this deployment
         app: redis
         role: master
@@ -38,8 +42,11 @@ spec:
         image: redis
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
         ports:
         - containerPort: 6379
 ---
@@ -50,26 +57,23 @@ metadata:
 data:
   config.yaml: |
     jwt_signing_key: testsecret
-    redis_url: redis.default.svc.cluster.local:6379
+    redis_url: localhost:6379
+    bank_service_url: localhost:8000
     matchmaker_signing_key: pokertest
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
   name: royalafg-poker-matchmaker
 spec:
-  rules:
-    - host: royalafg.games
-      http:
-          paths:
-            - path: "/api/poker"
-              pathType: Exact
-              backend:
-                service:
-                  name: royalafg-poker-matchmaker
-                  port:
-                    number: 80
-            
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/poker`)
+      kind: Rule
+      services:
+        - name: royalafg-poker-matchmaker
+          port: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -80,7 +84,7 @@ spec:
   selector:
     app: royalafg-poker-matchmaker
   ports:
-  - port: 8081
+  - port: 8080
     targetPort: 8080
 ---
 apiVersion: v1
@@ -111,6 +115,9 @@ spec:
       app: royalafg-poker-matchmaker
   template:
     metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "redis:6379, royalafg-bank:8000"
       labels:
         app: royalafg-poker-matchmaker
     spec:

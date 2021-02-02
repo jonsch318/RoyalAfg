@@ -238,7 +238,10 @@ spec:
             - --entrypoints.websecure.Address=:443
             - --providers.kubernetesingress
             - --providers.kubernetescrd
+            - --providers.consul.endpoints=consul-consul-server.default.svc.cluster.local:8500
+            - --providers.consul.rootkey=traefik
             - --metrics.prometheus=true
+            - --serversTransport.insecureSkipVerify=true
             - --certificatesresolvers.myresolver.acme.tlschallenge
             - --certificatesresolvers.myresolver.acme.email=jonas.max.schneider@gmail.com
             - --certificatesresolvers.myresolver.acme.storage=acme.json

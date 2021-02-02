@@ -1,0 +1,12 @@
+agones:
+  controller:
+    annotations: 
+      "consul.hashicorp.com/consul-inject": "true"
+  ping:
+    replicas: 1
+    annotations: 
+      "consul.hashicorp.com/consul-inject": "true"
+  allocator:
+    replicas: 1
+    annotations: 
+      "consul.hashicorp.com/consul-inject": "true"
