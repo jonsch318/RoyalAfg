@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"bytes"
+	"encoding/json"
 	"net/http"
 )
 
@@ -83,6 +86,23 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 
 	cookie := services.GenerateCookie(token, registerDto.RememberMe)
 	http.SetCookie(rw, cookie)
+
+	command := &auth.AccountCommand{
+		UserID:    user.ID.Hex(),
+		EventType: auth.AccountCreatedEvent,
+		Username:  registerDto.Username,
+		Email:     registerDto.Email,
+	}
+
+	var buf bytes.Buffer
+	err = json.NewEncoder(&buf).Encode(&command)
+	if err != nil {
+		h.l.Errorw("json serialization", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
+		return
+	}
+	h.Rabbit.PublishCommand(command.EventType, buf.Bytes())
+
 	err = ToJSON(dto.NewUserDTO(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)

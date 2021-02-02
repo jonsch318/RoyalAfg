@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
@@ -48,6 +48,7 @@ func Validate(dto dto.LoginDto) error {
 //
 func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 
+	h.l.Infof("Origin %v", r.RemoteAddr)
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
@@ -79,6 +80,8 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	h.l.Infof("Dto: %v", loginDto)
 
 	// validate dto
 	err := Validate(*loginDto)
