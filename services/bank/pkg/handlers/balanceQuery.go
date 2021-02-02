@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
 
 type BalanceQueryDto struct {
@@ -12,11 +14,10 @@ type BalanceQueryDto struct {
 }
 
 func (h Account) QueryBalance(rw http.ResponseWriter, r *http.Request) {
+	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 
-	vals := r.URL.Query()
-	userId := vals.Get("userId")
-
-	balance, err := h.balanceReadModel.GetAccountBalance(userId)
+	log.Printf("User balance for user %s", claims.ID)
+	balance, err := h.balanceReadModel.GetAccountBalance(claims.ID)
 
 	if err != nil {
 		log.Printf("Query error: %v", err)
@@ -25,7 +26,7 @@ func (h Account) QueryBalance(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	dto := &BalanceQueryDto{
-		UserID: userId,
+		UserID: claims.ID,
 		Balance: balance,
 	}
 

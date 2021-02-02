@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos"
 )
 
@@ -16,16 +17,11 @@ type HistoryQueryDto struct {
 
 func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 	vals := r.URL.Query()
-	q, ok := vals["userId"]
-	if !ok {
-		http.Error(rw, "a valid query is expected", http.StatusBadRequest)
-		return
-	}
-	userID := q[0]
-
 	i,_ := strconv.Atoi(vals["i"][0])
 
-	history, err := h.historyReadModel.GetAccountHistory(userID, i, 25)
+	claims := mw.FromUserTokenContext(r.Context().Value("user"))
+
+	history, err := h.historyReadModel.GetAccountHistory(claims.ID, i, 25)
 
 	if err != nil {
 		log.Printf("Query error %v", err)
@@ -33,7 +29,7 @@ func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = json.NewEncoder(rw).Encode(&HistoryQueryDto{
-		UserID:  userID,
+		UserID:  claims.ID,
 		History: history,
 	})
 

@@ -27,12 +27,17 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/serviceconfig"
 )
 
 func Start(logger *zap.SugaredLogger) {
 
+	viper.SetEnvPrefix("bank")
+	viper.BindEnv(config.RabbitMQUsername)
+	viper.BindEnv(config.RabbitMQPassword)
+
 	//eventstore client config
-	eventStore, err := goes.NewClient(nil, "http://localhost:2113")
+	eventStore, err := goes.NewClient(nil, viper.GetString(serviceconfig.EventstoreDbUrl))
 
 	if err != nil {
 		log.Fatalf("eventstore err %v", err)
@@ -47,7 +52,6 @@ func Start(logger *zap.SugaredLogger) {
 	//the result is then saved into the shared db.
 	eventBus := ycq.NewInternalEventBus()
 
-
 	//Read Model declarations
 	accountBalanceQuery := dtos.NewAccountBalanceQuery()
 	accountHistoryQuery := dtos.NewAccountHistoryQuery()
@@ -58,36 +62,35 @@ func Start(logger *zap.SugaredLogger) {
 	repo, err := repositories.NewAccount(eventStore, eventBus)
 
 	if err != nil {
-		log.Fatalf("account repo err %v", err)
+		logger.Fatalw("account repo err", "error", err)
 	}
 
 	accountCommandHandler := commands.NewAccountCommandHandlers(repo)
 	dispatcher := ycq.NewInMemoryDispatcher()
 
-
 	err = dispatcher.RegisterHandler(accountCommandHandler, &commands.CreateBankAccount{}, &commands.Deposit{}, &commands.Withdraw{})
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalw("Could not register handlers", "error", err)
 	}
 
 	//TODO: bank message consume.
-	bankConsumer, err := rabbit.NewBankConsumer(logger, eventBus, dispatcher)
+	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
+	rabbitConnections, err := rabbit.RegisterRabbitMqConsumers(logger, eventBus, dispatcher, rabbitURL)
+
+	if err != nil {
+		logger.Fatalw("Could not establish rabbitmq connection", "error", err)
+	}
 
 	//TODO: grpc bank client.
-
-
-
-
-
 
 	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
 	r := mux.NewRouter()
 	gr := r.Methods(http.MethodGet).Subrouter()
 	pr := r.Methods(http.MethodPost).Subrouter()
 
-	gr.Handle("/api/bank/balance", mw.RequireAuth(accountHandler.QueryBalance)).Queries("userId", "")
-	gr.Handle("/api/bank/history", mw.RequireAuth(accountHandler.QueryHistory)).Queries("userId", "", "i", "{i:[0-9]+}")
+	gr.Handle("/api/bank/balance", mw.RequireAuth(accountHandler.QueryBalance))
+	gr.Handle("/api/bank/history", mw.RequireAuth(accountHandler.QueryHistory)).Queries("i", "{i:[0-9]+}")
 	pr.HandleFunc("/api/bank/create", accountHandler.Create)
 	pr.Handle("/api/bank/deposit", mw.RequireAuth(accountHandler.Deposit))
 	pr.Handle("/api/bank/withdraw", mw.RequireAuth(accountHandler.Withdraw))
@@ -96,14 +99,13 @@ func Start(logger *zap.SugaredLogger) {
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
-		Service: "bankHTTP",
+		Service:  "bankHTTP",
 	})
 	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 	n.UseHandler(r)
 
-	port := 8080
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%v",port),
+		Addr:    fmt.Sprintf(":%v", viper.GetString(config.HTTPPort)),
 		Handler: n,
 	}
 
@@ -114,19 +116,11 @@ func Start(logger *zap.SugaredLogger) {
 	}()
 	logger.Warnf("Http server Listening on address %v", server.Addr)
 
-
-	go func() {
-		if err := bankConsumer.Start(); err != nil {
-			logger.Fatalw("Error during Consuming", "error", err)
-		}
-	}()
-
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
 
-	bankConsumer.Close()
+	rabbitConnections.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration(config.GracefulShutdownTimeout))
 	defer cancel()

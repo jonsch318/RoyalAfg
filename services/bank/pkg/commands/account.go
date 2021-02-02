@@ -24,3 +24,5 @@ type Withdraw struct {
 	RoundId string
 	Time    time.Time
 }
+
+type DeleteBankAccount struct {}

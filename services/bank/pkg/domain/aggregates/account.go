@@ -3,6 +3,7 @@ package aggregates
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
@@ -27,6 +28,7 @@ func (a *Account) Create() error {
 		ID: a.AggregateID(),
 	}, ycq.Int(a.CurrentVersion())), true)
 
+	log.Printf("Create Account %v", a.AggregateID())
 	return nil
 }
 
@@ -41,6 +43,7 @@ func (a *Account) Deposit(amount int, gameId, roundId string, time time.Time) er
 		RoundId: roundId,
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
+	log.Printf("Deposit to %v", a.AggregateID())
 
 	return nil
 }
@@ -63,6 +66,8 @@ func (a *Account) Withdraw(amount int, gameId, roundId string, time time.Time) e
 		RoundId: roundId,
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
+
+	log.Printf("Withdraw from %v", a.AggregateID())
 
 	return nil
 }
