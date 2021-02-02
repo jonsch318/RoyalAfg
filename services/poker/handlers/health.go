@@ -13,5 +13,6 @@ func (h *Game) Health(rw http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(rw).Encode(lobby.HealthPingResponse{
 		Count:   players,
 		Running: true,
+		LobbyID: h.lby.LobbyID,
 	})
 }

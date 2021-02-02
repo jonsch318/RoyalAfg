@@ -5,17 +5,18 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 )
 
 type RabbitMessageBroker struct {
 	logger *zap.SugaredLogger
-	conn *amqp.Connection
-	ch *amqp.Channel
+	conn   *amqp.Connection
+	ch     *amqp.Channel
 }
 
-func NewRabbitMessageBroker(logger *zap.SugaredLogger) (*RabbitMessageBroker, error) {
-	conn, err := amqp.Dial(viper.GetString(serviceConfig.RabbitUrl))
+func NewRabbitMessageBroker(logger *zap.SugaredLogger, url string) (*RabbitMessageBroker, error) {
+	conn, err := amqp.Dial(url)
 
 	if err != nil {
 		return nil, err
@@ -32,23 +33,16 @@ func NewRabbitMessageBroker(logger *zap.SugaredLogger) (*RabbitMessageBroker, er
 	}
 
 	return &RabbitMessageBroker{
-		conn: conn,
-		ch: ch,
+		conn:   conn,
+		ch:     ch,
 		logger: logger,
 	}, nil
-}
-
-
-type BodyNullError struct {}
-
-func (e *BodyNullError) Error() string {
-	return "the message should have a body"
 }
 
 func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) error {
 
 	if body == nil {
-		return &BodyNullError{}
+		return &errors.BodyNullError{}
 	}
 
 	headers := make(map[string]interface{})
@@ -59,9 +53,9 @@ func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) er
 		false,
 		false,
 		amqp.Publishing{
-			Headers: headers,
-			ContentType: "application/json",
-			Body: body,
+			Headers:      headers,
+			ContentType:  "application/json",
+			Body:         body,
 			DeliveryMode: amqp.Transient,
 		}); err != nil {
 		r.logger.Errorw("Error during command publishing", "error", err)
@@ -72,7 +66,7 @@ func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) er
 }
 
 //Close closes the connection to rabbitmq.
-func (r *RabbitMessageBroker) Close()  {
+func (r *RabbitMessageBroker) Close() {
 	//Close Channel
 	r.ch.Close()
 

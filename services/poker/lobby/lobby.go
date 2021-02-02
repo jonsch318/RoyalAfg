@@ -2,6 +2,7 @@ package lobby
 
 import (
 	"errors"
+	"strconv"
 
 	sdk "agones.dev/agones/sdks/go"
 
@@ -49,9 +50,11 @@ func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
 	}
 }
 
-func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int)  {
+func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int, id string )  {
 	l.Class = class
+	l.ClassIndex = classIndex
 	l.round = round.NewHand(l.Bank, class.Blind)
+	l.LobbyID = id
 }
 
 //TotalPlayerCount returns the total player count in queue and already joined
@@ -156,6 +159,9 @@ func (l *Lobby) EmptyToBeAdded() {
 			//l.ToBeAdded[i].Out <- events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.MaxBuyIn, l.MinBuyIn, l.SmallBlind).ToRaw()
 
 			log.Printf("Player joined lobby [%v] count: %v", l.LobbyID, len(l.Players))
+
+			l.SetPlayerCountLabel()
+
 		} else {
 			l.EnqueuePlayer(l.ToBeAdded[i])
 			l.lock.Unlock()
@@ -163,6 +169,10 @@ func (l *Lobby) EmptyToBeAdded() {
 	}
 	l.ToBeAdded = nil
 
+}
+
+func (l *Lobby) SetPlayerCountLabel(){
+	l.sdk.SetLabel("players", strconv.Itoa(l.TotalPlayerCount()))
 }
 
 //RemovePlayerByID removes the given player identified by his id
@@ -208,6 +218,7 @@ func (l *Lobby) RemoveAfterGame() {
 	log.Printf("Updated Playerlist in RoundId: %v", l.Players)
 
 	log.Printf("Check if player count is 0")
+	l.SetPlayerCountLabel()
 	if len(l.Players) < 1 {
 		err := l.sdk.Shutdown()
 		if err != nil {

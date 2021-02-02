@@ -9,6 +9,7 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/spf13/viper"
 
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
@@ -27,11 +28,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
-
-	//Check if lobby is configured
-	if h.lby == nil {
-		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
-	}
 
 	//Check if lobby is configured
 	if h.lby == nil {
@@ -81,12 +77,10 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return []byte(viper.GetString(serviceConfig.MatchMakerJWTKey)), nil
 	})
 
-	var username, id string
-	var buyIn int
+	var tokenDec *pokerModels.Token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
-		username = claims["username"].(string)
-		id = claims["id"].(string)
-		buyIn = claims["buyIn"].(int)
+		log.Printf("Token values: %s, %s, %s", claims["username"], claims["id"], claims["buyIn"])
+		tokenDec = pokerModels.FromToken(claims)
 	} else {
 		log.Printf("joinEvent was invalid %v", err)
 		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
@@ -95,7 +89,7 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	player := models.NewPlayer(username, id, buyIn, playerConn.In, playerConn.Out, playerConn.Close)
+	player := models.NewPlayer(tokenDec.Username, tokenDec.Id, tokenDec.BuyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
 	h.lby.Join(player)
 

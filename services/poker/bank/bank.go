@@ -14,17 +14,18 @@ type Bank struct {
 	PlayerBets   map[string]int
 	Pot          int
 	MaxBet       int
-	eventBus *rabbit.RabbitMessageBroker
-	eventQueue []bank.Command
-	LobbyId string
+	eventBus     *rabbit.RabbitMessageBroker
+	eventQueue   []bank.Command
+	LobbyId      string
 }
 
 //NewBank creates a new bank to handle the bets and wallets of players.
-func NewBank() *Bank {
+func NewBank(eventBus *rabbit.RabbitMessageBroker) *Bank {
 	return &Bank{
 		PlayerWallet: make(map[string]int),
 		PlayerBets:   make(map[string]int),
-		eventQueue: make([]bank.Command, 0),
+		eventBus:     eventBus,
+		eventQueue:   make([]bank.Command, 0),
 	}
 }
 
