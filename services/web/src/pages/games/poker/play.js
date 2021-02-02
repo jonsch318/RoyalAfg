@@ -17,26 +17,26 @@ const Play = () => {
     const [joined, setJoined] = useState(false);
     const [actions, setActions] = useState({});
     const router = useRouter();
-    const { id, buyInClass, buyIn } = router.query;
+    const { lobbyId, buyInClass, buyIn } = router.query;
 
     useEffect(() => {
-        usePokerTicketRequest({ id: id, class: buyInClass, buyIn: buyIn }).then((ticket) => {
+        usePokerTicketRequest({ id: lobbyId, class: buyInClass, buyIn: buyIn }).then((ticket) => {
             console.log("Ticket: ", ticket);
             if (!ticket.address || !ticket.token) {
                 router.push("/games/poker").then();
+            } else {
+                let gameState = new GameState();
+                gameState.setOnPossibleActions((actions) => {
+                    setActions(actions);
+                });
+                let game = new Game(gameState, ticket, () => {
+                    router.push("/games/poker").then();
+                });
+                game.start();
+                console.log("Starting");
+                setGame(game);
+                setJoined(true);
             }
-
-            let gameState = new GameState();
-            gameState.setOnPossibleActions((actions) => {
-                setActions(actions);
-            });
-            let game = new Game(gameState, ticket, () => {
-                router.push("/games/poker").then();
-            });
-            game.start();
-            console.log("Starting");
-            setGame(game);
-            setJoined(true);
         });
     }, []);
 

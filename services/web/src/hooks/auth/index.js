@@ -103,6 +103,21 @@ export const signIn = async (args = {}) => {
     return _fetch(`${_apiBaseUrl()}/login`, options);
 };
 
+export const register = async (args = {}) => {
+    console.log("REGISTER: ", `${_apiBaseUrl()}/register`);
+    console.log("regiser args: ", args);
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify({ ...args })
+    };
+    return await _fetch(`${_apiBaseUrl()}/register`, options);
+};
+
 export const signOut = async () => {
     const options = {
         method: "POST",

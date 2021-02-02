@@ -6,7 +6,7 @@ const FormItem = (props) => {
 };
 
 FormItem.propTypes = {
-    children: PropTypes.element
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.array])
 };
 
 export default FormItem;

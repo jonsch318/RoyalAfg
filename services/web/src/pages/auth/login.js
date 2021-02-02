@@ -77,10 +77,7 @@ const Login = () => {
                             <PasswordBox errors={errors} register={register} />
                             <button
                                 className="block w-full px-8 py-3  bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-150 font-sans font-medium cursor-pointer"
-                                type="submit"
-                                onClick={() => {
-                                    window.location = "/";
-                                }}>
+                                type="submit">
                                 Log In
                             </button>
                             <span className="font-sans font-light text-sm mb-8">
