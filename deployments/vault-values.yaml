@@ -1,4 +1,6 @@
 server:
+  dev:
+    enabled: true
   ha:
     enabled: true
     replicas: 1

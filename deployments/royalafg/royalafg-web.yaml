@@ -45,14 +45,22 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: royalafg-web
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-web
+data:
+  .env: |
+    NEXT_PUBLIC_AUTH_HOST: http://127.0.0.1:59683
+    NEXT_PUBLIC_POKER_TICKET_HOST: http://127.0.0.1:59683
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: royalafg-web
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: royalafg-web
@@ -71,3 +79,15 @@ spec:
           ports:
             - protocol: TCP
               containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_AUTH_HOST
+              value: http://127.0.0.1:59683
+            - name: NEXT_PUBLIC_POKER_TICKET_HOST
+              value: http://127.0.0.1:59683
+          volumeMounts:
+            - name: royalafg-web-config
+              mountPath: /usr/src/app
+      volumes:
+        - name: royalafg-web-config
+          configMap:
+            name: royalafg-web
