@@ -28,8 +28,9 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	gsa := m.agonesClient.AllocationV1()
 
 	class := m.classes[classIndex]
-	serverLabels := make(map[string]string, 3)
+	serverLabels := make(map[string]string)
 	serverLabels["lobbyId"] = id
+	serverLabels["players"] = "0"
 	serverLabels["min-buy-in"] = strconv.Itoa(class.Min)
 	serverLabels["max-buy-in"] = strconv.Itoa(class.Max)
 	serverLabels["blind"] = strconv.Itoa(class.Blind)
@@ -77,9 +78,9 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	}
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
-		LobbyID: id,
-		Class:   &m.classes[classIndex],
-		ClassIndex: classIndex,
+		LobbyID:     id,
+		Class:       &m.classes[classIndex],
+		ClassIndex:  classIndex,
 		PlayerCount: 0,
 	})
 

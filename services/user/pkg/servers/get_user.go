@@ -9,6 +9,7 @@ import (
 )
 
 func (s *UserServer) GetUserById(ctx context.Context, m *protos.GetUser) (*protos.User, error) {
+	s.l.Infof("Call Get By Username")
 
 	user, err := s.db.FindById(m.GetIdentifier())
 
@@ -32,6 +33,8 @@ func (s *UserServer) GetUserById(ctx context.Context, m *protos.GetUser) (*proto
 }
 
 func (s *UserServer) GetUserByUsername(ctx context.Context, m *protos.GetUser) (*protos.User, error) {
+	s.l.Infof("Call Get By Username")
+
 	user, err := s.db.FindByUsername(m.GetIdentifier())
 
 	if err != nil {

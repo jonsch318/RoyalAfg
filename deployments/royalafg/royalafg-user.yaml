@@ -49,11 +49,6 @@ spec:
         - name: royalafg-user
           imagePullPolicy: Always
           image: docker.io/johnnys318/royalafg_user:latest
-          env:
-            - name: GRPC_GO_LOG_VERBOSITY_LEVEL
-              value: "99"
-            - name: GRPC_GO_LOG_SEVERITY_LEVEL
-              value: info
           resources:
             requests:
               memory: 10Mi

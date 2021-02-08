@@ -12,6 +12,8 @@ import (
 
 func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 
+	return m.AgonesConnect(id)
+
 	addr, err := m.rdg.Get(context.Background(), id).Result()
 	if err != nil {
 		return nil, err
@@ -30,9 +32,9 @@ func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 	return &TicketRequestResult{Address: addr, LobbyId: id}, err
 }
 
-func (m *Manager) AgonesConnect(id string)  (*TicketRequestResult, error) {
+func (m *Manager) AgonesConnect(id string) (*TicketRequestResult, error) {
 	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
-		TypeMeta:            metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
 		},
@@ -41,8 +43,10 @@ func (m *Manager) AgonesConnect(id string)  (*TicketRequestResult, error) {
 		AllowWatchBookmarks: false,
 	})
 	if err != nil {
+		m.logger.Errorw("err during connect", "error", err)
 		return nil, err
 	}
+	m.logger.Infow("Agones list results", "id", id, "list", list)
 
 	if len(list.Items) < 1 {
 		return nil, fmt.Errorf("no lobbies found with the given id")
@@ -51,8 +55,8 @@ func (m *Manager) AgonesConnect(id string)  (*TicketRequestResult, error) {
 }
 
 type HealthPingResponse struct {
-	Count   int  `json:"count"`
-	Running bool `json:"running"`
+	Count   int    `json:"count"`
+	Running bool   `json:"running"`
 	LobbyID string `json:"lobbyId"`
 }
 

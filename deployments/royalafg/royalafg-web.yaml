@@ -68,6 +68,7 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "royalafg-poker-matchmaker:59683"
       labels:
         app: royalafg-web
         service: web
@@ -84,10 +85,5 @@ spec:
               value: http://127.0.0.1:59683
             - name: NEXT_PUBLIC_POKER_TICKET_HOST
               value: http://127.0.0.1:59683
-          volumeMounts:
-            - name: royalafg-web-config
-              mountPath: /usr/src/app
-      volumes:
-        - name: royalafg-web-config
-          configMap:
-            name: royalafg-web
+            - name: POKER_INFO_HOST
+              value: http://127.0.0.1:59683

@@ -6,16 +6,17 @@ import (
 
 	sdk "agones.dev/agones/sdks/go"
 
-	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/round"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 	"log"
 	"sync"
 	"time"
+
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/round"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/spf13/viper"
 )
@@ -34,7 +35,7 @@ type Lobby struct {
 	dealer        int
 	round         *round.Round
 	c             chan bool
-	sdk *sdk.SDK
+	sdk           *sdk.SDK
 }
 
 //NewLobby creates a new lobby object
@@ -50,7 +51,7 @@ func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
 	}
 }
 
-func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int, id string )  {
+func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int, id string) {
 	l.Class = class
 	l.ClassIndex = classIndex
 	l.round = round.NewHand(l.Bank, class.Blind)
@@ -171,7 +172,8 @@ func (l *Lobby) EmptyToBeAdded() {
 
 }
 
-func (l *Lobby) SetPlayerCountLabel(){
+func (l *Lobby) SetPlayerCountLabel() {
+	log.Printf("Players %v", l.TotalPlayerCount())
 	l.sdk.SetLabel("players", strconv.Itoa(l.TotalPlayerCount()))
 }
 

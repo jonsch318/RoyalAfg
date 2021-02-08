@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -59,7 +60,7 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.logger.Infow("Generate Ticket", "username", claims.Username, "id", claims.ID, "lobbyId", res.LobbyId, "buyIn", buyIn )
+	h.logger.Infow("Generate Ticket", "username", claims.Username, "id", claims.ID, "lobbyId", res.LobbyId, "buyIn", buyIn)
 	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
 
 	json.NewEncoder(rw).Encode(&TicketResponse{Address: res.Address, Token: token})
@@ -121,6 +122,14 @@ func VerifyBuyIn(userId string, buyIn int) error {
 
 	if err != nil {
 		return err
+	}
+
+	if res.StatusCode != 200 {
+		text, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("Bank service responded with a non 200 response. %v", text)
 	}
 
 	var result dtos.VerifyAmount

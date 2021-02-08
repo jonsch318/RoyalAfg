@@ -19,11 +19,11 @@ func (m *Manager) GetRegisteredLobbiesOfClass(index, count, class int) []models.
 	if index == 0 && count == 0 {
 		return m.lobbies[class]
 	}
-	if len(m.lobbies[class]) <= 0{
+	if len(m.lobbies[class]) <= 0 {
 		return nil
 	}
 
-	if len(m.lobbies[class]) < count+ index {
+	if len(m.lobbies[class]) < count+index {
 		//the query can not be fully answered, so we do our best to satisfy it as much as possible
 		if len(m.lobbies[class]) <= count {
 			//smaller than our result count. just use fullHistory
@@ -31,10 +31,10 @@ func (m *Manager) GetRegisteredLobbiesOfClass(index, count, class int) []models.
 		}
 
 		//return l from last.
-		return m.lobbies[class][len(m.lobbies) -count:]
+		return m.lobbies[class][len(m.lobbies)-count:]
 	}
 
-	return m.lobbies[class][index:index+count]
+	return m.lobbies[class][index : index+count]
 }
 
 func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
@@ -45,41 +45,49 @@ func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
 	}
 
 	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
-		TypeMeta:            metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
 		},
 		LabelSelector:       fmt.Sprintf("game=poker"),
 		Watch:               false,
 		AllowWatchBookmarks: false,
-		Limit: int64(count),
+		Limit:               int64(count),
 	})
 
-	if err != nil  {
+	if err != nil {
+		m.logger.Errorw("error during agones lobbies", "error", err)
 		return nil
 	}
+	m.logger.Info("Agones lists follwind")
 
 	lobbies := make([][]models.LobbyBase, len(m.classes))
 	for _, gs := range list.Items {
 		players, err := strconv.Atoi(gs.Labels["players"])
 		if err != nil {
-			continue
+			m.logger.Errorw("error decoding players lobby %v", "error", err)
 		}
 
-		class, err := strconv.Atoi(gs.Labels["class"])
+		class, err := strconv.Atoi(gs.Labels["class-index"])
 		if err != nil {
+			m.logger.Errorw("error decoding class lobby %v", "error", err)
 			continue
 		}
 
 		if lobbies[class] == nil {
 			lobbies[class] = make([]models.LobbyBase, 0)
 		}
-		lobbies[class] = append(lobbies[class], models.LobbyBase{
+
+		lby := models.LobbyBase{
 			LobbyID:     gs.Labels["lobbyId"],
 			Class:       &m.classes[class],
 			ClassIndex:  class,
 			PlayerCount: players,
-		})
+		}
+
+		lobbies[class] = append(lobbies[class], lby)
+		m.logger.Errorw("lobby [%v] %v => ", "error", lby.LobbyID, lby.Class, lby.PlayerCount)
+
 	}
 
 	//if len(m.lobbies) <= 0 {

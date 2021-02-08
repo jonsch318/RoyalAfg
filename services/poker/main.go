@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/urfave/negroni"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
@@ -70,14 +71,14 @@ func main() {
 
 	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
-		err := SetLobby(b, lobbyInstance, gs, s)
+		err := SetLobby(b, lobbyInstance, gs, s, logger)
 		if err == nil {
 			logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
 			if lobbyInstance.TotalPlayerCount() <= 0 {
 				go StartShutdownTimer(shutDownStop, s)
 			}
 		}
-
+		logger.Errorw("Error during configuration", "error", err)
 	})
 	if err != nil {
 		logger.Fatalf("Error during sdk annotation subscription: %s", err)
@@ -111,7 +112,7 @@ func main() {
 	rabbitConn.Close()
 }
 
-func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK, logger *zap.SugaredLogger) error {
 	labels := gs.GetObjectMeta().GetLabels()
 	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
@@ -137,9 +138,8 @@ func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, 
 	if !ok {
 		return errors.New("can not get the required information for the key lobbyId")
 	}
+	logger.Infow("Set Lobby", "LobbyId", lobbyId)
 	b.RegisterLobby(lobbyId)
-
-
 
 	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{
 		Min:   min,

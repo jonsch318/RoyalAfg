@@ -3,10 +3,11 @@ package lobby
 import (
 	"bufio"
 	"fmt"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
 
 	"github.com/spf13/viper"
 )
@@ -19,7 +20,7 @@ func (l *Lobby) Start() {
 		for len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) {
 
 			// Protection against multiple games using a buffered channel
-			timer := time.NewTimer(5 * time.Second)
+			timer := time.NewTimer(15 * time.Second)
 			select {
 			case <-l.c:
 				// game has already been called this instance is unneccesairy
