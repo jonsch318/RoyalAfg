@@ -138,6 +138,11 @@ export const Provider = ({ children, session }) => {
 };
 
 const _apiBaseUrl = () => {
+    if (process.env.NEXT_PUBLIC_AUTH_HOST == undefined) {
+        if (window) {
+            return "/api/auth";
+        }
+    }
     return `${process.env.NEXT_PUBLIC_AUTH_HOST}/api/auth`;
 };
 

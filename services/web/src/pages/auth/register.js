@@ -30,7 +30,7 @@ const PasswordBox = ({ errors, register }) => {
                 aria-label={hidePassword ? "Show password in plain text. This will show your password on screen." : "Hide Password."}>
                 {hidePassword ? "Show Password" : "Hide Password"}
             </button>
-            {errors.password && (
+            {errors?.password && (
                 <span className="text-sm text-red-700" id="password-constraints">
                     This field is required and can only be more than 3 and less than 100!
                 </span>
@@ -54,7 +54,7 @@ const Register = () => {
     return (
         <Layout disableFooter>
             <div className="w-full md:h-screen flex items-center justify-center md:absolute md:inset-0">
-                <div className="bg-gray-300 md:rounded-md shadow-md">
+                <div className="bg-gray-200 md:rounded-md shadow-md">
                     <div className="heading mx-16 my-8">
                         <h1 className="text-center font-sans font-semibold text-3xl">Register A New Account</h1>
                     </div>
@@ -107,7 +107,8 @@ const Register = () => {
                                     name="email"
                                     id="email"
                                     type="email"
-                                    placeholder="Your Email"></input>
+                                    placeholder="Your Email"
+                                />
                                 {errors.birthdate && <span className="text-sm text-red-700">This field is required</span>}
                             </FormItem>
 
@@ -123,12 +124,13 @@ const Register = () => {
                                     name="fullName"
                                     id="fullName"
                                     type="fullName"
-                                    placeholder="Your Name"></input>
+                                    placeholder="Your Name"
+                                />
                                 {errors.birthdate && <span className="text-sm text-red-700">This field is required</span>}
                             </FormItem>
 
                             <FormItem>
-                                <input type="checkbox" className="p-2 border-none form-checkbox mr-4 text-blue-700" />
+                                <input type="checkbox" className="border-none form-checkbox mr-4 text-blue-700" />
                                 <span>
                                     I consent to the{" "}
                                     <a href="/legal/terms" className="font-sans text-blue-800">

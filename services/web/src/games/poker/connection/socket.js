@@ -48,6 +48,10 @@ class Game {
     send(event) {
         this.ws.send(SendEvent(event));
     }
+
+    close(code = 1000, reason = "") {
+        this.ws.close(code, reason);
+    }
 }
 
 export { Game };

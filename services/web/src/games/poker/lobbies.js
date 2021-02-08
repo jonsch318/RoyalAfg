@@ -11,23 +11,24 @@ const Lobbies = ({ info }) => {
         <div>
             <h1 className="font-sans text-xl text-center my-4 font-medium">Buy In Classes</h1>
             <div className="flex justify-center items-center">
-                {info.classes.map((c, i) => (
-                    <Chip
-                        key={c.min}
-                        lobbyClass={c}
-                        selected={i === lobby.classIndex}
-                        onSelect={() => {
-                            setLobby({ id: "", i: -1, classIndex: i, class: c });
-                        }}
-                    />
-                ))}
+                {info?.classes?.length &&
+                    info?.classes.map((c, i) => (
+                        <Chip
+                            key={c.min}
+                            lobbyClass={c}
+                            selected={i === lobby.classIndex}
+                            onSelect={() => {
+                                setLobby({ id: "", i: -1, classIndex: i, class: c });
+                            }}
+                        />
+                    ))}
             </div>
             <h1 className="font-sans text-xl text-center my-4 font-medium">Lobbies</h1>
             <div className="flex justify-center">
-                {info.lobbies.length &&
-                    info.lobbies.map((c) => {
+                {info?.lobbies?.length &&
+                    info?.lobbies.map((c) => {
                         return (
-                            c.length &&
+                            c &&
                             c.map((l, j) => {
                                 return (
                                     l.id && (
