@@ -6,7 +6,7 @@ export const CARDHEIGHT = 130;
 const emptyCardText = "";
 
 class Card extends PIXI.Container {
-    constructor(id, card) {
+    constructor(id, card = { value: -1, color: -1 }) {
         super();
 
         this.card = {
@@ -21,7 +21,8 @@ class Card extends PIXI.Container {
             this.sprite.resolution = 2;
             this.addChild(this.sprite);
         } else {
-            this.sprite = new PIXI.Sprite(PIXI.Texture.from("back.png"));
+            this.backTexture = id["back.png"];
+            this.sprite = new PIXI.Sprite(this.backTexture);
             this.addChild(this.sprite);
             let rect = new PIXI.Graphics();
             rect.lineStyle(1, 0x000000, 1);
@@ -62,11 +63,9 @@ class Card extends PIXI.Container {
             }
         } else {
             if (this.card.color < 0 || this.card.value < 0) {
-                this.sprite.texture = PIXI.Texture.from("back.png");
+                this.sprite.texture = this.backTexture;
             } else {
-                this.sprite.texture = PIXI.Texture.from(
-                    `${this.card.value}_${this.card.color}.png`
-                );
+                this.sprite.texture = this.id[`${this.card.value}_${this.card.color}.png`];
             }
             this.sprite.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
             this.sprite.width = rW(CARDWIDTH);

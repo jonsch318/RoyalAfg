@@ -24,7 +24,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 )
 
 //main method is the entry point of the game server
@@ -34,7 +34,7 @@ func main() {
 
 	config.ReadStandardConfig("poker", logger)
 
-	serviceConfig.SetDefaults()
+	serviceconfig.SetDefaults()
 
 	viper.SetEnvPrefix("poker")
 	viper.BindEnv(config.RabbitMQUsername)
@@ -65,7 +65,7 @@ func main() {
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-	serviceConfig.SetDefaults()
+	serviceconfig.SetDefaults()
 
 	shutDownStop := make(chan interface{})
 

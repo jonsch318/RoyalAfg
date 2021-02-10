@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 )
 
 type RabbitMessageBroker struct {
@@ -28,7 +28,7 @@ func NewRabbitMessageBroker(logger *zap.SugaredLogger, url string) (*RabbitMessa
 		return nil, err
 	}
 
-	if err := ch.ExchangeDeclare(viper.GetString(serviceConfig.RabbitExchange), "direct", true, false, false, false, nil); err != nil {
+	if err := ch.ExchangeDeclare(viper.GetString(serviceconfig.RabbitExchange), "direct", true, false, false, false, nil); err != nil {
 		logger.Panicw("Exchange Declare Error", "error", err)
 	}
 
@@ -48,8 +48,8 @@ func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) er
 	headers := make(map[string]interface{})
 	headers["CommandType"] = commandType
 	if err := r.ch.Publish(
-		viper.GetString(serviceConfig.RabbitExchange),
-		viper.GetString(serviceConfig.RabbitBankQueue),
+		viper.GetString(serviceconfig.RabbitExchange),
+		viper.GetString(serviceconfig.RabbitBankQueue),
 		false,
 		false,
 		amqp.Publishing{

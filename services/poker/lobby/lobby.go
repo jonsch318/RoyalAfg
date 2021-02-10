@@ -15,7 +15,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/round"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/spf13/viper"
@@ -115,7 +115,7 @@ func (l *Lobby) Join(player *models.Player) {
 			0,
 			len(l.Players)+len(l.ToBeAdded)+len(l.PlayerQueue), l.Class.Max, l.Class.Min, l.Class.Blind))
 
-		if len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) && !gameStarted {
+		if len(l.Players) >= viper.GetInt(serviceconfig.PlayersRequiredForStart) && !gameStarted {
 			l.Start()
 		}
 	} else {

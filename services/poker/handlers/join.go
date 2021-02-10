@@ -12,7 +12,7 @@ import (
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/gorilla/websocket"
@@ -74,7 +74,7 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(viper.GetString(serviceConfig.MatchMakerJWTKey)), nil
+		return []byte(viper.GetString(serviceconfig.MatchMakerJWTKey)), nil
 	})
 
 	var tokenDec *pokerModels.Token

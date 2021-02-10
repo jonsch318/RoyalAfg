@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 
 	"github.com/spf13/viper"
 )
@@ -17,7 +17,7 @@ func (l *Lobby) Start() {
 
 	// SETUP
 	go func() {
-		for len(l.Players) >= viper.GetInt(serviceConfig.PlayersRequiredForStart) {
+		for len(l.Players) >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 
 			// Protection against multiple games using a buffered channel
 			timer := time.NewTimer(15 * time.Second)
@@ -35,7 +35,7 @@ func (l *Lobby) Start() {
 			fmt.Printf("ENTER for game start \n")
 			reader.ReadLine()
 
-			if len(l.Players) < viper.GetInt(serviceConfig.PlayersRequiredForStart) {
+			if len(l.Players) < viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 				// Not enough players to start
 				return
 			}

@@ -26,10 +26,7 @@ class Board extends PIXI.Container {
     }
 
     push(card) {
-        let itemX =
-            this.options.paddingX +
-            this.cards.children.length * CARDWIDTH +
-            this.cards.children.length * 2 * this.options.paddingCardX;
+        let itemX = this.options.paddingX + this.cards.children.length * CARDWIDTH + this.cards.children.length * 2 * this.options.paddingCardX;
         const registered = this.insertCard(itemX);
         if (card) {
             registered.update(card);
@@ -98,10 +95,7 @@ class Board extends PIXI.Container {
     }
 
     onResize() {
-        this.w =
-            CARDWIDTH * this.cards.children.length +
-            this.options.paddingX * 2 +
-            this.options.paddingCardX * this.cards.children.length * 2;
+        this.w = CARDWIDTH * this.cards.children.length + this.options.paddingX * 2 + this.options.paddingCardX * this.cards.children.length * 2;
         if (isMobile()) {
             this.h = 15 + rH(2 * this.options.paddingY);
         } else {
@@ -109,13 +103,7 @@ class Board extends PIXI.Container {
         }
         this.background.clear();
         this.background.beginFill(0x000000, 0.12);
-        this.background.drawRoundedRect(
-            0,
-            0,
-            Math.max(rW(this.w), rW(this.options.minWidth)),
-            this.h,
-            rH(10)
-        );
+        this.background.drawRoundedRect(0, 0, Math.max(rW(this.w), rW(this.options.minWidth)), this.h, rH(10));
         this.background.endFill();
         this.options.updatedWidth();
     }

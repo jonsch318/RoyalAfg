@@ -7,9 +7,9 @@ import PropTypes from "prop-types";
 import { Game } from "../connection/socket";
 import { UpdateEvents } from "../game/state";
 import { Notification } from "./notifcation";
-import { Router, withRouter } from "next/router";
+import { withRouter } from "next/router";
 
-const textureUrl = window.location.protocol + "//" + window.location.host + "/static/games/poker/textures/cards.json";
+const textureUrl = window.location.origin + "/static/games/poker/textures/cards.json";
 
 class View extends React.Component {
     constructor(props) {
