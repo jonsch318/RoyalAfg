@@ -3,6 +3,7 @@ package lobby
 import (
 	"strconv"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 )
 
@@ -15,10 +16,10 @@ func (l *Lobby) Count() int {
 }
 
 func (l *Lobby) SetPlayerCountLabel() {
-	logger.Debugf("Players %v", l.Count())
+	log.Logger.Debugf("Players %v", l.Count())
 	err := l.sdk.SetLabel("players", strconv.Itoa(l.Count()))
 	if err != nil {
-		logger.Warnw("error during player label set %v", "error", err.Error())
+		log.Logger.Warnw("error during player label set %v", "error", err.Error())
 	}
 }
 
