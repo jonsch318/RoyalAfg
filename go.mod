@@ -5,6 +5,7 @@ go 1.15
 require (
 	agones.dev/agones v1.11.0
 	github.com/Kamva/mgm v1.2.3
+	github.com/Rhymond/go-money v1.0.2
 	github.com/auth0/go-jwt-middleware v1.0.0
 	github.com/aws/aws-sdk-go v1.36.28 // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20201216152027-57cb70149147

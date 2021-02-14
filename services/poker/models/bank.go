@@ -1,5 +1,6 @@
 package models
 
 type Bank interface {
-	GetPlayerWallet(string) int
+	GetPlayerWallet(string) string
+	GetMaxBet(string) string
 }

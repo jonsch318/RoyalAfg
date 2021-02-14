@@ -7,8 +7,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 )
 
-func (h *Round) searchByID(id string) (*models.Player, int, error) {
-	for i, n := range h.Players {
+func (r *Round) searchByID(id string) (*models.Player, int, error) {
+	for i, n := range r.Players {
 		if n.ID == id {
 			return &n, i, nil
 		}
@@ -16,8 +16,8 @@ func (h *Round) searchByID(id string) (*models.Player, int, error) {
 	return nil, -1, errors.New("Player not in game")
 }
 
-func (h *Round) searchByActiveID(id string) (int, error) {
-	for i, n := range h.Players {
+func (r *Round) searchByActiveID(id string) (int, error) {
+	for i, n := range r.Players {
 		if n.ID == id && n.Active {
 			return i, nil
 		}
@@ -25,8 +25,8 @@ func (h *Round) searchByActiveID(id string) (int, error) {
 	return -1, errors.New("Player not in game")
 }
 
-func (h *Round) sendDealer() {
-	if !h.Ended {
-		utils.SendToAll(h.Players, models.NewEvent(events.DEALER_SET, h.Dealer))
+func (r *Round) sendDealer() {
+	if !r.Ended {
+		utils.SendToAll(r.Players, models.NewEvent(events.DEALER_SET, r.Dealer))
 	}
 }

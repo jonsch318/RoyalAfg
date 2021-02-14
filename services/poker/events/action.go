@@ -2,15 +2,19 @@ package events
 
 import (
 	"errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+
+	"github.com/Rhymond/go-money"
 
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 )
 
-//FOLD descibes the action of a player quiting this hand
+//FOLD describes the action of a player quiting this hand
 const FOLD = 1
 
-//BET descibes the action of a player betting the same amount as the highes bet and therefore go along or callling the hand
+//BET describes the action of a player betting the same amount as the highes bet and therefore go along or callling the hand
 const BET = 2
 
 //RAISE raises sets the highest bet a certain amount
@@ -21,23 +25,42 @@ const CHECK = 4
 
 const ALL_IN = 5
 
-//Action descibes a action a player can make one a normal hand stage
+//Action describes a action a player can make one a normal hand stage
 type Action struct {
+	Action  int `json:"action" mapstructure:"action"`
+	Payload *money.Money `json:"payload" mapstructure:"payload"`
+}
+
+
+//Action describes a action a player can make one a normal hand stage
+type ActionDTO struct {
 	Action  int `json:"action" mapstructure:"action"`
 	Payload int `json:"payload" mapstructure:"payload"`
 }
 
-func ToAction(raw *models.Event) (*Action, error) {
+func ToActionDTO(raw *models.Event) (*ActionDTO, error) {
 
 	if !ValidateEventName(PLAYER_ACTION, raw.Name) {
 		return nil, errors.New(REQUIRED_EVENT_NAME_MISSING)
 	}
 
-	event := new(Action)
+	event := new(ActionDTO)
 	err := mapstructure.Decode(raw.Data.(map[string]interface{}), event)
 	return event, err
 }
 
+func ToAction(raw *models.Event) (*Action, error) {
+	event, err := ToActionDTO(raw)
+	if err != nil {
+		return nil, err
+	}
+	return &Action{
+		Action:  event.Action,
+		Payload: moneyUtils.ConvertToIMoney(event.Payload),
+	}, nil
+}
+
+//WaitForActionEvent encodes all possible actions the user can perform.
 type WaitForActionEvent struct {
 	Position        int  `json:"position" mapstructure:"position"`
 	PossibleActions byte `json:"possibleActions" mapstructure:"possibleActions"`
@@ -52,18 +75,18 @@ type ActionProcessedEvent struct {
 	Action int `json:"action" mapstructure:"action"`
 	//Player   *models.PublicPlayer `json:"player" mapstructure:"player"`
 	Position    int     `json:"position" mapstructure:"position"`
-	Amount      float32 `json:"amount" mapstructure:"amount"`
-	TotalAmount float32 `json:"totalAmount" mapstructure:"totalAmount"`
-	BuyIn       float32 `json:"buyIn" mapstructure:"buyIn"`
+	Amount      string `json:"amount" mapstructure:"amount"`
+	TotalAmount string `json:"totalAmount" mapstructure:"totalAmount"`
+	BuyIn       string `json:"buyIn" mapstructure:"buyIn"`
 }
 
-func NewActionProcessedEvent(action, amount, position, totalAmount, wallet int) *models.Event {
+func NewActionProcessedEvent(action, position int, amount, totalAmount, wallet string) *models.Event {
 	return models.NewEvent(ACTION_PROCESSED, &ActionProcessedEvent{
 		Action:      action,
 		Position:    position,
-		Amount:      float32(amount) / 100,
-		TotalAmount: float32(totalAmount) / 100,
-		BuyIn:       float32(wallet) / 100,
+		Amount:      amount,
+		TotalAmount: amount,
+		BuyIn:       amount,
 		//Player:   player.ToPublic(),
 	})
 }

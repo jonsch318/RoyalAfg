@@ -2,13 +2,12 @@ package lobby
 
 import (
 	"errors"
-	"strconv"
-
-	sdk "agones.dev/agones/sdks/go"
-
 	"log"
+	"strconv"
 	"sync"
 	"time"
+
+	sdk "agones.dev/agones/sdks/go"
 
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
@@ -135,7 +134,7 @@ func (l *Lobby) EmptyToBeAdded() {
 			}
 			player := l.ToBeAdded[i]
 			public := l.ToBeAdded[i].ToPublic()
-			public.BuyIn = float32(l.ToBeAdded[i].BuyIn) / 100
+			public.BuyIn = l.ToBeAdded[i].BuyIn.Display()
 			if len(l.Players) > 0 {
 				utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1))
 			}
@@ -146,7 +145,7 @@ func (l *Lobby) EmptyToBeAdded() {
 
 			go func() {
 				<-l.Players[j].Close
-				l.RemovePlayerByID(l.Players[j].ID)
+				_ = l.RemovePlayerByID(l.Players[j].ID)
 			}()
 			log.Printf("Adding now")
 
@@ -174,7 +173,10 @@ func (l *Lobby) EmptyToBeAdded() {
 
 func (l *Lobby) SetPlayerCountLabel() {
 	log.Printf("Players %v", l.TotalPlayerCount())
-	l.sdk.SetLabel("players", strconv.Itoa(l.TotalPlayerCount()))
+	err := l.sdk.SetLabel("players", strconv.Itoa(l.TotalPlayerCount()))
+	if err != nil {
+		log.Printf("error during player label set %v", err.Error())
+	}
 }
 
 //RemovePlayerByID removes the given player identified by his id
@@ -189,7 +191,7 @@ func (l *Lobby) RemovePlayerByID(id string) error {
 	l.lock.Lock()
 	l.ToBeRemoved = append(l.ToBeRemoved, i)
 	l.lock.Unlock()
-	l.round.Fold(id)
+	_ = l.round.Fold(id)
 	if !l.GetGameStarted() {
 		l.RemoveAfterGame()
 	}
@@ -203,7 +205,7 @@ func (l *Lobby) RemoveAfterGame() {
 	defer l.lock.Unlock()
 	for _, i := range l.ToBeRemoved {
 		if len(l.Players) > i {
-			l.Bank.RemovePlayer(l.Players[i].ID)
+			_ = l.Bank.RemovePlayer(l.Players[i].ID)
 			if len(l.PlayerQueue) > 0 {
 				player, ok := l.DequeuePlayer(i)
 				if ok {

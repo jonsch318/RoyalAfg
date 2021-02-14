@@ -17,6 +17,7 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
@@ -37,8 +38,8 @@ func main() {
 	serviceconfig.SetDefaults()
 
 	viper.SetEnvPrefix("poker")
-	viper.BindEnv(config.RabbitMQUsername)
-	viper.BindEnv(config.RabbitMQPassword)
+	_ = viper.BindEnv(config.RabbitMQUsername)
+	_ = viper.BindEnv(config.RabbitMQPassword)
 
 	//connect to rabbitmq to send user commands
 	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
@@ -71,7 +72,7 @@ func main() {
 
 	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
-		err := SetLobby(b, lobbyInstance, gs, s, logger)
+		err := SetLobby(b, lobbyInstance, gs, logger)
 		if err == nil {
 			logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
 			if lobbyInstance.TotalPlayerCount() <= 0 {
@@ -94,12 +95,15 @@ func main() {
 
 	recoverMW := negroni.NewRecovery()
 	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation) {
-		s.Shutdown()
+		_ = s.Shutdown()
 	}
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery())
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery())
 	n.UseHandler(r)
 
-	s.Ready()
+	err = s.Ready()
+	if err != nil {
+		logger.Errorw("Error during sdk ready call", "error", err)
+	}
 
 	logger.Info("SDK Ready called")
 
@@ -112,7 +116,7 @@ func main() {
 	rabbitConn.Close()
 }
 
-func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK, logger *zap.SugaredLogger) error {
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, logger *zap.SugaredLogger) error {
 	labels := gs.GetObjectMeta().GetLabels()
 	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
@@ -171,6 +175,6 @@ func StartShutdownTimer(stop chan interface{}, s *sdk.SDK) {
 		cancel()
 		//Cancel shutdown
 	case <-ctx.Done():
-		s.Shutdown()
+		_ = s.Shutdown()
 	}
 }

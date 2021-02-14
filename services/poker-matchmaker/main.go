@@ -79,7 +79,7 @@ func main() {
 		Debug:            false,
 	})
 
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
 	n.UseHandler(r)
 
 	// Start Application

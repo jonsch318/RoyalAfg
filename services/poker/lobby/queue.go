@@ -11,7 +11,7 @@ func (l *Lobby) EnqueuePlayer(player *models.Player) {
 }
 
 //DequeuePlayer dequeues the player and adds it to the position
-func (l *Lobby) DequeuePlayer(pos int) (player *models.Player, ok bool) {
+func (l *Lobby) DequeuePlayer(pos int) (*models.Player, bool) {
 	if len(l.PlayerQueue) > 0 && len(l.Players) < 10 {
 		player := l.PlayerQueue[0]
 		if pos < 0 {

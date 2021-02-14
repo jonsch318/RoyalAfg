@@ -1,37 +1,53 @@
 package bank
 
-import "log"
+import (
+	"log"
+
+	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
+)
 
 //ConcludeRound resets the current round and adds the fair share of the to the winners wallets.
-func (b *Bank) ConcludeRound(winners []string) int {
+func (b *Bank) ConcludeRound(winners []string) []string {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
-	if winners == nil || b.Pot == 0 {
-		return -1
+	if winners == nil || b.Pot.IsZero() || b.Pot.IsNegative() {
+		return nil
 	}
 
-	share := b.Pot / len(winners)
+	winnersCount := len(winners)
+	shares, err := b.Pot.Split(winnersCount)
+	ret := make([]string, winnersCount)
 
-	for _, n := range winners {
-		b.PlayerWallet[n] += share
-
-		b.AddWinEvent(n, share)
-		log.Printf("User [%v] wins share %d", n, share)
+	if err != nil {
+		return nil
 	}
 
-	b.Pot = 0
-	b.MaxBet = 0
-	return share
+	for i, n := range winners {
+		res, err := b.PlayerWallet[n].Add(shares[i])
+
+		if err != nil {
+			return nil
+		}
+		b.PlayerWallet[n] = res
+
+		b.AddWinEvent(n, int(shares[i].Amount()))
+		log.Printf("User [%v] wins share %d", n, shares[i])
+		ret[i] = shares[i].Display()
+	}
+
+	b.Pot = moneyUtils.Zero()
+	b.MaxBet = moneyUtils.Zero()
+	return ret
 }
 
 //Reset resets the state of the Bank for a new round
 func (b *Bank) Reset() {
 	b.lock.Lock()
 	defer b.lock.Unlock()
-	b.Pot = 0
-	b.MaxBet = 0
+	b.Pot = moneyUtils.Zero()
+	b.MaxBet = moneyUtils.Zero()
 	for id := range b.PlayerBets {
-		b.PlayerBets[id] = 0
+		b.PlayerBets[id] = moneyUtils.Zero()
 	}
 }

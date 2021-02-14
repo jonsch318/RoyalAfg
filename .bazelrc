@@ -1,2 +1,0 @@
-build --remote_cache=http://192.168.178.109:80
-build --remote_upload_local_results=false

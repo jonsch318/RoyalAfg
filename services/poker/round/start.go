@@ -9,98 +9,94 @@ import (
 	"time"
 )
 
-func (h *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
+func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
 
-	h.Bank.Reset()
+	r.Bank.Reset()
 
-	h.Dealer = dealer
-	h.Players = players
-	h.InCount = byte(len(players))
-	h.HoleCards = make(map[string][2]models.Card, len(players))
+	r.Dealer = dealer
+	r.Players = players
+	r.InCount = byte(len(players))
+	r.HoleCards = make(map[string][2]models.Card, len(players))
 
 	//publish players and position
 
 	time.Sleep(3 * time.Second)
 
-	h.InnerStart()
+	r.InnerStart()
 
-	for i := range h.Players {
-		utils.SendToPlayerInList(h.Players, i, events.NewGameStartEvent(publicPlayers, i))
+	for i := range r.Players {
+		utils.SendToPlayerInList(r.Players, i, events.NewGameStartEvent(publicPlayers, i))
 	}
 
 	time.Sleep(3 * time.Second)
 
 	// Publish choosen Dealer
 
-	h.sendDealer()
+	r.sendDealer()
 	time.Sleep(3 * time.Second)
 
 	//set predefined blinds
-	err := h.setBlinds()
+	err := r.setBlinds()
 
 	if err != nil {
-		h.Bank.ConcludeRound(nil)
+		r.Bank.ConcludeRound(nil)
 		return
 	}
 
 	// Set players hole cards
-	holeCards(h.Players, h.HoleCards, h.cardGen)
+	holeCards(r.Players, r.HoleCards, r.cardGen)
 
 	time.Sleep(3 * time.Second)
 
-	h.actions(true)
+	r.actions(true)
 
 	// Flop, turn and river are done here
 	for i := 0; i < 5; i++ {
-		h.Board[i] = h.cardGen.SelectRandom()
+		r.Board[i] = r.cardGen.SelectRandom()
 	}
 
 	// send flop result
 
-	utils.SendToAll(h.Players, events.NewFlopEvent(h.Board))
+	utils.SendToAll(r.Players, events.NewFlopEvent(r.Board))
 
-	//
-	h.actions(false)
+	r.actions(false)
 	// send turn result
-	utils.SendToAll(h.Players, events.NewTurnEvent(h.Board))
+	utils.SendToAll(r.Players, events.NewTurnEvent(r.Board))
 
-	h.WhileNotEnded(func() {
-		h.actions(false)
+	r.WhileNotEnded(func() {
+		r.actions(false)
 		// send river result
-		utils.SendToAll(h.Players, events.NewRiverEvent(h.Board))
+		utils.SendToAll(r.Players, events.NewRiverEvent(r.Board))
 	})
 
-	h.WhileNotEnded(func() {
-		h.actions(false)
+	r.WhileNotEnded(func() {
+		r.actions(false)
 	})
 
-	winners := showdown.Evaluate(h.Players, h.HoleCards, h.Board)
+
+	//Evaluation
+	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board)
 	winningPlayers := make([]int, 0)
 	for i := range winners {
-		_, i, err := utils.SearchByID(h.Players, winners[i])
+		_, i, err := utils.SearchByID(r.Players, winners[i])
 		if err == nil {
 			winningPlayers = append(winningPlayers, i)
 		}
 	}
-
+	shares := r.Bank.ConcludeRound(winners)
 	winningPublic := make([]models.PublicPlayer, len(winningPlayers))
 	for i, n := range winningPlayers {
 		winningPublic[i] = publicPlayers[n]
 	}
-
 	log.Printf("Winners: %v", winningPlayers)
-
-	share := h.Bank.ConcludeRound(winners)
-
-	utils.SendToAll(h.Players, events.NewGameEndEvent(winningPublic, share))
-
+	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 
-func (h *Round) InnerStart() {
-	h.sendDealer()
+func (r *Round) InnerStart() {
+	r.sendDealer()
 }
 
-func (h *Round) End() {
+func (r *Round) End() {
 	log.Printf("Ending Hand due to error")
-	h.Ended = true
+	r.Ended = true
 }

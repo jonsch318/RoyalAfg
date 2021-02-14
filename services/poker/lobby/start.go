@@ -23,7 +23,7 @@ func (l *Lobby) Start() {
 			timer := time.NewTimer(15 * time.Second)
 			select {
 			case <-l.c:
-				// game has already been called this instance is unneccesairy
+				// game has already been called this instance is unnecessary
 				return
 			case <-timer.C:
 			}
@@ -31,9 +31,11 @@ func (l *Lobby) Start() {
 			// channel is empty, so the buffer is free to be filled.
 			l.c <- true
 
-			reader := bufio.NewReader(os.Stdin)
-			fmt.Printf("ENTER for game start \n")
-			reader.ReadLine()
+			if viper.GetBool(serviceconfig.NeedEnterToStart) {
+				reader := bufio.NewReader(os.Stdin)
+				fmt.Printf("ENTER for game start \n")
+				_, _, _ = reader.ReadLine()
+			}
 
 			if len(l.Players) < viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 				// Not enough players to start

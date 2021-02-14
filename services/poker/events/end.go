@@ -4,12 +4,12 @@ import "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 
 type GameEndEvent struct {
 	Winners []models.PublicPlayer `json:"winners"`
-	Share   float32               `json:"share"`
+	Shares   string               `json:"shares"`
 }
 
-func NewGameEndEvent(winners []models.PublicPlayer, share int) *models.Event {
+func NewGameEndEvent(winners []models.PublicPlayer, shares string) *models.Event {
 	return models.NewEvent(GAME_END, &GameEndEvent{
 		Winners: winners,
-		Share:   float32(share) / 100,
+		Shares:   shares,
 	})
 }
