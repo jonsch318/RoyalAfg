@@ -21,3 +21,25 @@ go_library(
         "@org_uber_go_zap//:go_default_library",
     ],
 )
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "get_user.go",
+        "save_user.go",
+        "update_user.go",
+        "user.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/servers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models",
+        "//pkg/protos",
+        "//services/user/pkg/database:go_default_library",
+        "//services/user/pkg/metrics:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
+        "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

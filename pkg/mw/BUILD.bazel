@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "auth.go",
         "logging.go",
+        "zap.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/mw",
     visibility = ["//visibility:public"],

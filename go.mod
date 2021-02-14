@@ -11,7 +11,6 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20201216152027-57cb70149147
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-openapi/runtime v0.19.26
 	github.com/go-openapi/spec v0.20.1 // indirect
 	github.com/go-openapi/strfmt v0.20.0 // indirect
@@ -42,7 +41,6 @@ require (
 	github.com/slok/go-http-metrics v0.9.0
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.0.0
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1

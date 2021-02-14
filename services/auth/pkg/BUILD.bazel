@@ -12,6 +12,7 @@ go_library(
         "//pkg/utils",
         "//services/auth/config",
         "//services/auth/pkg/handlers",
+        "//services/auth/pkg/rabbit:go_default_library",
         "//services/auth/pkg/services/authentication",
         "//services/auth/pkg/services/user",
         "@com_github_gorilla_mux//:go_default_library",

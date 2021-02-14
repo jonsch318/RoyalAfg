@@ -16,3 +16,20 @@ go_library(
         "@org_uber_go_zap//:go_default_library",
     ],
 )
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "get_user.go",
+        "handler.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/mw",
+        "//pkg/responses",
+        "//pkg/utils",
+        "//services/user/pkg/database:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+    ],
+)

@@ -55,7 +55,7 @@ func Start(logger *zap.SugaredLogger) {
 
 	userDatabase := database.NewUserDatabase(logger)
 
-	// grpc server serviceConfig
+	// grpc server config
 	gs := grpc.NewServer()
 
 	userServer := servers.NewUserServer(logger, userDatabase, metrics)
