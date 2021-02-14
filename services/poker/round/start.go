@@ -1,22 +1,26 @@
 package round
 
 import (
+	"time"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
-	"log"
-	"time"
 )
 
 func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
+	log.Logger.Debugf("Start called reseting bank and initializing")
 
+	//Initializing start
 	r.Bank.Reset()
-
 	r.Dealer = dealer
 	r.Players = players
 	r.InCount = byte(len(players))
 	r.HoleCards = make(map[string][2]models.Card, len(players))
+
+	log.Logger.Debugf("Configured round")
 
 	//publish players and position
 
@@ -88,7 +92,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	for i, n := range winningPlayers {
 		winningPublic[i] = publicPlayers[n]
 	}
-	log.Printf("Winners: %v", winningPlayers)
+	log.Logger.Infof("Winners: %v", winningPlayers)
 	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 

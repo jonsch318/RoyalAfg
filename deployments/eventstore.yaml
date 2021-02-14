@@ -58,7 +58,7 @@ spec:
           - containerPort: 1113
             name: ui
         volumeMounts:
-          - mountPath: "/usr/data/eventstore"
+          - mountPath: "/var/lib/eventstore"
             name: eventstore-pv-storage
   volumeClaimTemplates:
     - metadata:

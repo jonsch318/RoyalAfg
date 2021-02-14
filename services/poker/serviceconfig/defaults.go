@@ -16,6 +16,7 @@ const RabbitBankQueue = "rabbit_bank_queue"
 const MatchMakerJWTKey = "matchmaker_signing_key"
 
 const NeedEnterToStart = "gamestart_needs_enter"
+const GameRequiresUniquePlayers = "game_require_unique"
 
 //SetDefaults configures all defaults
 func SetDefaults() {
@@ -30,5 +31,5 @@ func SetDefaults() {
 	viper.SetDefault(MatchMakerJWTKey, "matchmakerkey")
 
 	viper.SetDefault(NeedEnterToStart, false)
-
+	viper.SetDefault(GameRequiresUniquePlayers, false)
 }

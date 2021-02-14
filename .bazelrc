@@ -1,0 +1,2 @@
+run --incompatible_restrict_string_escapes=false
+build --incompatible_restrict_string_escapes=false

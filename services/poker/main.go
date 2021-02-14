@@ -68,18 +68,21 @@ func main() {
 
 	serviceconfig.SetDefaults()
 
+	lobbyConfigured := false
 	shutDownStop := make(chan interface{})
-
 	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
-		err := SetLobby(b, lobbyInstance, gs, logger)
-		if err == nil {
-			logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
-			if lobbyInstance.TotalPlayerCount() <= 0 {
-				go StartShutdownTimer(shutDownStop, s)
+		if !lobbyConfigured {
+			err := SetLobby(b, lobbyInstance, gs, logger)
+			if err == nil {
+				logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
+				if lobbyInstance.Count() <= 0 {
+					go StartShutdownTimer(shutDownStop, s)
+				}
+			}else {
+				logger.Errorw("Error during configuration", "error", err)
 			}
 		}
-		logger.Errorw("Error during configuration", "error", err)
 	})
 	if err != nil {
 		logger.Fatalf("Error during sdk annotation subscription: %s", err)

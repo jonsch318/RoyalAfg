@@ -50,11 +50,11 @@ type PlayerLeavesEvent struct {
 	Index  int                  `json:"index"`
 }
 
-func NewPlayerLeavesEvent(player *models.Player, i int) *PlayerLeavesEvent {
-	return &PlayerLeavesEvent{
-		Player: player.ToPublic(),
+func NewPlayerLeavesEvent(player *models.PublicPlayer, i int) *models.Event {
+	return models.NewEvent(PLAYER_LEAVE, &PlayerLeavesEvent{
+		Player: player,
 		Index:  i,
-	}
+	})
 }
 
 type PlayerJoinEvent struct {

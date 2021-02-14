@@ -6,7 +6,6 @@ import (
 
 type AccountCreated struct {
 	ID string
-	Balance int
 }
 
 type Withdrawn struct {

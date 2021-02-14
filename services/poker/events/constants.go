@@ -9,6 +9,8 @@ const PLAYER_ACTION = "PLAYER_ACTION"
 
 const JOIN_SUCCESS = "JOIN_SUCCESS"
 const PLAYER_JOIN = "PLAYER_JOIN"
+const PLAYER_LEAVE = "PLAYER_LEAVE"
+
 const REQUIRED_EVENT_NAME_MISSING = "The event recieved does not match the required event name"
 const GAME_START = "GAME_START"
 const DEALER_SET = "DEALER_SET"

@@ -33,12 +33,12 @@ protobuf_deps()
 
 # Docker rules
 
-# Download the rules_docker repository at release v0.14.4
+# Download the rules_docker repository at release v0.14.3
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "4521794f0fba2e20f3bf15846ab5e01d5332e587e9ce81629c7f96c793bb7036",
-    strip_prefix = "rules_docker-0.14.4",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.4/rules_docker-v0.14.4.tar.gz"],
+    sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
+    strip_prefix = "rules_docker-0.15.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.15.0/rules_docker-v0.15.0.tar.gz"],
 )
 
 load(
@@ -48,41 +48,21 @@ load(
 
 container_repositories()
 
-load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+load(
+    "@io_bazel_rules_docker//repositories:go_repositories.bzl",
+    container_go_deps = "go_deps",
+)
 
-container_deps()
+container_go_deps()
 
-load("@io_bazel_rules_docker//repositories:pip_repositories.bzl", "pip_deps")
 
-pip_deps()
+
 
 load(
-    "@io_bazel_rules_docker//container:container.bzl",
-    "container_pull",
+    "@io_bazel_rules_docker//go:image.bzl",
+    _go_image_repos = "repositories",
 )
-
-container_pull(
-    name = "alpine_linux_amd64",
-    registry = "index.docker.io",
-    repository = "library/alpine",
-    tag = "3.8",
-)
-load(
-    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
-    docker_toolchain_configure = "toolchain_configure",
-)
-
-docker_toolchain_configure(
-    name = "docker_config",
-    # OPTIONAL: Path to a directory which has a custom docker client config.json.
-    # See https://docs.docker.com/engine/reference/commandline/cli/#configuration-files
-    # for more details.
-    # client_config = "/home/jonas/.docker/config.json",
-    docker_flags = [
-        "--tls",
-        "--log-level=info",
-    ],
-)
+_go_image_repos()
 
 
 # Go rules
@@ -117,3 +97,12 @@ load("//:deps.bzl", "go_dependencies")
 
 # gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
+
+load("@bazel_gazelle//:deps.bzl", "go_repository")
+
+go_repository(
+    name = "io_k8s_api",
+    build_file_proto_mode = "disable_global",
+    commit = "a191abe0b71e00ce4cde58af8002aa4c1a8bb068",
+    importpath = "k8s.io/api",
+)

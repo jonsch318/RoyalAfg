@@ -19,7 +19,8 @@ func (l *Lobby) Start() {
 	go func() {
 		for len(l.Players) >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 
-			// Protection against multiple games using a buffered channel
+
+			// Protection against multiple games using a buffered channel. Once one is through the 15 seconds timeout all other cancel the starting process.
 			timer := time.NewTimer(15 * time.Second)
 			select {
 			case <-l.c:
@@ -30,6 +31,8 @@ func (l *Lobby) Start() {
 
 			// channel is empty, so the buffer is free to be filled.
 			l.c <- true
+
+			l.PrepareForRound()
 
 			if viper.GetBool(serviceconfig.NeedEnterToStart) {
 				reader := bufio.NewReader(os.Stdin)
@@ -65,12 +68,7 @@ func (l *Lobby) Start() {
 			l.GameStarted = false
 			l.lock.Unlock()
 
-			if l.HasToBeRemoved() {
-				l.RemoveAfterGame()
-			}
-			if l.HasToBeAdded() {
-				l.EmptyToBeAdded()
-			}
+			l.RemoveAfterRound()
 		}
 	}()
 }
