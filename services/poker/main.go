@@ -79,6 +79,8 @@ func main() {
 				if lobbyInstance.Count() <= 0 {
 					go StartShutdownTimer(shutDownStop, s)
 				}
+				//Lobby is configured through kubernetes labels and is assigned a unique id.
+				lobbyConfigured = true
 			}else {
 				logger.Errorw("Error during configuration", "error", err)
 			}
@@ -145,7 +147,6 @@ func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, 
 	if !ok {
 		return errors.New("can not get the required information for the key lobbyId")
 	}
-	logger.Infow("Set Lobby", "LobbyId", lobbyId)
 	b.RegisterLobby(lobbyId)
 
 	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{

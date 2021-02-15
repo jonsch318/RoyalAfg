@@ -1,9 +1,9 @@
 package round
 
 import (
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"log"
 	"sort"
 )
 
@@ -50,7 +50,7 @@ func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, ban
 			l.list = append(l.list, i)
 		}
 	}
-	log.Printf("After raise blocking: %v", l.list)
+	log.Logger.Debugf("After raise blocking: %v", len(l.list))
 	return l.list
 }
 

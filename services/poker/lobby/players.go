@@ -23,8 +23,10 @@ func (l *Lobby) Join(player *models.Player)  {
 	//Add player to queue
 	l.PlayerQueue.Enqueue(player)
 
+	log.Logger.Debugf("Gamestart if [%d] > %d && %v", l.Count(), viper.GetInt(serviceconfig.PlayersRequiredForStart), !l.GetGameStarted())
 	//Start game if not already started.
-	if len(l.Players) >= viper.GetInt(serviceconfig.PlayersRequiredForStart) && !l.GetGameStarted() {
+	if l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) && !l.GetGameStarted() {
+		log.Logger.Debugf("Calling start")
 		l.Start()
 	}
 	return
@@ -70,9 +72,10 @@ func (l *Lobby) FillLobbyPosition()  {
 	//Start CloseWatching
 	go l.WatchPlayerConnClose(playerIndex)
 
-	log.Logger.Debugf("Started watching player close and sending event")
+	log.Logger.Debugf("started watching player close and sending event")
 	//Send join confirmation to player
-	utils.SendToPlayer(player, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GetGameStarted(), 0, playerIndex, l.Class.Max, l.Class.Min, l.Class.Blind))
+	utils.SendToPlayerInList(l.Players, playerIndex, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GameStarted, 0, playerIndex, l.Class.Max, l.Class.Min, l.Class.Blind))
+	log.Logger.Debugf("send event")
 
 	//Update player count label (matchmaker)
 	l.SetPlayerCountLabel()

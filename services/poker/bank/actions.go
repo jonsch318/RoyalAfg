@@ -1,8 +1,22 @@
 package bank
 
+import (
+	"fmt"
+
+	"github.com/Rhymond/go-money"
+)
+
 //PerformBet performs a check action. This equals the players bet to the current maximum bet.
 func (b *Bank) PerformBet(playerId string) error {
 	return b.Bet(playerId, b.MaxBet)
+}
+
+//PerformRaise checks if it
+func (b *Bank) PerformRaise(playerId string, amount *money.Money) error {
+	if !b.IsRaise(amount) {
+		return fmt.Errorf("the specified amount is not higher than the highest bet")
+	}
+	return b.Bet(playerId, amount)
 }
 
 //Perform Check

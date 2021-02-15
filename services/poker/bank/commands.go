@@ -6,28 +6,29 @@ import (
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 )
 
 
 func (b *Bank) PublishCommand(command bank.Command) error {
 
 	//Fill all fields.
-
 	command.Lobby = b.LobbyId
 	command.Game = "Poker"
 
 	var buf *bytes.Buffer
 	err := json.NewEncoder(buf).Encode(&command)
 	if err != nil {
+		log.Logger.Errorw("Command could not be encoded", "error", err)
 		return err
 	}
 
 	err = b.eventBus.PublishCommand(command.CommandType, buf.Bytes())
 
 	if err != nil {
+		log.Logger.Errorw("Command could not be added to the event bus", "error", err)
 		return err
 	}
-
 	return nil
 }
 
@@ -35,6 +36,7 @@ func (b *Bank) PublishCommand(command bank.Command) error {
 func (b *Bank) ExecuteQueue()  {
 	//compressed commands evaluate the end difference after the game (e.g. -5 -5 -5 +10 => -5). This reduces traffic and load on the bank.
 	//in case of a crash the entire poker game will not persisted to the bank. The bank will be updated once a round. Buy In is an extra
+	log.Logger.Debugf("compressing commands")
 	compressed := make(map[string]bank.Command, len(b.PlayerWallet))
 	for _, command := range b.eventQueue {
 		v, ok := compressed[command.UserId]
@@ -50,10 +52,13 @@ func (b *Bank) ExecuteQueue()  {
 		}
 	}
 
+	log.Logger.Debugf("Compressed commands publishing them now")
+
 	//Publish compressed commands
 	for _, command := range compressed {
 		command.Time = time.Now()
-		b.PublishCommand(command)
+		//Retry functionality should be implemented here. A crucial peace to send all events to the bank. Add redundancy
+		_ = b.PublishCommand(command)
 	}
 }
 

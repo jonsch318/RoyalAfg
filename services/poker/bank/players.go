@@ -3,6 +3,7 @@ package bank
 import (
 	"errors"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 )
@@ -24,6 +25,7 @@ func (b *Bank) RemovePlayer(id string) error {
 		delete(b.PlayerWallet, id)
 		return nil
 	}
+	log.Logger.Infof("Tried removing player [%v] which is not registered in the bank", id)
 	return errors.New("player not registered in bank")
 }
 
@@ -34,6 +36,7 @@ func (b *Bank) UpdatePublicPlayerBuyIn(p []models.PublicPlayer) {
 	for i := 0; i < len(p); i++ {
 		t, ok := b.PlayerWallet[p[i].ID]
 		if !ok {
+			log.Logger.Warnf("Player [%v] has no wallet", p[i].ID)
 			continue
 		}
 		p[i].BuyIn = t.Display()

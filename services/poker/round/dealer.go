@@ -9,22 +9,13 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 )
 
-func (r *Round) searchByID(id string) (*models.Player, int, error) {
-	for i, n := range r.Players {
-		if n.ID == id {
-			return &n, i, nil
-		}
-	}
-	return nil, -1, errors.New("Player not in game")
-}
-
 func (r *Round) searchByActiveID(id string) (int, error) {
 	for i, n := range r.Players {
 		if n.ID == id && n.Active {
 			return i, nil
 		}
 	}
-	return -1, errors.New("Player not in game")
+	return -1, errors.New("player not in game")
 }
 
 func (r *Round) sendDealer() {

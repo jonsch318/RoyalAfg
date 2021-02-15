@@ -3,20 +3,25 @@ package dtos
 import (
 	"errors"
 	"log"
+	"reflect"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )
 
 
 type AccountBalanceQuery struct {
 	accounts map[string]int
+	repo *repositories.Account
 }
 
-func NewAccountBalanceQuery() *AccountBalanceQuery  {
+func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery  {
 	return &AccountBalanceQuery{
 		accounts: make(map[string]int),
+		repo: repo,
 	}
 }
 
@@ -51,7 +56,13 @@ func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 func (q *AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
 	res, ok := q.accounts[id]
 	if !ok {
-		return -1, errors.New("the account with the given id does not exist")
+		item, err := q.repo.Load(reflect.TypeOf(&aggregates.Account{}).Elem().Name(), id)
+
+		if err != nil {
+			return -1, errors.New("the account with the given id does not exist")
+		}
+
+		return item.Balance, nil
 	}
 
 	if res == -1 {

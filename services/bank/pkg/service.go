@@ -52,18 +52,19 @@ func Start(logger *zap.SugaredLogger) {
 	//the result is then saved into the shared db.
 	eventBus := ycq.NewInternalEventBus()
 
+	repo, err := repositories.NewAccount(eventStore, eventBus)
+	if err != nil {
+		logger.Fatalw("account repo err", "error", err)
+	}
+
 	//Read Model declarations
-	accountBalanceQuery := dtos.NewAccountBalanceQuery()
+	accountBalanceQuery := dtos.NewAccountBalanceQuery(repo)
 	accountHistoryQuery := dtos.NewAccountHistoryQuery()
 
 	eventBus.AddHandler(accountBalanceQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
 	eventBus.AddHandler(accountHistoryQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
 
-	repo, err := repositories.NewAccount(eventStore, eventBus)
 
-	if err != nil {
-		logger.Fatalw("account repo err", "error", err)
-	}
 
 	accountCommandHandler := commands.NewAccountCommandHandlers(repo)
 	dispatcher := ycq.NewInMemoryDispatcher()
@@ -111,7 +112,7 @@ func Start(logger *zap.SugaredLogger) {
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logger.Fatalw("Http server counld not listen and serve", "error", err)
+			logger.Fatalw("Http server could not listen and serve", "error", err)
 		}
 	}()
 	logger.Warnf("Http server Listening on address %v", server.Addr)

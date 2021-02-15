@@ -2,11 +2,11 @@ package round
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Rhymond/go-money"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
@@ -25,11 +25,15 @@ type ActionRoundOptions struct {
 	BlockingList *BlockingList
 }
 
+//RecursiveAction acquires actions from every player so that everybody folds, bets the same amount, or go all in
 func (r *Round) RecursiveAction(options *ActionRoundOptions){
 
+	//_____Preceding checks_____
+
 	//Checks in Poker are difficult to keep track. We count all the checks and decide whether more checks are legal.
-	log.Printf("Checkcount: %v; InCount: %v", options.CheckCount, r.InCount)
+	log.Logger.Debugf("Checkcount: %v; InCount: %v", options.CheckCount, r.InCount)
 	if options.CanCheck && options.CheckCount >= r.InCount {
+		log.Logger.Debugf("number of checks exceed lmits")
 		options.CanCheck = false
 	}
 
@@ -42,8 +46,12 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 	options.PlayerId = r.Players[options.Current].ID
 	options.Success = false
 
+	log.Logger.Debugf("Action round setup")
+
 	// Check for any abnormalities. Player must be active and has money to bet.
 	if options.Current < 0 || !r.Players[options.Current].Active || r.Bank.IsAllIn(options.PlayerId) {
+
+		log.Logger.Warnf("Player is not active or already all in. Continuing with next in list")
 		// remove from blocking list
 		options.BlockingList.RemoveBlocking(options.BlockingIndex)
 		options.BlockingIndex = options.BlockingIndex % options.BlockingList.Length()
@@ -51,17 +59,22 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 		return
 	}
 
+	//____Acquire actions_____
+
 	r.ActionTries(options)
 
+	//_____Subsequent checks_____
+
 	if !options.Success {
+		log.Logger.Warnf("Actions were not successful the player is counted as folded")
 		options.SuccessfulAction = &events.Action{
 			Action:  events.FOLD,
 			Payload: moneyUtils.Zero(),
 		}
-		_ = r.Fold(options.PlayerId)
-		options.BlockingList.RemoveBlocking(options.BlockingIndex)
+		r.Action(options)
 	}
 
+	//Sending results to clients
 	utils.SendToAll(r.Players,
 		events.NewActionProcessedEvent(
 			options.SuccessfulAction.Action,
@@ -71,16 +84,23 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 			r.Bank.GetPlayerWallet(options.PlayerId),
 			),
 	)
+
+	log.Logger.Debugf("Send results to clients")
+
 	time.Sleep(1 * time.Second)
 
 	if !options.BlockingList.CheckIfEmpty() {
-		//Get Next in Line
+		//Get next in blocking list
 		next := options.BlockingList.GetNext(options.SuccessfulAction.Action != events.CHECK, options.BlockingIndex)
-
 		options.BlockingIndex = next
+
+		log.Logger.Debugf("Blocking list is not empty continue with %v", next)
+
 		r.RecursiveAction(options)
+		return
 	}
 
+	//No one is blocking to continue, so we return
 	return
 }
 
@@ -100,14 +120,17 @@ func (r *Round) ActionTries(options *ActionRoundOptions)  {
 			break
 		}
 	}
+	log.Logger.Debugf("Action tries concluded")
 }
 
 func (r *Round) Action(options *ActionRoundOptions) {
+	defer log.Logger.Debugf("Action taken successfully: %v", options.Success)
 	switch options.SuccessfulAction.Action {
 	case events.FOLD:
 		_ = r.Fold(options.PlayerId)
 		options.BlockingList.RemoveBlocking(options.BlockingIndex)
 		options.Success = true
+
 		return
 
 	case events.CHECK:
@@ -133,15 +156,13 @@ func (r *Round) Action(options *ActionRoundOptions) {
 		return
 
 	case events.RAISE:
-		if r.Bank.IsRaise(options.Payload) {
-			err := r.Bank.Bet(options.PlayerId, options.Payload)
-			if err == nil {
-				options.Success = true
-				options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
-				return
-			}
-			r.playerError(options.BlockingIndex, fmt.Sprintf("Raise must be higher than the highest bet."))
+		err := r.Bank.PerformRaise(options.PlayerId, options.Payload)
+		if err == nil {
+			options.Success = true
+			options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
+			return
 		}
+		r.playerError(options.BlockingIndex, fmt.Sprintf("Raise must be higher than the highest bet."))
 		return
 
 	case events.BET:
