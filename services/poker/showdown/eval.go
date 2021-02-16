@@ -1,8 +1,8 @@
 package showdown
 
 import (
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"log"
 )
 
 type WinnerInfo struct{
@@ -14,13 +14,14 @@ type WinnerInfo struct{
 func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5]models.Card) []WinnerInfo {
 
 	if len(players) < 1 {
-		log.Printf("No players. Nobody wins")
+		log.Logger.Info("No players. Nobody wins")
 		return nil
 	}
 
 	if len(players) == 1 {
 		if players[0].Active{
 			//player wins
+			log.Logger.Info("The only player that is active wins")
 			return []WinnerInfo{
 				{
 					Player:   players[0],
@@ -42,7 +43,7 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 				Position: i,
 			}
 			ranks[info] = rank
-			log.Printf("Ranking Player %v => %d", players[i].ID, rank)
+			log.Logger.Infof("Ranking Player %v => %d", players[i].ID, rank)
 		}
 	}
 	winners := make([]WinnerInfo, 0)
@@ -74,7 +75,7 @@ func evaluatePlayer(cards []models.Card) int {
 	for i := -1; i < 5; i++ {
 		for j := -1; j < 5; j++ {
 			if i == j {
-				log.Printf("Skipped: %d", i)
+				log.Logger.Debugf("Skipped: %d", i)
 				continue
 			}
 
@@ -89,7 +90,7 @@ func evaluatePlayer(cards []models.Card) int {
 			}
 
 			r := rankSpecificHand(cards[2:])
-			log.Printf("Set : %v => %v", cards[2:], r)
+			log.Logger.Debugf("Set : %v => %v", cards[2:], r)
 
 			if r > maxRank {
 				maxRank = r

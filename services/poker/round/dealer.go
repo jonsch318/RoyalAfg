@@ -19,7 +19,7 @@ func (r *Round) searchByActiveID(id string) (int, error) {
 }
 
 func (r *Round) sendDealer() {
-	log.Logger.Infow("dealer send", r.Dealer)
+	log.Logger.Infow("dealer send", "dealer", r.Dealer)
 	if !r.Ended {
 		utils.SendToAll(r.Players, models.NewEvent(events.DEALER_SET, r.Dealer))
 	}

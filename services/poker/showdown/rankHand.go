@@ -4,10 +4,9 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 )
 
-//rankSpecificHand generates a rank identificiation number for 5 card array out of the 7 cards.
+//rankSpecificHand generates a rank identification number for 5 card array out of the 7 cards.
 func rankSpecificHand(cards []models.Card) int {
 
-	//Hand identifier explanation:
 	// 1 Byte Number:
 	// 4 MSB: Describe Hand State (0: High Card - 8: Straight Flush)
 	// 4 LSB: Describe State Identifier via Highest Card (0: Card Value 2 - 12: Card Value Ace)

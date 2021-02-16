@@ -1,7 +1,6 @@
 package bank
 
 import (
-	"bytes"
 	"encoding/json"
 	"time"
 
@@ -16,14 +15,13 @@ func (b *Bank) PublishCommand(command bank.Command) error {
 	command.Lobby = b.LobbyId
 	command.Game = "Poker"
 
-	var buf *bytes.Buffer
-	err := json.NewEncoder(buf).Encode(&command)
+	buf, err := json.Marshal(&command)
 	if err != nil {
 		log.Logger.Errorw("Command could not be encoded", "error", err)
 		return err
 	}
 
-	err = b.eventBus.PublishCommand(command.CommandType, buf.Bytes())
+	err = b.eventBus.PublishCommand(command.CommandType, buf)
 
 	if err != nil {
 		log.Logger.Errorw("Command could not be added to the event bus", "error", err)

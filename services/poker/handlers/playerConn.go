@@ -71,6 +71,7 @@ func (p *PlayerConn) writer() {
 				return
 			}
 
+			log.Logger.Debugf("Send event successfully")
 			//Create Websocket writer
 			w, err := p.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
@@ -93,7 +94,6 @@ func (p *PlayerConn) writer() {
 			if err != nil {
 				log.Logger.Warnw("error during websocket writer closing", "error", err)
 			}
-			log.Logger.Debugf("Send event successfully")
 		}
 	}
 }

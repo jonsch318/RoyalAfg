@@ -95,7 +95,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 func (r *Round) Evaluate() {
 	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
 	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board)
-	log.Logger.Infow("Winners determined", "winners", winners)
+	log.Logger.Infow("Winners determined")
 
 	//Publish commands to bank service.
 	shares := r.Bank.ConcludeRound(winners)
