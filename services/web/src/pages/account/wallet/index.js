@@ -24,7 +24,7 @@ WalletHeader.propTypes = {
     value: PropTypes.object
 };
 
-const Wallet = () => {
+const Wallet = ({ value, history }) => {
     const account = {
         value: Dinero({ amount: 25000, currency: "EUR" }),
         transactions: [
@@ -49,5 +49,31 @@ const Wallet = () => {
         </Layout>
     );
 };
+
+export async function getStaticProps(ctx) {
+    const { req } = ctx;
+
+    const res = await fetch(`${process.env.API_ADRESS}/api/bank/history`, {
+        headers: {
+            cookie: req.headers.cookie ?? ""
+        }
+    });
+
+    const valueRes = await fetch(`${process.env.API_ADRESS}/api/bank/history`, {
+        headers: {
+            cookie: req.headers.cookie ?? ""
+        }
+    });
+
+    const history = await res.json();
+    const value = await valueRes.json();
+
+    return {
+        props: {
+            history: history,
+            value: value
+        }
+    };
+}
 
 export default Wallet;

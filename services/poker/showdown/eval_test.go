@@ -1,10 +1,13 @@
 package showdown
 
 import (
+	"github.com/stretchr/testify/assert"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"testing"
 )
 
+var winnerResult []WinnerInfo
 func TestEvaluate(t *testing.T) {
 	//setup
 	players := []models.Player{{ID: "a", Active: true}, {ID: "b", Active: true}}
@@ -15,15 +18,21 @@ func TestEvaluate(t *testing.T) {
 
 	winners := Evaluate(players, cards, board)
 
-	if len(winners) > 1 || len(winners) < 1 {
-		t.Errorf("The winners do not match %v", winners)
-		return
-	}
+	assert.Len(t, winners, 1)
+	assert.Equal(t, "a", winners[0].Player.ID)
+}
 
-	if winners[0] != "a" {
-		t.Errorf("The winners do not match [%v] != %v", "a", winners[0])
-		return
+func BenchmarkEvaluate(b *testing.B) {
+	players := []models.Player{{ID: "a", Active: true}, {ID: "b", Active: true}}
+	cards := make(map[string][2]models.Card)
+	cards["a"] = [2]models.Card{{Color: 2, Value: 11}, {Color: 1, Value: 11}}
+	cards["b"] = [2]models.Card{{Color: 3, Value: 8}, {Color: 0, Value: 1}}
+	board := [5]models.Card{{Color: 0, Value: 11}, c(3, 4), c(1, 4), c(0, 7), c(2, 2)}
+	var winners []WinnerInfo
+	for i := 0; i < b.N; i++ {
+		winners = Evaluate(players, cards, board)
 	}
+	winnerResult = winners
 }
 
 func TestEvaluatePlayer(t *testing.T) {

@@ -49,6 +49,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/urfave/negroni v1.0.0
+	github.com/vektra/mockery v1.1.2 // indirect
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect

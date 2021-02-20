@@ -50,6 +50,9 @@ func (b *Bank) ExecuteQueue()  {
 		}
 	}
 
+	//We could include more information (in which round was bet how much etc).
+	//
+
 	log.Logger.Debugf("Compressed commands publishing them now")
 
 	//Publish compressed commands

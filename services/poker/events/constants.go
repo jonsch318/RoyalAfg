@@ -11,7 +11,7 @@ const JOIN_SUCCESS = "JOIN_SUCCESS"
 const PLAYER_JOIN = "PLAYER_JOIN"
 const PLAYER_LEAVE = "PLAYER_LEAVE"
 
-const REQUIRED_EVENT_NAME_MISSING = "The event recieved does not match the required event name"
+const REQUIRED_EVENT_NAME_MISSING = "The event received does not match the required event name"
 const GAME_START = "GAME_START"
 const DEALER_SET = "DEALER_SET"
 const HOLE_CARDS = "HOLE_CARDS"

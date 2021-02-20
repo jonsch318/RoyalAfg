@@ -3,11 +3,12 @@ package authentication
 import (
 	"errors"
 
+	"github.com/spf13/viper"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
-	"github.com/spf13/viper"
 )
 
 func (auth Service) Login(username, password string) (*models.User, string, error) {

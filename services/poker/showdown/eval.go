@@ -21,7 +21,6 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 	if len(players) == 1 {
 		if players[0].Active{
 			//player wins
-			log.Logger.Info("The only player that is active wins")
 			return []WinnerInfo{
 				{
 					Player:   players[0],
@@ -43,7 +42,6 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 				Position: i,
 			}
 			ranks[info] = rank
-			log.Logger.Infof("Ranking Player %v => %d", players[i].ID, rank)
 		}
 	}
 	winners := make([]WinnerInfo, 0)
@@ -68,14 +66,13 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 }
 
 //evaluatePlayer generates a number as an identification of the players hole cards + the boards cards rank. it selects the best card section and return the rank.
-//this probably could be better optimised with technics like tree shaking, etc. but it works.
+//this probably could be better optimised with technics like tree shaking, etc. but it works. O(n^2) or O(n^3)
 func evaluatePlayer(cards []models.Card) int {
 
 	maxRank := rankSpecificHand(cards[2:])
 	for i := -1; i < 5; i++ {
 		for j := -1; j < 5; j++ {
 			if i == j {
-				log.Logger.Debugf("Skipped: %d", i)
 				continue
 			}
 
@@ -90,7 +87,6 @@ func evaluatePlayer(cards []models.Card) int {
 			}
 
 			r := rankSpecificHand(cards[2:])
-			log.Logger.Debugf("Set : %v => %v", cards[2:], r)
 
 			if r > maxRank {
 				maxRank = r
@@ -108,11 +104,4 @@ func evaluatePlayer(cards []models.Card) int {
 	}
 
 	return maxRank
-}
-
-func normalizeAce(number int) int {
-	if number-1 < 0 {
-		return 12
-	}
-	return number
 }

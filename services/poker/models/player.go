@@ -31,5 +31,5 @@ func NewPlayer(username, id string, buyin int, in chan *Event, out chan []byte, 
 }
 
 func (p *Player) String() string {
-	return fmt.Sprintf("Player [%v]: %v has %d", p.ID, p.Username, p.BuyIn)
+	return fmt.Sprintf("Player [%s]: %vs has %s", p.ID, p.Username, p.BuyIn.Display())
 }

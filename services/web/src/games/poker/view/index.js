@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+ import * as PIXI from "pixi.js";
 import React from "react";
 import { Board } from "./board";
 import { Players } from "./players";
