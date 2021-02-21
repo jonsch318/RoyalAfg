@@ -64,7 +64,7 @@ func (b *Bank) Bet(id string, amount *money.Money) error {
 	log.Logger.Debugf("transaction done publishing event")
 
 	//Could use b.PlayerBet but this works as well
-	b.AddBetEvent(id, int(ad.Amount()))
+	b.AddBetEvent(id, ad)
 
 	return nil
 }

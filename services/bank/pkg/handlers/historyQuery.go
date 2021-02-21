@@ -12,7 +12,7 @@ import (
 
 type HistoryQueryDto struct {
 	UserID string `json:"userId"`
-	History []dtos.AccountHistoryEvent `history`
+	History []dtos.AccountHistoryEvent `json:"history"`
 }
 
 func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {

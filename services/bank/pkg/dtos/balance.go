@@ -2,11 +2,13 @@ package dtos
 
 import (
 	"errors"
-	"log"
 	"reflect"
 
+	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
@@ -14,59 +16,67 @@ import (
 
 
 type AccountBalanceQuery struct {
-	accounts map[string]int
+	accounts map[string]*money.Money
 	repo *repositories.Account
 }
 
 func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery  {
 	return &AccountBalanceQuery{
-		accounts: make(map[string]int),
+		accounts: make(map[string]*money.Money),
 		repo: repo,
 	}
 }
 
 func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 
-	log.Printf("Read Model handle %v", message)
+	log.Logger.Debugf("Read Model handle %v", message)
 
 	switch ev := message.Event().(type) {
 	case *events.AccountCreated:
-		log.Printf("created [%v]", message.AggregateID())
-		q.accounts[message.AggregateID()] = 0
+		log.Logger.Debugf("created [%v]", message.AggregateID())
+		q.accounts[message.AggregateID()] = currency.Zero()
 
 	case *events.Deposited:
 		a, err := q.GetAccountBalance(message.AggregateID())
 		if err != nil {
-			log.Printf("the account was not created")
+			log.Logger.Errorf("the account was not created")
+			return
 		}
-		log.Printf("Deposited [%v] %v", message.AggregateID(), ev.Amount)
-		q.accounts[message.AggregateID()] = a + ev.Amount
+		log.Logger.Debugf("Deposited [%v] %v", message.AggregateID(), ev.Amount)
+		res, err := a.Add(ev.Amount)
+		if err != nil {
+			log.Logger.Errorw("balance read model could not handle event", "error", err)
+			return
+		}
+		q.accounts[message.AggregateID()] = res
 
 	case *events.Withdrawn:
 		a, err := q.GetAccountBalance(message.AggregateID())
 		if err != nil{
-			log.Printf("the account was not created")
+			log.Logger.Debugf("the account was not created")
+			return
 		}
-		log.Printf("Withdrawn [%v] %v", message.AggregateID(), ev.Amount)
-		q.accounts[message.AggregateID()] = a - ev.Amount
+		log.Logger.Debugf("Withdrawn [%v] %v", message.AggregateID(), ev.Amount)
+		res, err := a.Subtract(ev.Amount)
+		if err != nil {
+			log.Logger.Errorw("balance read model could not handle event", "error", err)
+			return
+		}
+		q.accounts[message.AggregateID()] = res
 	}
 
 }
 
-func (q *AccountBalanceQuery) GetAccountBalance(id string) (int, error) {
+func (q *AccountBalanceQuery) GetAccountBalance(id string) (*money.Money, error) {
 	res, ok := q.accounts[id]
 	if !ok {
 		item, err := q.repo.Load(reflect.TypeOf(&aggregates.Account{}).Elem().Name(), id)
 
 		if err != nil {
-			return -1, errors.New("the account with the given id does not exist")
+			return nil, errors.New("the account with the given id does not exist")
 		}
 
 		return item.Balance, nil
-	}
-
-	if res == -1 {
-		return -1, errors.New("the account with the given id does not exist")
 	}
 
 	return res, nil

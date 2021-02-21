@@ -5,12 +5,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
 
 type BalanceQueryDto struct {
+	Balance *dtos.CurrencyDto `json:"balance"`
 	UserID string `json:"userId"`
-	Balance int `json:"balance"`
 }
 
 func (h Account) QueryBalance(rw http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ func (h Account) QueryBalance(rw http.ResponseWriter, r *http.Request) {
 
 	dto := &BalanceQueryDto{
 		UserID: claims.ID,
-		Balance: balance,
+		Balance: dtos.FromMoney(balance),
 	}
 
 	_ = json.NewEncoder(rw).Encode(dto)

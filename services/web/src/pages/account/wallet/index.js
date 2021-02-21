@@ -26,7 +26,7 @@ WalletHeader.propTypes = {
 
 const Wallet = ({ value, history }) => {
     const account = {
-        value: Dinero({ amount: 25000, currency: "EUR" }),
+        value: value,
         transactions: [
             { amount: 1000, game: "", lobby: "", time: moment().subtract(7, "days") },
             { amount: -2500, game: "Poker", lobby: "UXMSK", time: moment().subtract(1, "h") },
@@ -37,14 +37,14 @@ const Wallet = ({ value, history }) => {
     return (
         <Layout>
             <BackToAccount />
-            <WalletHeader value={account.value} />
+            <WalletHeader value={value} />
             <div className="px-10 pb-10 bg-gray-200">
                 <ActionMenu>
                     <ActionMenuLink href="/account/wallet/deposit">Deposit</ActionMenuLink>
                 </ActionMenu>
             </div>
             <div className="p-10 bg-white">
-                <TransactionList transactions={account.transactions} />
+                <TransactionList transactions={history} />
             </div>
         </Layout>
     );
@@ -59,7 +59,7 @@ export async function getStaticProps(ctx) {
         }
     });
 
-    const valueRes = await fetch(`${process.env.API_ADRESS}/api/bank/history`, {
+    const valueRes = await fetch(`${process.env.API_ADRESS}/api/bank/balance`, {
         headers: {
             cookie: req.headers.cookie ?? ""
         }

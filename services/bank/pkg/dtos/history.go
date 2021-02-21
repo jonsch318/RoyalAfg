@@ -6,11 +6,12 @@ import (
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
 type AccountHistoryEvent struct {
-	Amount int `json:"amount"`
+	Amount *dtos.CurrencyDto `json:"amount"`
 	Type string `json:"type"`
 	Time time.Time `json:"time"`
 }
@@ -32,13 +33,13 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 		q.accounts[message.AggregateID()] = make([]AccountHistoryEvent,0)
 	case *events.Deposited:
 		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], AccountHistoryEvent{
-			Amount: ev.Amount,
+			Amount: dtos.FromMoney(ev.Amount),
 			Type:   "Deposited",
 			Time:   time.Now(),
 		})
 	case *events.Withdrawn:
 		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], AccountHistoryEvent{
-			Amount: ev.Amount,
+			Amount: dtos.FromMoney(ev.Amount),
 			Type:   "Withdrawn",
 			Time:   time.Now(),
 		})

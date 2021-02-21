@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/Rhymond/go-money"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 )
 
@@ -43,9 +46,19 @@ func (b *Bank) ExecuteQueue()  {
 		}else {
 			switch command.CommandType {
 			case bank.Withdraw:
-				v.Amount -= command.Amount
+				res, err := dtos.FromDTO(v.Amount).Subtract(dtos.FromDTO(command.Amount))
+				if err != nil {
+					log.Logger.Errorw("Error during Command queue execution. Cannot guarantee the correct values are transacted. Closing => no transactions.", "error", err)
+					return
+				}
+				v.Amount = dtos.FromMoney(res)
 			case bank.Deposit:
-				v.Amount += command.Amount
+				res, err := dtos.FromDTO(v.Amount).Add(dtos.FromDTO(command.Amount))
+				if err != nil {
+					log.Logger.Errorw("Error during Command queue execution. Cannot guarantee the correct values are transacted. Closing => no transactions.", "error", err)
+					return
+				}
+				v.Amount = dtos.FromMoney(res)
 			}
 		}
 	}
@@ -63,10 +76,10 @@ func (b *Bank) ExecuteQueue()  {
 	}
 }
 
-func (b *Bank) AddBetEvent(userId string, amount int)  {
+func (b *Bank) AddBetEvent(userId string, amount *money.Money)  {
 	b.eventQueue = append(b.eventQueue, *bank.NewCommand(bank.Withdraw, userId, amount, "Poker", b.LobbyId))
 }
 
-func (b *Bank) AddWinEvent(userId string, amount int){
+func (b *Bank) AddWinEvent(userId string, amount *money.Money){
 	b.eventQueue = append(b.eventQueue, *bank.NewCommand(bank.Deposit, userId, amount, "Poker", b.LobbyId))
 }

@@ -36,7 +36,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo) []string {
 		b.PlayerWallet[player.Player.ID] = res
 
 		//Adds the winning amount to the command queue, so that it will be compressed with the expenses.
-		b.AddWinEvent(player.Player.ID, int(shares[i].Amount()))
+		b.AddWinEvent(player.Player.ID, shares[i])
 		log.Logger.Infof("User [%v] wins share %s", player, shares[i].Display())
 		ret[i] = shares[i].Display()
 	}

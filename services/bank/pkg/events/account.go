@@ -2,6 +2,8 @@ package events
 
 import (
 	"time"
+
+	"github.com/Rhymond/go-money"
 )
 
 type AccountCreated struct {
@@ -10,7 +12,7 @@ type AccountCreated struct {
 
 type Withdrawn struct {
 	ID      string
-	Amount  int
+	Amount  *money.Money
 	GameId  string
 	RoundId string
 	Time    time.Time
@@ -18,7 +20,7 @@ type Withdrawn struct {
 
 type Deposited struct {
 	ID      string
-	Amount  int
+	Amount  *money.Money
 	GameId  string
 	RoundId string
 	Time    time.Time
