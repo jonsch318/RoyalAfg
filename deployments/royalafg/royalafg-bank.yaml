@@ -52,9 +52,9 @@ metadata:
   name: royalafg-bank
 data:
   config.yaml: |
-    jwt_signing_key: testsecret
     eventstore_url: http://localhost:2113?tls=false
-    rabbitmq_url: rabbitmq.service.dc1.consul
+    rabbitmq_url: royalafg-rabbitmq.default.svc.cluster.local:5672
+    Prod: true
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -70,6 +70,20 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service-upstreams": "eventstore:2113"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-status": "update"
+        "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
+        "vault.hashicorp.com/agent-inject-template-rabbitmq.yaml": |
+          {{- with secret "rabbitmq/creds/royalafg" -}}
+          rabbitmq_username: {{.Data.username}}
+          rabbitmq_password: {{.Data.password}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+          jwt_signing_key: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": bank-role
       labels:
         app: royalafg-bank
         service: bank
@@ -79,16 +93,16 @@ spec:
         - name: royalafg-bank
           image: docker.io/johnnys318/royalafg_bank:latest
           env:
-            - name: BANK_RABBITMQ_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: username
-                  name: royalafg-rabbitmq-default-user
-            - name: BANK_RABBITMQ_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: password
-                  name: royalafg-rabbitmq-default-user
+            # - name: BANK_RABBITMQ_USERNAME
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: username
+            #       name: royalafg-rabbitmq-default-user
+            # - name: BANK_RABBITMQ_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: password
+            #       name: royalafg-rabbitmq-default-user
           resources:
               requests:
                 memory: 10Mi

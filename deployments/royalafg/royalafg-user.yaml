@@ -39,8 +39,19 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/connect-service-upstreams": "mongo:27017"
-        "consul.hashicorp.com/connect-service-protocol": "grpc"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-status": "update"
+        "vault.hashicorp.com/agent-inject-secret-mongodb.yaml": "kv-v2/royalafg-user-mongo"
+        "vault.hashicorp.com/agent-inject-template-mongodb.yaml": |
+          {{- with secret "kv-v2/royalafg-user-mongo" -}}
+            mongodb_url: {{.Data.data.url}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+            mongodb_url: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": user-role
       labels:
         app: royalafg-user
     spec:
