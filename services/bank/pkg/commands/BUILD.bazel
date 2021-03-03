@@ -12,5 +12,6 @@ go_library(
         "//services/bank/pkg/domain/aggregates:go_default_library",
         "//services/bank/pkg/repositories:go_default_library",
         "@com_github_jetbasrawi_go_cqrs//:go_default_library",
+        "@com_github_rhymond_go_money//:go_default_library",
     ],
 )

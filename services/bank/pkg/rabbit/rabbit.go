@@ -34,6 +34,10 @@ func NewEventConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher yc
 	}
 	logger.Infof("Queue declared on %v", q.Name)
 
+	if err := ch.ExchangeDeclare(viper.GetString(config.RabbitExchange), "direct", true, false, false, false, nil); err != nil {
+		logger.Fatalw("Exchange Declare Error", "error", err)
+	}
+
 	err = ch.QueueBind(q.Name, q.Name, viper.GetString(config.RabbitExchange), false, nil)
 
 	if err != nil {
@@ -42,12 +46,12 @@ func NewEventConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher yc
 	}
 
 	return &EventConsumer{
-		logger:     logger,
-		conn:       conn,
-		ch:         ch,
-		q:          q,
-		bus:        bus,
-		dispatcher: dispatcher,
+		logger:         logger,
+		conn:           conn,
+		ch:             ch,
+		q:              q,
+		bus:            bus,
+		dispatcher:     dispatcher,
 		commandHandler: handler,
 	}, nil
 }
