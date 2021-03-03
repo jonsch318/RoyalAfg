@@ -2401,3 +2401,9 @@ def go_dependencies():
         sum = "h1:KklB66H3VlpNMkm8T5BH/MROK88o7q9CCn1hl853TzI=",
         version = "v1.0.2",
     )
+    go_repository(
+        name = "com_github_vektra_mockery",
+        importpath = "github.com/vektra/mockery",
+        sum = "h1:uc0Yn67rJpjt8U/mAZimdCKn9AeA97BOkjpmtBSlfP4=",
+        version = "v1.1.2",
+    )
