@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 
 class Button extends PIXI.Container {
     constructor(options) {

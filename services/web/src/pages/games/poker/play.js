@@ -1,5 +1,6 @@
 import React from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 import Actions from "../../../games/poker/actions.js";
 import "../poker.module.css";
@@ -7,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GameState } from "../../../games/poker/game/state.js";
 import { Game } from "../../../games/poker/connection/socket.js";
+import Back from "../../../components/layout/back";
 
 const View = dynamic(import("../../../games/poker/view"), { ssr: false });
 
@@ -56,12 +58,13 @@ const Play = () => {
         gameState.setOnPossibleActions((actions) => {
             setActions(actions);
         });
-        let game = new Game(gameState, ticket, () => {
-            router.push("/games/poker").then();
-        });
+        setGame(
+            new Game(gameState, ticket, () => {
+                router.push("/games/poker").then();
+            })
+        );
         game.start();
         console.log("Starting");
-        setGame(game);
         setJoined(true);
 
         return () => {
@@ -72,6 +75,7 @@ const Play = () => {
 
     return (
         <div className="App">
+            <Back href="/games/poker" />
             {joined ? (
                 <div>
                     <Actions game={game} actions={actions} />

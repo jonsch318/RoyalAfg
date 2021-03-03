@@ -1,4 +1,4 @@
- import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import React from "react";
 import { Board } from "./board";
 import { Players } from "./players";
@@ -88,7 +88,10 @@ class View extends React.Component {
         if (!PIXI.Loader.shared.resources[textureUrl]) {
             this.props.router.push("/games/poker");
         }
-        this.id = PIXI.Loader.shared.resources[textureUrl]?.textures;
+        this.id = PIXI.Loader.shared.resources[textureUrl].textures;
+
+        console.log("ID: ", this.id);
+        console.log("Texture Back", this.id["back.png"]);
 
         this.notification.reset();
         this.players.setup(this.id, {
@@ -98,6 +101,8 @@ class View extends React.Component {
             height: this.tableHeight
         });
         this.board.setup(this.id);
+
+        console.log("SETUP COMPLETE");
         this.app.ticker.add((delta) => this.gameLoop(delta));
     }
 

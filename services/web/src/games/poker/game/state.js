@@ -43,8 +43,8 @@ class GameState {
         this.onGameEnd = onGameEnd.bind(this);
     }
 
-    setOnGameStart(handler){
-        this.onGameStart = handler
+    setOnGameStart(handler) {
+        this.onGameStart = handler;
     }
 
     setOnUpdate(onUpdate) {
@@ -140,7 +140,7 @@ class GameState {
 
                 console.log("Player [", e.data.position, "] betting ", e.data.totalAmount);
                 this.state.players[e.data.position].bet = e.data.totalAmount;
-                this.state.players[e.data.position].buyIn = e.data.buyIn;
+                this.state.players[e.data.position].buyIn = e.data.wallet;
                 this.state.lastAction = e.data.position;
                 this.state.waitingFor = -1;
                 this.updateQueue.push({ event: UpdateEvents.player, data: e.data.position });
@@ -214,11 +214,6 @@ class GameState {
     getPlayerState(position) {
         return this.state.players[position];
     }
-
-    actionProcessed(){
-
-    }
-
 }
 
 export { GameState };
