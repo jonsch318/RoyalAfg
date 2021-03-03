@@ -136,6 +136,7 @@ func (r *Round) Action(options *ActionRoundOptions) {
 	case events.CHECK:
 		if !options.PreFlop {
 			options.CheckCount++
+			options.BlockingList.RemoveBlocking(options.BlockingIndex)
 			err := options.BlockingList.AddBlocking(options.Current)
 			if err == nil {
 				options.Success = true

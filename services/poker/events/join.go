@@ -23,17 +23,18 @@ func ToJoinEvent(raw *models.Event) (*JoinEvent, error) {
 }
 
 type JoinSuccess struct {
-	LobbyID     string                `json:"lobbyId" mapstructure:"lobbyId"`
 	Players     []models.PublicPlayer `json:"players" mapstructure:"players"`
-	GameStarted bool                  `json:"gameStarted" mapstructure:"gameStarted"`
-	GameState   byte                  `json:"gameState" mapstructure:"gameState"`
+	Wallet string	`json:"wallet"`
+	LobbyID     string                `json:"lobbyId" mapstructure:"lobbyId"`
 	MaxBuyIn    int                   `json:"maxBuyIn"`
 	MinBuyIn    int                   `json:"minBuyIn"`
 	BigBlind    int                   `json:"bigBlind"`
 	Position    int                   `json:"position" mapstructure:"position"`
+	GameState   byte                  `json:"gameState" mapstructure:"gameState"`
+	GameStarted bool                  `json:"gameStarted" mapstructure:"gameStarted"`
 }
 
-func NewJoinSuccessEvent(lobbyId string, players []models.PublicPlayer, gameStarted bool, gameState byte, position, maxBuyIn, minBuyIn, bigBlind int) *models.Event {
+func NewJoinSuccessEvent(lobbyId string, players []models.PublicPlayer, gameStarted bool, gameState byte, position, maxBuyIn, minBuyIn, bigBlind int, wallet string) *models.Event {
 	return models.NewEvent(JOIN_SUCCESS, &JoinSuccess{
 		LobbyID:     lobbyId,
 		Players:     players,
@@ -42,6 +43,8 @@ func NewJoinSuccessEvent(lobbyId string, players []models.PublicPlayer, gameStar
 		MinBuyIn:    minBuyIn,
 		BigBlind:    bigBlind,
 		Position:    position,
+		GameState: gameState,
+		Wallet: wallet,
 	})
 }
 

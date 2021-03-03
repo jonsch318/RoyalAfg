@@ -14,7 +14,7 @@ import (
 //FOLD describes the action of a player quiting this hand
 const FOLD = 1
 
-//BET describes the action of a player betting the same amount as the highes bet and therefore go along or callling the hand
+//BET describes the action of a player betting the same amount as the highest bet and therefore go along or calling the hand
 const BET = 2
 
 //RAISE raises sets the highest bet a certain amount
@@ -23,6 +23,7 @@ const RAISE = 3
 //CHECK action pushes the action requirement to the next player
 const CHECK = 4
 
+//ALL_IN action bets the entire wallet of the user in this round
 const ALL_IN = 5
 
 //Action describes a action a player can make one a normal hand stage
@@ -77,7 +78,7 @@ type ActionProcessedEvent struct {
 	Position    int     `json:"position" mapstructure:"position"`
 	Amount      string `json:"amount" mapstructure:"amount"`
 	TotalAmount string `json:"totalAmount" mapstructure:"totalAmount"`
-	BuyIn       string `json:"buyIn" mapstructure:"buyIn"`
+	Wallet       string `json:"wallet" mapstructure:"wallet"`
 }
 
 func NewActionProcessedEvent(action, position int, amount, totalAmount, wallet string) *models.Event {
@@ -85,8 +86,8 @@ func NewActionProcessedEvent(action, position int, amount, totalAmount, wallet s
 		Action:      action,
 		Position:    position,
 		Amount:      amount,
-		TotalAmount: amount,
-		BuyIn:       amount,
+		TotalAmount: totalAmount,
+		Wallet:       wallet,
 		//Player:   player.ToPublic(),
 	})
 }
