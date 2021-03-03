@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 )
 
@@ -33,22 +34,21 @@ func (h *BankCommandHandler) Handle(d *amqp.Delivery) {
 		switch cmd.CommandType {
 		case bank.Withdraw:
 			_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Withdraw{
-				Amount:  cmd.Amount,
+				Amount:  dtos.FromDTO(cmd.Amount),
 				GameId:  cmd.Game,
 				RoundId: cmd.Lobby,
 				Time:    cmd.Time,
 			}))
 		case bank.Deposit:
 			_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Deposit{
-				Amount:  cmd.Amount,
+				Amount:  dtos.FromDTO(cmd.Amount),
 				GameId:  cmd.Game,
 				RoundId: cmd.Lobby,
 				Time:    cmd.Time,
 			}))
 		}
-		if err != nil {
-			h.logger.Errorw("Message deserialization error", "error", err)
-		}
+	}else {
+		h.logger.Errorw("Message deserialization error", "error", err)
 	}
 }
 

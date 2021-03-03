@@ -2,10 +2,16 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["rabbit.go"],
+    srcs = [
+        "auth.go",
+        "bank.go",
+        "rabbit.go",
+        "register.go",
+    ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/auth:go_default_library",
         "//pkg/bank:go_default_library",
         "//pkg/config:go_default_library",
         "//services/bank/pkg/commands:go_default_library",

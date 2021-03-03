@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 )
 
@@ -42,7 +44,7 @@ func (h *AuthCommandHandler) Handle(d *amqp.Delivery) {
 			}
 			h.logger.Infof("Account created with id %v", cmd.UserID)
 			_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserID, &commands.Deposit{
-				Amount:  50000,
+				Amount:  money.New(20000, currency.Code),
 				Time:    time.Now(),
 			}))
 			h.logger.Infof("Account starting credit %v", cmd.UserID)

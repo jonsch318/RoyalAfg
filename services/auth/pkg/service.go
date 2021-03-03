@@ -89,7 +89,7 @@ func Start(logger *zap.SugaredLogger) {
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service:  "authHTTP",
 	})
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 
 	if viper.GetBool(gConfig.CorsEnabled) {
 		cors := cors.New(cors.Options{

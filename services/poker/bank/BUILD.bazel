@@ -3,7 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "bank",
     srcs = [
+        "actions.go",
         "allIn.go",
+        "asserts.go",
         "bank.go",
         "betting.go",
         "commands.go",
@@ -15,6 +17,8 @@ go_library(
     deps = [
         "//pkg/bank:go_default_library",
         "//services/poker/models",
+        "//services/poker/money:go_default_library",
         "//services/poker/rabbit:go_default_library",
+        "@com_github_rhymond_go_money//:go_default_library",
     ],
 )

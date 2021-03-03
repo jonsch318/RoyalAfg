@@ -214,6 +214,11 @@ class GameState {
     getPlayerState(position) {
         return this.state.players[position];
     }
+
+    actionProcessed(){
+
+    }
+
 }
 
 export { GameState };

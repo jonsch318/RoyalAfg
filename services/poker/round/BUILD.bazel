@@ -3,6 +3,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "round",
     srcs = [
+        "actionRound.go",
+        "actions.go",
         "blinds.go",
         "blocking.go",
         "cards.go",
@@ -17,7 +19,9 @@ go_library(
         "//services/poker/bank",
         "//services/poker/events",
         "//services/poker/models",
+        "//services/poker/money:go_default_library",
         "//services/poker/showdown",
         "//services/poker/utils",
+        "@com_github_rhymond_go_money//:go_default_library",
     ],
 )

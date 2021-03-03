@@ -9,14 +9,14 @@ go_library(
         "end.go",
         "gameStart.go",
         "join.go",
-        "joinOptions.go",
         "utils.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/events",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/poker/dto",
         "//services/poker/models",
+        "//services/poker/money:go_default_library",
         "@com_github_mitchellh_mapstructure//:go_default_library",
+        "@com_github_rhymond_go_money//:go_default_library",
     ],
 )

@@ -5,12 +5,12 @@ go 1.15
 require (
 	agones.dev/agones v1.11.0
 	github.com/Kamva/mgm v1.2.3
+	github.com/Rhymond/go-money v1.0.2
 	github.com/auth0/go-jwt-middleware v1.0.0
 	github.com/aws/aws-sdk-go v1.36.28 // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20201216152027-57cb70149147
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-openapi/runtime v0.19.26
 	github.com/go-openapi/spec v0.20.1 // indirect
 	github.com/go-openapi/strfmt v0.20.0 // indirect
@@ -41,7 +41,6 @@ require (
 	github.com/slok/go-http-metrics v0.9.0
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.0.0
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
@@ -50,6 +49,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/urfave/negroni v1.0.0
+	github.com/vektra/mockery v1.1.2 // indirect
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect

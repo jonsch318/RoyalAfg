@@ -15,6 +15,11 @@ const RabbitExchange = "rabbit_exchange"
 const RabbitBankQueue = "rabbit_bank_queue"
 const MatchMakerJWTKey = "matchmaker_signing_key"
 
+const NeedEnterToStart = "gamestart_needs_enter"
+const GameRequiresUniquePlayers = "game_require_unique"
+
+const StepSleepDuration = "step_sleep_duration"
+
 //SetDefaults configures all defaults
 func SetDefaults() {
 	viper.SetDefault(Port, 5000)
@@ -26,5 +31,10 @@ func SetDefaults() {
 	viper.SetDefault(RabbitBankQueue, "ryl_bank")
 	viper.SetDefault(RabbitExchange, "ryl")
 	viper.SetDefault(MatchMakerJWTKey, "matchmakerkey")
+
+	viper.SetDefault(NeedEnterToStart, false)
+	viper.SetDefault(GameRequiresUniquePlayers, false)
+
+	viper.SetDefault(StepSleepDuration, time.Second)
 
 }

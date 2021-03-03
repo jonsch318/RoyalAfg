@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//SendToAll is a utitlity for sending an event (message) to an entire array (lobby) of players.
+//SendToAll is a utility for sending an event (message) to an entire array (lobby) of players.
 func SendToAll(players []models.Player, event *models.Event) {
 	for i := range players {
 		players[i].Out <- event.ToRaw()
@@ -33,16 +33,16 @@ func SendToChanTimeoutD(out chan []byte, event *models.Event, d time.Duration) e
 	case out <- event.ToRaw():
 		return nil
 	case <-timer.C:
-		return errors.New("Send Timeout")
+		return errors.New("send timeout")
 	}
 }
 
-//WaitUntilEvent waits for a player event before a timeout succeedes.
+//WaitUntilEvent waits for a player event before a timeout succeeds.
 func WaitUntilEvent(player *models.Player) (*models.Event, error) {
 	return WaitUntilEventD(player.In, 1*time.Minute)
 }
 
-//WaitUntilEventD waits for a player event before a given timeout duration succeedes.
+//WaitUntilEventD waits for a player event before a given timeout duration succeeds.
 func WaitUntilEventD(in chan *models.Event, d time.Duration) (*models.Event, error) {
 	timer := time.NewTimer(d)
 	select {
@@ -51,6 +51,6 @@ func WaitUntilEventD(in chan *models.Event, d time.Duration) (*models.Event, err
 		return e, nil
 	case <-timer.C:
 		timer.Stop()
-		return nil, errors.New("Action Timeout")
+		return nil, errors.New("action timeout")
 	}
 }

@@ -4,15 +4,15 @@ import (
 	"go.uber.org/zap"
 )
 
-var logger *zap.SugaredLogger
+var Logger *zap.SugaredLogger
 
 func RegisterService() *zap.SugaredLogger {
-	logger = NewLogger()
-	logger.Warn("Application started")
-	return logger
+	Logger = NewLogger()
+	Logger.Warn("Application started")
+	return Logger
 }
 
 func CleanLogger() {
-	logger.Warn("Logger is exiting")
-	logger.Desugar().Sync()
+	Logger.Warn("Logger is exiting")
+	Logger.Desugar().Sync()
 }

@@ -6,12 +6,10 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank",
     visibility = ["//visibility:private"],
     deps = [
+        "//pkg/config:go_default_library",
         "//pkg/log",
         "//services/bank/pkg:go_default_library",
-        "@com_github_mitchellh_go_homedir//:go_default_library",
-        "@com_github_spf13_pflag//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "//services/user/pkg/serviceconfig:go_default_library",
     ],
 )
 

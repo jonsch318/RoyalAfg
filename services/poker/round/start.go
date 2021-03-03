@@ -1,106 +1,132 @@
 package round
 
 import (
+	"time"
+
+	"github.com/spf13/viper"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
-	"log"
-	"time"
 )
 
-func (h *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
+func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
+	defer func(){
+		if r := recover(); r != nil {
+			log.Logger.Debugf("recovering in round start from %v", r)
+		}
+	}()
+	r.Players = players
+	r.PublicPlayers = publicPlayers
 
-	h.Bank.Reset()
+	sleepTime := viper.GetDuration(serviceconfig.StepSleepDuration)
 
-	h.Dealer = dealer
-	h.Players = players
-	h.InCount = byte(len(players))
-	h.HoleCards = make(map[string][2]models.Card, len(players))
+	log.Logger.Debugf("Start called reseting bank and initializing")
+
+	//Initializing start
+	r.Bank.Reset()
+	r.Dealer = dealer
+	r.Players = players
+	r.InCount = byte(len(players))
+	r.HoleCards = make(map[string][2]models.Card, len(players))
+	log.Logger.Debugf("Configured round")
+
+	//We let the client handle everything and then start the round.
+	time.Sleep(sleepTime)
 
 	//publish players and position
-
-	time.Sleep(3 * time.Second)
-
-	h.InnerStart()
-
-	for i := range h.Players {
-		utils.SendToPlayerInList(h.Players, i, events.NewGameStartEvent(publicPlayers, i))
+	log.Logger.Debugf("Publishing players")
+	for i := range r.Players {
+		utils.SendToPlayerInList(r.Players, i, events.NewGameStartEvent(publicPlayers, i))
 	}
 
-	time.Sleep(3 * time.Second)
-
-	// Publish choosen Dealer
-
-	h.sendDealer()
-	time.Sleep(3 * time.Second)
+	// Publish chosen Dealer
+	r.sendDealer()
+	time.Sleep(sleepTime)
 
 	//set predefined blinds
-	err := h.setBlinds()
-
+	err := r.setBlinds()
 	if err != nil {
-		h.Bank.ConcludeRound(nil)
+		r.Bank.ConcludeRound(nil)
 		return
 	}
 
 	// Set players hole cards
-	holeCards(h.Players, h.HoleCards, h.cardGen)
+	holeCards(r.Players, r.HoleCards, r.cardGen)
+	log.Logger.Infof("Hole cards set")
 
-	time.Sleep(3 * time.Second)
 
-	h.actions(true)
+	time.Sleep(sleepTime)
 
-	// Flop, turn and river are done here
-	for i := 0; i < 5; i++ {
-		h.Board[i] = h.cardGen.SelectRandom()
-	}
-
-	// send flop result
-
-	utils.SendToAll(h.Players, events.NewFlopEvent(h.Board))
-
-	//
-	h.actions(false)
-	// send turn result
-	utils.SendToAll(h.Players, events.NewTurnEvent(h.Board))
-
-	h.WhileNotEnded(func() {
-		h.actions(false)
-		// send river result
-		utils.SendToAll(h.Players, events.NewRiverEvent(h.Board))
+	r.WhileNotEnded(func(){
+		r.actions(true)
 	})
+	log.Logger.Debugf("Generate cards")
 
-	h.WhileNotEnded(func() {
-		h.actions(false)
-	})
-
-	winners := showdown.Evaluate(h.Players, h.HoleCards, h.Board)
-	winningPlayers := make([]int, 0)
-	for i := range winners {
-		_, i, err := utils.SearchByID(h.Players, winners[i])
-		if err == nil {
-			winningPlayers = append(winningPlayers, i)
+	r.WhileNotEnded(func() {
+		// Flop, turn and river cards are generated here. Doing it once lets us optimize the randomization of it.
+		for i := 0; i < 5; i++ {
+			r.Board[i] = r.cardGen.SelectRandom()
 		}
+	})
+
+	for i := 3; i < 6; i++ {
+		r.WhileNotEnded(func() {
+			log.Logger.Debugf("Started action round [%v]", i-2)
+			//Send the board cards first 3 then the 4th and then the 5th
+			r.SendBoardEvent(i)
+
+			//Acquire the actions of the players
+			r.actions(false)
+		})
 	}
 
-	winningPublic := make([]models.PublicPlayer, len(winningPlayers))
-	for i, n := range winningPlayers {
-		winningPublic[i] = publicPlayers[n]
+	//Done
+
+	//Evaluation
+	r.Evaluate()
+	time.Sleep(sleepTime)
+}
+
+//Evaluate concludes this round and publishes all results to the bank service for performing the real transactions.
+func (r *Round) Evaluate() {
+	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
+	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board)
+	log.Logger.Infow("Winners determined")
+
+	//Publish commands to bank service.
+	shares := r.Bank.ConcludeRound(winners)
+	r.Bank.UpdatePublicPlayerBuyIn(r.PublicPlayers)
+
+	//Send winning results to clients. You could add the hole cards for clarity. But this can be added fairly easily.
+	winningPublic := make([]models.PublicPlayer, len(winners))
+	for _, w := range winners {
+		winningPublic = append(winningPublic, r.PublicPlayers[w.Position])
 	}
-
-	log.Printf("Winners: %v", winningPlayers)
-
-	share := h.Bank.ConcludeRound(winners)
-
-	utils.SendToAll(h.Players, events.NewGameEndEvent(winningPublic, share))
-
+	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 
-func (h *Round) InnerStart() {
-	h.sendDealer()
+
+//SendBoardEvent is a little utility for sorting the right board event name for a given number of cards
+func (r *Round) SendBoardEvent(cardCount int){
+	switch cardCount {
+	case 3:
+		utils.SendToAll(r.Players, events.NewFlopEvent(r.Board))
+	case 4:
+		utils.SendToAll(r.Players, events.NewTurnEvent(r.Board))
+
+	case 5:
+		utils.SendToAll(r.Players, events.NewRiverEvent(r.Board))
+
+	default:
+		log.Logger.Errorf("SendBoardEvent with cardCount not between 3-5: %v", cardCount)
+	}
 }
 
-func (h *Round) End() {
-	log.Printf("Ending Hand due to error")
-	h.Ended = true
+func (r *Round) End() {
+	log.Logger.Error("ending round due to error")
+	r.Ended = true
 }

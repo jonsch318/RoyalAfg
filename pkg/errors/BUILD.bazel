@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "auth.go",
         "pokerMatchmaker.go",
+        "rabbit.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/errors",
     visibility = ["//visibility:public"],

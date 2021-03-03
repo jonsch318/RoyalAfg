@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 )
 
@@ -46,7 +48,7 @@ func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Deposit{
-		Amount:  dto.Amount,
+		Amount:  money.New(int64(dto.Amount), currency.Code),
 		GameId:  "",
 		RoundId: "",
 		Time:    time.Now(),
@@ -68,7 +70,7 @@ func (h Account) Withdraw(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.dispatcher.Dispatch(ycq.NewCommandMessage(dto.UserID, &commands.Withdraw{
-		Amount:  dto.Amount,
+		Amount:  money.New(int64(dto.Amount), currency.Code),
 		GameId:  "",
 		RoundId: "",
 		Time:    time.Now(),

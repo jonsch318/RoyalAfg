@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/urfave/negroni"
 
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
@@ -38,17 +39,17 @@ func main() {
 	gameSearch := services.NewGameSearch(logger, elasticSearchClient)
 	gameSearchHandler := handlers.NewGameHandler(logger, gameSearch)
 
-	gr := r.Methods(http.MethodGet).Subrouter()
-
 	loggerHandler := mw.NewLoggerHandler(logger)
 	stdChain := alice.New(loggerHandler.LogRoute)
 
-	gr.Path("/api/search").Queries("q", "{.}").Handler(stdChain.ThenFunc(gameSearchHandler.GameSearch))
+	r.Path("/api/search").Methods(http.MethodGet).Queries("q", "{.}").Handler(stdChain.ThenFunc(gameSearchHandler.GameSearch))
 
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery())
+	n.UseHandler(r)
 	// Start Application
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: r,
+		Handler: n,
 	}
 
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))

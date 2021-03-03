@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/gorilla/mux"
@@ -54,7 +55,7 @@ func Start(logger *zap.SugaredLogger) {
 
 	userDatabase := database.NewUserDatabase(logger)
 
-	// grpc server serviceConfig
+	// grpc server config
 	gs := grpc.NewServer()
 
 	userServer := servers.NewUserServer(logger, userDatabase, metrics)
@@ -84,7 +85,7 @@ func Start(logger *zap.SugaredLogger) {
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service:  "authHTTP",
 	})
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 	n.UseHandler(r)
 
 	srv := &http.Server{

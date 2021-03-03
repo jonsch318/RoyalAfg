@@ -1,22 +1,35 @@
 package lobby
 
 import (
-	"math/rand"
-	"strings"
-	"time"
+	"strconv"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 )
 
-const idLength = 5
+func IsInRange(players []models.Player, i int) bool {
+	return i > 0 && i < len(players)
+}
 
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+func (l *Lobby) Count() int {
+	return l.PlayerCount + l.PlayerQueue.Length()
+}
 
-//GenerateLobbyID generates a new lobby id out of random letters
-func GenerateLobbyID() string {
-	rand.Seed(time.Now().UnixNano())
-	sb := strings.Builder{}
-	sb.Grow(idLength)
-	for i := 0; i < idLength; i++ {
-		sb.WriteByte(letterBytes[rand.Intn(len(letterBytes))])
+func (l *Lobby) SetPlayerCountLabel() {
+	log.Logger.Debugf("Players %v", l.Count())
+	err := l.sdk.SetLabel("players", strconv.Itoa(l.Count()))
+	if err != nil {
+		log.Logger.Warnw("error during player label set %v", "error", err.Error())
 	}
-	return sb.String()
+}
+
+//FindPlayerByID searches a player based on the given id linearly.
+func (l *Lobby) FindPlayerByID(id string) int {
+	//A map structure or hashtable like map[string(id)]int(index) would be more efficient, though it is not necessary for the maximum of 10 players in this list.
+	for i, n := range l.Players {
+		if n.ID == id {
+			return i
+		}
+	}
+	return -1
 }

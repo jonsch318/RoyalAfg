@@ -76,10 +76,10 @@ spec:
             - containerPort: 8080
               protocol: TCP
           volumeMounts:
-            - name: royalafg-search-serviceConfig
+            - name: royalafg-search-config
               mountPath: "/etc/royalafg-search"
 
       volumes:
-        - name: royalafg-search-serviceConfig
+        - name: royalafg-search-config
           configMap:
             name: royalafg-search

@@ -1,2 +1,2 @@
-build --remote_cache=http://192.168.178.109:80
-build --remote_upload_local_results=false
+run --incompatible_restrict_string_escapes=false
+build --incompatible_restrict_string_escapes=false
