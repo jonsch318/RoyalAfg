@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["cards.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/random",
+    visibility = ["//visibility:public"],
+    deps = ["//services/poker/models"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["cards_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//services/poker/models",
+        "@com_github_stretchr_testify//assert:go_default_library",
+    ],
+)

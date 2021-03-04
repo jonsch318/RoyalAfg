@@ -5,9 +5,13 @@ go_library(
     srcs = [
         "auth.go",
         "bank.go",
+        "currency.go",
         "poker.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos",
     visibility = ["//visibility:public"],
-    deps = ["//pkg/poker/models:go_default_library"],
+    deps = [
+        "//pkg/poker/models:go_default_library",
+        "@com_github_rhymond_go_money//:go_default_library",
+    ],
 )

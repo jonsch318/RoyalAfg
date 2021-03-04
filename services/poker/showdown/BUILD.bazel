@@ -8,7 +8,10 @@ go_library(
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown",
     visibility = ["//visibility:public"],
-    deps = ["//services/poker/models"],
+    deps = [
+        "//pkg/log",
+        "//services/poker/models",
+    ],
 )
 
 go_test(
@@ -31,5 +34,8 @@ go_test(
         "rankHand_test.go",
     ],
     embed = [":go_default_library"],
-    deps = ["//services/poker/models"],
+    deps = [
+        "//services/poker/models",
+        "@com_github_stretchr_testify//assert:go_default_library",
+    ],
 )

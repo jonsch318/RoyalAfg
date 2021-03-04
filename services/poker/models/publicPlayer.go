@@ -6,15 +6,20 @@ type PublicPlayer struct {
 	BuyIn    string `json:"buyIn" mapstructure:"buyIn"`
 }
 
-func (player *Player) ToPublic() *PublicPlayer {
+func (p *PublicPlayer) SetBuyIn(buyIn string) {
+	p.BuyIn = buyIn
+}
+
+func (p *Player) ToPublic() *PublicPlayer {
 	return &PublicPlayer{
-		ID:       player.ID,
-		Username: player.Username,
+		ID:       p.ID,
+		Username: p.Username,
 	}
 }
 
-func (player *Player) ToPublicWithWallet(b Bank) *PublicPlayer {
-	p := player.ToPublic()
-	p.BuyIn = b.GetPlayerWallet(p.ID)
-	return p
+
+func (p *Player) ToPublicWithWallet(b Bank) *PublicPlayer {
+	public := p.ToPublic()
+	public.SetBuyIn(b.GetPlayerWallet(public.ID))
+	return public
 }

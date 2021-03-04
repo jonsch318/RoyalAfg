@@ -19,21 +19,22 @@ type Lobby struct {
 	pokerModels.LobbyBase
 	lock          sync.RWMutex
 	Players       []models.Player
-	PublicPlayers []models.PublicPlayer `json:"players"`
-	GameStarted   bool
+	PublicPlayers []models.PublicPlayer
 	PlayerQueue   *queue.PlayerQueue
 	RemovalQueue *queue.PlayerQueue
 	Bank          *bank.Bank
-	dealer        int
 	round         *round.Round
-	c             chan bool
 	sdk           *sdk.SDK
+	dealer        int
+	c             chan bool
+	GameStarted   bool
 }
 
 //NewLobby creates a new lobby object
 func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
 	return &Lobby{
 		Players:     make([]models.Player, 0),
+		PublicPlayers: make([]models.PublicPlayer, 0),
 		PlayerQueue: queue.New(),
 		RemovalQueue: queue.New(),
 		Bank:        bank,

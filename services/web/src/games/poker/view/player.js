@@ -1,10 +1,11 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { Board } from "./board";
 import { isMobile } from "./utils";
 
 class Player extends PIXI.Container {
     constructor(id, options, state, index) {
         super();
+        this.id = id;
 
         this.state = state;
         this.playerState = this.state.getPlayerState(index);
@@ -38,8 +39,10 @@ class Player extends PIXI.Container {
         this.usernameLabel = new PIXI.Text("", { align: "center" });
         this.usernameLabel.resolution = 2;
         this.avatar = new PIXI.Graphics();
-        this.board = new Board(id, {
-            paddingX: 8,
+        this.board = new Board({});
+        this.board.setup(this.id);
+        this.board.update({
+            paddinX: 8,
             paddingY: 5,
             paddingCardX: 5
         });

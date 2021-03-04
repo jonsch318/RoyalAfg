@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["GameSearch.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/search/pkg/interfaces",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/search/pkg/dto:go_default_library",
+        "@com_github_stretchr_testify//mock:go_default_library",
+    ],
+)

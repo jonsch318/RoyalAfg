@@ -16,9 +16,11 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/bank:go_default_library",
+        "//pkg/log",
         "//services/poker/models",
         "//services/poker/money:go_default_library",
         "//services/poker/rabbit:go_default_library",
+        "//services/poker/showdown",
         "@com_github_rhymond_go_money//:go_default_library",
     ],
 )

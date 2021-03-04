@@ -59,12 +59,10 @@ func Start(logger *zap.SugaredLogger) {
 
 	//Read Model declarations
 	accountBalanceQuery := dtos.NewAccountBalanceQuery(repo)
-	accountHistoryQuery := dtos.NewAccountHistoryQuery()
+	accountHistoryQuery := dtos.NewAccountHistoryQuery(repo, eventStore)
 
 	eventBus.AddHandler(accountBalanceQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
 	eventBus.AddHandler(accountHistoryQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
-
-
 
 	accountCommandHandler := commands.NewAccountCommandHandlers(repo)
 	dispatcher := ycq.NewInMemoryDispatcher()
@@ -87,16 +85,12 @@ func Start(logger *zap.SugaredLogger) {
 
 	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
 	r := mux.NewRouter()
-	gr := r.Methods(http.MethodGet).Subrouter()
-	pr := r.Methods(http.MethodPost).Subrouter()
+	r.Handle("/api/bank/balance", mw.RequireAuth(accountHandler.QueryBalance)).Methods(http.MethodGet)
+	r.Handle("/api/bank/history", mw.RequireAuth(accountHandler.QueryHistory)).Methods(http.MethodGet)
+	r.Handle("/api/bank/deposit", mw.RequireAuth(accountHandler.Deposit)).Methods(http.MethodPost)
+	r.Handle("/api/bank/withdraw", mw.RequireAuth(accountHandler.Withdraw)).Methods(http.MethodPost)
 
-	gr.Handle("/api/bank/balance", mw.RequireAuth(accountHandler.QueryBalance))
-	gr.Handle("/api/bank/history", mw.RequireAuth(accountHandler.QueryHistory)).Queries("i", "{i:[0-9]+}")
-	pr.HandleFunc("/api/bank/create", accountHandler.Create)
-	pr.Handle("/api/bank/deposit", mw.RequireAuth(accountHandler.Deposit))
-	pr.Handle("/api/bank/withdraw", mw.RequireAuth(accountHandler.Withdraw))
-
-	gr.HandleFunc("/api/bank/verifyAmount", accountHandler.VerifyAmount).Queries("userId", "", "amount", "{i:[0-9]+}")
+	r.HandleFunc("/api/bank/verifyAmount", accountHandler.VerifyAmount).Methods(http.MethodGet).Queries("userId", "", "amount", "{i:[0-9]+}")
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),

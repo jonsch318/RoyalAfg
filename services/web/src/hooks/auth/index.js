@@ -19,7 +19,7 @@ export const getSession = async ({ req, ctx } = {}) => {
     if (!req && ctx && ctx.req) {
         req = ctx.req;
     }
-
+    console.log("AUTH URL: ", _apiBaseUrl())
     try {
         const res = await fetch(`${_apiBaseUrl()}/session`, {
             credentials: "include",
@@ -138,12 +138,12 @@ export const Provider = ({ children, session }) => {
 };
 
 const _apiBaseUrl = () => {
-    if (process.env.NEXT_PUBLIC_AUTH_HOST == undefined) {
+    if (process.env.AUTH_HOST == undefined) {
         if (window) {
             return "/api/auth";
         }
     }
-    return `${process.env.NEXT_PUBLIC_AUTH_HOST}/api/auth`;
+    return `${process.env.AUTH_HOST}/api/auth`;
 };
 
 const _fetch = async (url, options) => {

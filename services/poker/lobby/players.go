@@ -56,8 +56,6 @@ func (l *Lobby) FillLobbyPosition()  {
 		l.FillLobbyPosition()
 	}
 
-	//Send to currently active players. The joining player is not included. He will get a different confirmation
-	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1))
 
 	log.Logger.Info("Adding player to player list")
 	playerIndex := len(l.Players)
@@ -69,12 +67,18 @@ func (l *Lobby) FillLobbyPosition()  {
 	l.Bank.AddPlayer(player)
 	l.Bank.UpdatePublicPlayerBuyIn(l.PublicPlayers)
 
+
+	public.SetBuyIn(l.Bank.GetPlayerWallet(public.ID))
+
+	//Send to currently active players. The joining player is not included. He will get a different confirmation
+	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1))
+
 	//Start CloseWatching
 	go l.WatchPlayerConnClose(playerIndex)
 
 	log.Logger.Debugf("started watching player close and sending event")
 	//Send join confirmation to player
-	utils.SendToPlayerInList(l.Players, playerIndex, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GameStarted, 0, playerIndex, l.Class.Max, l.Class.Min, l.Class.Blind))
+	utils.SendToPlayerInList(l.Players, playerIndex, events.NewJoinSuccessEvent(l.LobbyID, l.PublicPlayers, l.GameStarted, 0, playerIndex, l.Class.Max, l.Class.Min, l.Class.Blind, public.BuyIn))
 	log.Logger.Debugf("send event")
 
 	//Update player count label (matchmaker)

@@ -31,7 +31,6 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service": "redis"
-        "consul.hashicorp.com/connect-service-protocol": "tcp"
       labels:        # Labels to be applied to the Pods in this deployment
         app: redis
         role: master
@@ -56,10 +55,8 @@ metadata:
   name: royalafg-poker-matchmaker
 data:
   config.yaml: |
-    jwt_signing_key: testsecret
     redis_url: localhost:6379
     bank_service_url: localhost:8000
-    matchmaker_signing_key: pokertest
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -118,6 +115,18 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service-upstreams": "redis:6379, royalafg-bank:8000"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-secret-poker.yaml": "kv-v2/poker"
+        "vault.hashicorp.com/agent-inject-template-poker.yaml": |
+          {{- with secret "kv-v2/poker" -}}
+          matchmaker_signing_key: {{.Data.data.signing_key}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+          jwt_signing_key: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": poker-role
       labels:
         app: royalafg-poker-matchmaker
     spec:

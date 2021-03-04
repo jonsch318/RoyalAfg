@@ -35,8 +35,15 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo) []string {
 		}
 		b.PlayerWallet[player.Player.ID] = res
 
-		//Adds the winning amount to the command queue, so that it will be compressed with the expenses.
-		b.AddWinEvent(player.Player.ID, shares[i])
+		//Subtract the winning amount of the current bet. (Compression). This could be done separately to clarify the wins and expenses of users and oneself. And to include more information to the bank service.
+		res, err =  b.PlayerBets[player.Player.ID].Subtract(shares[i])
+		if err != nil {
+			log.Logger.Errorw("error during win calculations", "error", err) // We should remove this person from the round.
+			continue
+		}
+
+		b.PlayerBets[player.Player.ID] = res // Change the bet. It would be reset soon anyway.
+
 		log.Logger.Infof("User [%v] wins share %s", player, shares[i].Display())
 		ret[i] = shares[i].Display()
 	}

@@ -1,6 +1,8 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  creationTimestamp: null
   name: mongodb-kubernetes-operator
 rules:
 - apiGroups:
@@ -66,10 +68,11 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - mongodb.com
+  - mongodbcommunity.mongodb.com
   resources:
-  - '*'
-  - mongodbs
+  - mongodbcommunity
+  - mongodbcommunity/status
+  - mongodbcommunity/spec
   verbs:
   - create
   - delete

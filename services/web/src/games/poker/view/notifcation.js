@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 
 class Notification extends PIXI.Container {
     constructor(state, appWidth, appHeight) {
@@ -39,10 +39,7 @@ class Notification extends PIXI.Container {
         );
         this.textBg.endFill();
 
-        this.label.position.set(
-            this.appWidth / 2 - this.label.width / 2,
-            this.appHeight / 2 - this.label.height / 2
-        );
+        this.label.position.set(this.appWidth / 2 - this.label.width / 2, this.appHeight / 2 - this.label.height / 2);
     }
 
     updateFromState() {

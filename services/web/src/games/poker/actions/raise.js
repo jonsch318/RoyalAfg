@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
 
 const Subj = new BehaviorSubject(0);
 
-const Raise = (onRaise) => {
+const Raise = ({ onRaise }) => {
     const [raise, setRaise] = useState(0);
     useEffect(() => {
         const subscription = Subj.pipe(debounceTime(700)).subscribe((val) => {

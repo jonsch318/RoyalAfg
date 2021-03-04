@@ -11,6 +11,7 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/log",
         "//pkg/poker/models:go_default_library",
         "//services/poker-matchmaker/pkg/lobby:go_default_library",
         "//services/poker/events",

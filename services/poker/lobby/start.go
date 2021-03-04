@@ -25,6 +25,7 @@ func (l *Lobby) Start() {
 			select {
 			case <-l.c:
 				// game has already been called this instance is unnecessary
+				log.Logger.Debugf("Game has already begun.")
 				return
 			case <-timer.C:
 			}
@@ -86,6 +87,16 @@ func (l *Lobby) Start() {
 
 			log.Logger.Debugf("Remove players after round")
 			l.RemoveAfterRound()
-		}
+
+			//empty the starting channel.
+			L:
+				for {
+					select {
+					case <-l.c:
+					default:
+						break L
+					}
+				}
+			}
 	}()
 }

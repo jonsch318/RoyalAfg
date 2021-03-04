@@ -26,6 +26,7 @@
         "next-i18next": "^6.0.3",
         "normalize.css": "^8.0.1",
         "pixi.js": "^5.3.6",
+        "pixi.js-legacy": "^5.3.8",
         "postcss": "^8.2.4",
         "prettier": "^2.2.1",
         "prop-types": "^15.7.2",
@@ -49,6 +50,7 @@
     "devDependencies": {
         "@tailwindcss/custom-forms": "^0.2.1",
         "autoprefixer": "^10.2.1",
+        "dinero": "^1.0.1",
         "postcss-preset-env": "^6.7.0",
         "purgecss": "^4.0.0",
         "tailwindcss": "^2.0.2"

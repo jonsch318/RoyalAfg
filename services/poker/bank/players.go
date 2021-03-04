@@ -33,12 +33,13 @@ func (b *Bank) RemovePlayer(id string) error {
 func (b *Bank) UpdatePublicPlayerBuyIn(p []models.PublicPlayer) {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
-	for i := 0; i < len(p); i++ {
-		t, ok := b.PlayerWallet[p[i].ID]
+	for _, player := range p {
+		t, ok := b.PlayerWallet[player.ID]
 		if !ok {
-			log.Logger.Warnf("Player [%v] has no wallet", p[i].ID)
+			log.Logger.Warnf("Player [%v] has no wallet", player.ID)
 			continue
 		}
-		p[i].BuyIn = t.Display()
+		player.SetBuyIn(t.Display())
+		log.Logger.Debugf("Player [%v] wallet is %v ", player.Username, player.BuyIn)
 	}
 }

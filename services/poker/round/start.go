@@ -8,6 +8,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/random"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
@@ -54,8 +55,22 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		return
 	}
 
+	cards, err := random.SelectCards(5 + 2*int(r.InCount))
+
+	if err != nil {
+		log.Logger.Errorw("error during card generation")
+		return
+	}
+
+	log.Logger.Debugf("Cards generated %v", cards)
+
+	// Fill the board
+	for i := 0; i < 5; i++ {
+		r.Board[i] = cards[i]
+	}
+
 	// Set players hole cards
-	holeCards(r.Players, r.HoleCards, r.cardGen)
+	holeCards(r.Players, r.HoleCards, cards[4:])
 	log.Logger.Infof("Hole cards set")
 
 
@@ -65,13 +80,6 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		r.actions(true)
 	})
 	log.Logger.Debugf("Generate cards")
-
-	r.WhileNotEnded(func() {
-		// Flop, turn and river cards are generated here. Doing it once lets us optimize the randomization of it.
-		for i := 0; i < 5; i++ {
-			r.Board[i] = r.cardGen.SelectRandom()
-		}
-	})
 
 	for i := 3; i < 6; i++ {
 		r.WhileNotEnded(func() {

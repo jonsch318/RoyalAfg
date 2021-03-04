@@ -5,7 +5,6 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
 )
 
@@ -17,7 +16,6 @@ type Bank struct {
 	Pot          *money.Money
 	MaxBet       *money.Money
 	eventBus     *rabbit.RabbitMessageBroker
-	eventQueue   []bank.Command
 	LobbyId      string
 }
 
@@ -27,7 +25,6 @@ func NewBank(eventBus *rabbit.RabbitMessageBroker) *Bank {
 		PlayerWallet: make(map[string]*money.Money),
 		PlayerBets:   make(map[string]*money.Money),
 		eventBus:     eventBus,
-		eventQueue:   make([]bank.Command, 0),
 	}
 }
 

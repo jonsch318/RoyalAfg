@@ -2,35 +2,49 @@ import React, { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import Layout from "../../../components/layout";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import Dinero from "dinero.js";
 
 const Deposit = () => {
     const { locale } = useRouter();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const { register, handleSubmit, errors } = useForm();
+    const [amount, setAmount] = useState(-1);
 
-    const onSubmit = (data) => {
-        console.log("amount: ", data.amount);
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        if (amount <= 0) {
+            return;
+        }
         setLoading(true);
-        setTimeout(() => {
-            setSuccess(true);
+        const res = await fetch("/api/bank/deposit", {
+            method: "POST",
+            body: JSON.stringify({
+                amount: amount * 100
+            })
+        });
+
+        if (res.ok) {
             setLoading(false);
-        }, 2000);
+            setSuccess(false);
+            console.log("Error during response: ", res);
+            return;
+        }
+
+        setLoading(false);
+        setSuccess(true);
+        return;
     };
 
     return (
         <Layout disableFooter headerAbsolut>
             <div className="m-0 flex justify-center">
-                {errors.amount && (
+                {amount == 0 && (
                     <span className="text-sm bg-red-700 text-white px-3 py-1 rounded h-auto absolute top-16">
                         Specify a amount between $0.01 and 99,999,999.99
                     </span>
                 )}
                 <div className="font-sans text-5xl m-0 font-semibold grid justify-center items-center h-screen">
                     {!loading && !success && (
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                        <form onSubmit={onSubmit}>
                             <div className="grid justify-center items-center">
                                 <label htmlFor="amount" className="flex align-middle items-center justify-center">
                                     Deposit
@@ -41,8 +55,10 @@ const Deposit = () => {
                                         intlConfig={{ locale: locale, currency: "USD" }}
                                         autoComplete="off"
                                         defaultValue={0}
+                                        onValueChange={(val) => {
+                                            setAmount(val);
+                                        }}
                                         allowNegativeValue={false}
-                                        ref={register({ required: true, validate: (val) => Dinero({ amount: val, currency: "USD" }).isZero })}
                                     />
                                     to your account.
                                 </label>
