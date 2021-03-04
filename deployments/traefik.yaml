@@ -225,6 +225,8 @@ spec:
     metadata:
       labels:
         app: traefik
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
     spec:
       serviceAccountName: traefik-ingress-controller
       containers:
@@ -238,7 +240,7 @@ spec:
             - --entrypoints.websecure.Address=:443
             - --providers.kubernetesingress
             - --providers.kubernetescrd
-            - --providers.consul.endpoints=consul-consul-server.default.svc.cluster.local:8500
+            - --providers.consul.endpoints=consul-consul-server.default:8500
             - --providers.consul.rootkey=traefik
             - --metrics.prometheus=true
             - --serversTransport.insecureSkipVerify=true

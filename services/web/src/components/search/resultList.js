@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 const SearchResultList = (props) => {
     return (
-        <ul className="py-4 md:py-2 md: px-4 bg-white ">
+        <ul className="py-4 md:py-2 md: px-4 bg-blue ">
             {props.results.map((result) => (
                 <li key={result.name} className="px-5">
                     <Result result={result} />

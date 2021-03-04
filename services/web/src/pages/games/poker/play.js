@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import { GameState } from "../../../games/poker/game/state.js";
 import { Game } from "../../../games/poker/connection/socket.js";
 import Back from "../../../components/layout/back";
+import { formatTitle } from "../../../utils/title";
+import Head from "next/head";
 
 const View = dynamic(import("../../../games/poker/view"), { ssr: false });
 
@@ -75,7 +77,6 @@ const Play = () => {
 
     return (
         <div className="App">
-            <Back href="/games/poker" />
             {joined ? (
                 <div>
                     <Actions game={game} actions={actions} />

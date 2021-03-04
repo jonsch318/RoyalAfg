@@ -4,6 +4,8 @@ import Layout from "../../../components/layout";
 import Join from "../../../games/poker/join";
 import Lobbies from "../../../games/poker/lobbies";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import { formatTitle } from "../../../utils/title";
 
 export const PokerInfoContext = createContext({});
 
@@ -50,17 +52,22 @@ const Poker = ({ info }) => {
     };
 
     return (
-        <Layout footerAbsolute>
-            {info && Array.isArray(info?.classes) && Array.isArray(info?.lobbies) ? (
-                <PokerInfoContext.Provider value={{ lobby, setLobby }}>
-                    <h1 className="text-center font-sans font-bold text-3xl my-10">Join A Poker Match</h1>
-                    <Join onJoin={join} classes={info?.classes} />
-                    <Lobbies info={info} />
-                </PokerInfoContext.Provider>
-            ) : (
-                <PokerConnectError onRefresh={() => router.reload()} onBack={() => router.push("/games")} />
-            )}
-        </Layout>
+        <>
+            <Head>
+                <title>{formatTitle("Play Poker")}</title>
+            </Head>
+            <Layout footerAbsolute>
+                {info && Array.isArray(info?.classes) && Array.isArray(info?.lobbies) ? (
+                    <PokerInfoContext.Provider value={{ lobby, setLobby }}>
+                        <h1 className="text-center font-sans font-bold text-3xl my-10">Join A Poker Match</h1>
+                        <Join onJoin={join} classes={info?.classes} />
+                        <Lobbies info={info} />
+                    </PokerInfoContext.Provider>
+                ) : (
+                    <PokerConnectError onRefresh={() => router.reload()} onBack={() => router.push("/games")} />
+                )}
+            </Layout>
+        </>
     );
 };
 
