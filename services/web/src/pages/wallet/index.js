@@ -1,13 +1,13 @@
 import React from "react";
-import Layout from "../../../components/layout";
-import Front from "../../../components/layout/front";
+import Layout from "../../components/layout";
+import Front from "../../components/layout/front";
 import Dinero from "dinero.js";
 import PropTypes from "prop-types";
-import ActionMenu from "../../../components/actionMenu";
-import TransactionList from "../../../widgets/account/wallet/transactionList";
-import BackToAccount from "../../../widgets/account/back";
-import ActionMenuLink from "../../../components/actionMenu/link";
-import { getSession } from "../../../hooks/auth";
+import ActionMenu from "../../components/actionMenu";
+import TransactionList from "../../widgets/account/wallet/transactionList";
+import BackToAccount from "../../widgets/account/back";
+import ActionMenuLink from "../../components/actionMenu/link";
+import { getSession } from "../../hooks/auth";
 import moment from "moment";
 
 const WalletHeader = ({ value }) => {
@@ -35,7 +35,7 @@ const Wallet = ({ balance, history }) => {
             {balance && <WalletHeader value={balance} />}
             <div className="px-10 pb-10 bg-gray-200">
                 <ActionMenu>
-                    <ActionMenuLink href="/account/wallet/deposit">Deposit</ActionMenuLink>
+                    <ActionMenuLink href="/wallet/deposit">Deposit</ActionMenuLink>
                 </ActionMenu>
             </div>
             <div className="p-10 bg-white">{history && <TransactionList transactions={history} />}</div>

@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { IntlProvider } from "react-intl";
 import { Provider } from "../hooks/auth";
+import { SnackbarProvider } from "notistack";
+
 import "../../styles/globals.css";
 import "../../styles/tailwind.css";
 
@@ -16,9 +18,11 @@ function MyApp({ Component, pageProps }) {
     return (
         <IntlProvider locale={locale} defaultLocale={defaultLocale} messages={GetMessage(defaultLocale, locale, pathname)}>
             <Provider session={pageProps.session}>
-                <div className="main-container">
-                    <Component {...pageProps} />
-                </div>
+                <SnackbarProvider>
+                    <div className="main-container">
+                        <Component {...pageProps} />
+                    </div>
+                </SnackbarProvider>
             </Provider>
         </IntlProvider>
     );

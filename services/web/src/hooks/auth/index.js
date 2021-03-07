@@ -19,7 +19,7 @@ export const getSession = async ({ req, ctx } = {}) => {
     if (!req && ctx && ctx.req) {
         req = ctx.req;
     }
-    console.log("AUTH URL: ", _apiBaseUrl())
+    console.log("AUTH URL: ", _apiBaseUrl());
     try {
         const res = await fetch(`${_apiBaseUrl()}/session`, {
             credentials: "include",
@@ -100,7 +100,9 @@ export const signIn = async (args = {}) => {
         mode: "cors",
         body: JSON.stringify({ ...args })
     };
-    return _fetch(`${_apiBaseUrl()}/login`, options);
+    const res = await _fetch(`${_apiBaseUrl()}/login`, options);
+    await getSession();
+    return res;
 };
 
 export const register = async (args = {}) => {
@@ -115,7 +117,9 @@ export const register = async (args = {}) => {
         mode: "cors",
         body: JSON.stringify({ ...args })
     };
-    return await _fetch(`${_apiBaseUrl()}/register`, options);
+    const res = await _fetch(`${_apiBaseUrl()}/register`, options);
+    await getSession();
+    return res;
 };
 
 export const signOut = async () => {
@@ -148,8 +152,7 @@ const _apiBaseUrl = () => {
 
 const _fetch = async (url, options) => {
     try {
-        await fetch(url, options);
-        return Promise.resolve();
+        return await fetch(url, options);
     } catch (error) {
         console.log("error during fetch", url, error);
         return Promise.reject(error);

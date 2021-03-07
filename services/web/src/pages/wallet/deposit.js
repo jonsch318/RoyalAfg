@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
-import Layout from "../../../components/layout";
+import Layout from "../../components/layout";
 import { useRouter } from "next/router";
 
 const Deposit = () => {

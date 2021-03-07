@@ -10,7 +10,7 @@ type PasswordBoxProps = {
 const PasswordBox: React.FC<PasswordBoxProps> = ({ errors, register }: PasswordBoxProps) => {
     const [hidePassword, setHidePassword] = useState(true);
     return (
-        <section className="mb-8 font-sans text-lg font-medium">
+        <section className="mb-6 font-sans text-lg font-medium">
             <label htmlFor="password" className="mb-2 block">
                 Passphrase*:
             </label>
