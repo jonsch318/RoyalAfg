@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`royalafg.grafana`) && PathPrefix(`/grafana`)
+      kind: Rule
+      services:
+        - name: kube-prom-grafana
+          port: 80

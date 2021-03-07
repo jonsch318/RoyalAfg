@@ -185,7 +185,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: traefik
-
+  labels:
+    app: traefik
 spec:
   type: NodePort 
   ports:
@@ -200,6 +201,21 @@ spec:
       port: 443
   selector:
     app: traefik
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik
+  labels:
+    app: traefik
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: traefik
+  endpoints:
+  - port: admin
+    interval: 15s
 ---
 apiVersion: v1
 kind: ServiceAccount

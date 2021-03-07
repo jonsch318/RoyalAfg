@@ -24,4 +24,4 @@ server:
     maxUnavailable: 0
 
 syncCatalog:
-  enabled: true
+  enabled: false

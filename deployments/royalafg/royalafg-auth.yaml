@@ -16,6 +16,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: royalafg-auth
+  labels:
+    app: royalafg-auth
 spec:
   selector:
     app: royalafg-auth
@@ -25,6 +27,21 @@ spec:
       targetPort: 8080
 
 ---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: royalafg-auth
+  labels:
+    app: royalafg-auth
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: royalafg-auth
+  endpoints:
+  - port: web
+    interval: 15s
+---    
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -34,6 +51,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: royalafg-auth
+  labels:
+    app: royalafg-auth
 data:
   config.yaml: |
     jwt_signing_key: testsecret

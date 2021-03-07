@@ -34,6 +34,8 @@ spec:
           db: admin
         - name: readWrite
           db: admin
+        - name: readWrite
+          db: RoyalafgUser
       scramCredentialsSecretName: vault-scram
   additionalMongodConfig:
     storage.wiredTiger.engineConfig.journalCompressor: zlib

@@ -6,6 +6,7 @@ data:
   config.yaml: |
     http_port: 7654
     rabbitmq_url: royalafg-rabbitmq.default.svc.cluster.local:5672
+    matchmaker_signing_key: matchmakingkey
 ---
 apiVersion: autoscaling.agones.dev/v1
 kind: FleetAutoscaler
@@ -24,6 +25,19 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: royalafg-poker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: royalafg-poker
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: royalafg-poker
+roleRef:
+  kind: ClusterRole
+  name: agones-sdk
+  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: "agones.dev/v1"
 kind: Fleet
@@ -55,12 +69,18 @@ spec:
           labels:
             app: royalafg-poker-gameserver
           annotations:
-            'consul.hashicorp.com/connect-inject': "false"
+            "consul.hashicorp.com/connect-inject": "false"
             "vault.hashicorp.com/agent-inject": "true"
             "vault.hashicorp.com/agent-inject-secret-poker.yaml": "kv-v2/poker"
             "vault.hashicorp.com/agent-inject-template-poker.yaml": |
               {{- with secret "kv-v2/poker" -}}
-                matchmaker_signing_key: {{.Data.data.signing_key}}
+              matchmaker_signing_key: {{.Data.data.signing_key}}
+              {{- end}}
+            "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
+            "vault.hashicorp.com/agent-inject-template-rabbitmq.yaml": |
+              {{- with secret "rabbitmq/creds/royalafg" -}}
+              rabbitmq_username: {{.Data.username}}
+              rabbitmq_password: {{.Data.password}}
               {{- end}}
             "vault.hashicorp.com/role": poker-role
         spec:
@@ -68,17 +88,17 @@ spec:
           containers:
             - name: royalafg-poker
               image: docker.io/johnnys318/royalafg_poker:latest
-              env:
-                - name: POKER_RABBITMQ_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: username
-                      name: royalafg-rabbitmq-default-user
-                - name: POKER_RABBITMQ_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: password
-                      name: royalafg-rabbitmq-default-user
+              # env:
+              #   - name: POKER_RABBITMQ_USERNAME
+              #     valueFrom:
+              #       secretKeyRef:
+              #         key: username
+              #         name: royalafg-rabbitmq-default-user
+              #   - name: POKER_RABBITMQ_PASSWORD
+              #     valueFrom:
+              #       secretKeyRef:
+              #         key: password
+              #         name: royalafg-rabbitmq-default-user
               volumeMounts:
                 - name: royalafg-poker-config
                   mountPath: "/etc/royalafg-poker"
