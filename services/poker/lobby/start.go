@@ -21,7 +21,7 @@ func (l *Lobby) Start() {
 			log.Logger.Debug("Start timer")
 
 			// Protection against multiple games using a buffered channel. Once one is through the 15 seconds timeout all other cancel the starting process.
-			timer := time.NewTimer(15 * time.Second)
+			timer := time.NewTimer(time.Duration(viper.GetInt(serviceconfig.GameStartTimeout)) * time.Second)
 			select {
 			case <-l.c:
 				// game has already been called this instance is unnecessary
@@ -52,7 +52,6 @@ func (l *Lobby) Start() {
 				return
 			}
 
-
 			if l.dealer < 0 {
 				rand.Seed(time.Now().UnixNano())
 				l.dealer = rand.Intn(len(l.Players))
@@ -80,7 +79,6 @@ func (l *Lobby) Start() {
 
 			log.Logger.Debugf("Game finished")
 
-
 			l.lock.Lock()
 			l.GameStarted = false
 			l.lock.Unlock()
@@ -89,14 +87,14 @@ func (l *Lobby) Start() {
 			l.RemoveAfterRound()
 
 			//empty the starting channel.
-			L:
-				for {
-					select {
-					case <-l.c:
-					default:
-						break L
-					}
+		L:
+			for {
+				select {
+				case <-l.c:
+				default:
+					break L
 				}
 			}
+		}
 	}()
 }

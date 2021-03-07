@@ -2,9 +2,10 @@ package round
 
 import (
 	"errors"
+	"log"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
-	"log"
 )
 
 func (r *Round) setBlinds() error {
@@ -35,7 +36,14 @@ func (r *Round) setBlinds() error {
 			continue
 		}
 
-		utils.SendToAll(r.Players, events.NewActionProcessedEvent(2, i, r.SmallBlind.Display(), r.Bank.GetPlayerBet(r.Players[i].ID), r.Bank.GetPlayerWallet(r.Players[i].ID)))
+		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+				2,
+				i,
+				r.SmallBlind.Display(),
+				r.Bank.GetPlayerBet(r.Players[i].ID),
+				r.Bank.GetPlayerWallet(r.Players[i].ID),
+				r.Bank.GetPot(),
+		))
 		success = true
 		smallBlindIndex = i
 		s = 0
@@ -65,7 +73,15 @@ func (r *Round) setBlinds() error {
 			s++
 			continue
 		}
-		utils.SendToAll(r.Players, events.NewActionProcessedEvent(2, i, bigBlind.Display(), r.Bank.GetPlayerBet(r.Players[i].ID), r.Bank.GetPlayerWallet(r.Players[i].ID)))
+		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+			2,
+			i,
+			bigBlind.Display(),
+			r.Bank.GetPlayerBet(r.Players[i].ID),
+			r.Bank.GetPlayerWallet(r.Players[i].ID),
+			r.Bank.GetPot(),
+		))
+
 		success = true
 		r.bigBlindIndex = i
 	}

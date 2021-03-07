@@ -29,6 +29,7 @@ func NewPlayerConn(conn *websocket.Conn) *PlayerConn {
 }
 
 func (p *PlayerConn) reader() {
+	defer log.Logger.Debugf("Conn reader closed")
 	log.Logger.Debugf("Conn reader started")
 	for {
 		//we dont need message type. We detect closing in the error
@@ -62,6 +63,7 @@ func (p *PlayerConn) reader() {
 }
 
 func (p *PlayerConn) writer() {
+	defer log.Logger.Debugf("Conn writer closed")
 	log.Logger.Debugf("Conn writer started")
 	for true {
 		select {
@@ -71,7 +73,6 @@ func (p *PlayerConn) writer() {
 				return
 			}
 
-			log.Logger.Debugf("Send event successfully")
 			//Create Websocket writer
 			w, err := p.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
@@ -99,6 +100,11 @@ func (p *PlayerConn) writer() {
 }
 
 func (p *PlayerConn) CloseConnection(unexpected bool){
+	defer func() {
+		if r := recover(); r != nil {
+			log.Logger.Debugf("recovering in round start from %v", r)
+		}
+	}()
 
 	log.Logger.Warnw("Closing Connection", "unexpected", unexpected)
 
@@ -115,7 +121,14 @@ func (p *PlayerConn) CloseConnection(unexpected bool){
 
 	p.Status = 0
 
-	//Message close event
-	p.Close <- unexpected
+	select {
+	case <-p.Close:
+	default:
+		//Message close event
+		log.Logger.Warnf("Closing channel")
+		close(p.Close)
+	}
+
+
 }
 

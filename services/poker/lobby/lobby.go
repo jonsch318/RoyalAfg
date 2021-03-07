@@ -85,7 +85,7 @@ func (l *Lobby) RemovePlayerByID(id string) error {
 	}
 
 	l.RemovalQueue.Enqueue(&l.Players[i])
-	_ = l.round.Fold(id)
+	_ = l.round.Leave(id)
 	if !l.GetGameStarted() {
 		l.RemoveAfterRound()
 	}

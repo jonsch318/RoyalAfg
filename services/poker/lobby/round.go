@@ -1,6 +1,8 @@
 package lobby
 
 import (
+	"time"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 )
 
@@ -11,11 +13,28 @@ func (l *Lobby) RemoveAfterRound()  {
 	l.lock.Lock()
 	defer l.lock.Unlock()
 
+	//Remove players that left during the round.
+	for _, player := range l.Players {
+		if player.Left {
+			l.RemovalQueue.Enqueue(&player)
+		}
+	}
+
 	//Remove all hanging players and update player count
 	l.PlayerRemoval()
 	l.SetPlayerCountLabel()
 
-	log.Logger.Debugf("Removed Players Player Count: %v", l.PlayerCount)
+	log.Logger.Debugf("Removed PlayerCount Player Count: %v", l.PlayerCount)
+	if l.Count() <= 0 {
+		log.Logger.Warnf("No more players... Notify agones sdk to shutdown")
+		t := time.NewTimer(time.Second * 10)
+		<- t.C
+		err := l.sdk.Shutdown()
+		if err != nil {
+			log.Logger.Errorw("Error during sdk shutdown notification", "error", err.Error())
+		}
+	}
+
 }
 
 //PrepareForRound prepares the lobby for a new Round
@@ -30,5 +49,5 @@ func (l *Lobby) PrepareForRound()  {
 	l.FillLobbyPosition()
 	l.SetPlayerCountLabel()
 
-	log.Logger.Debugf("Removed Players Player Count: %v", l.PlayerCount)
+	log.Logger.Debugf("Removed PlayerCount Player Count: %v", l.PlayerCount)
 }

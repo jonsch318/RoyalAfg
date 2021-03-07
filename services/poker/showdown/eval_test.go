@@ -16,7 +16,7 @@ func TestEvaluate(t *testing.T) {
 	cards["b"] = [2]models.Card{{Color: 3, Value: 8}, {Color: 0, Value: 1}}
 	board := [5]models.Card{{Color: 0, Value: 11}, c(3, 4), c(1, 4), c(0, 7), c(2, 2)}
 
-	winners := Evaluate(players, cards, board)
+	winners := Evaluate(players, cards, board, 2)
 
 	assert.Len(t, winners, 1)
 	assert.Equal(t, "a", winners[0].Player.ID)
@@ -30,7 +30,7 @@ func BenchmarkEvaluate(b *testing.B) {
 	board := [5]models.Card{{Color: 0, Value: 11}, c(3, 4), c(1, 4), c(0, 7), c(2, 2)}
 	var winners []WinnerInfo
 	for i := 0; i < b.N; i++ {
-		winners = Evaluate(players, cards, board)
+		winners = Evaluate(players, cards, board, 2)
 	}
 	winnerResult = winners
 }

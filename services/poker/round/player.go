@@ -13,7 +13,7 @@ import (
 
 
 func (r *Round) playerError(i int, message string) {
-	utils.SendToPlayerInList(r.Players, i, models.NewEvent("INVALID_ACTION", message))
+	_ = utils.SendToPlayerInListTimeout(r.Players, i, models.NewEvent("INVALID_ACTION", message))
 }
 
 //waitForAction sends the player all action possibilities in a decoded form and awaits an response.
@@ -37,13 +37,13 @@ func (r *Round) waitForAction(i int, preFlop, check bool) (*events.Action, error
 		possibilities = possibilities & 0b10111
 	}
 
-	log.Logger.Info("Possibilities:  %v", strconv.FormatInt(int64(possibilities), 2))
+	log.Logger.Infof("Possibilities:  %v", strconv.FormatInt(int64(possibilities), 2))
 
 	utils.SendToAll(r.Players, events.NewWaitForActionEvent(i, possibilities))
 
-	e, err := utils.WaitUntilEvent(&r.Players[i])
+	e, err := utils.WaitUntilCloseOrEvent(&r.Players[i])
 	if err != nil {
-		log.Logger.Warnw("Timeout waiting for action", "error", err)
+		log.Logger.Warnw("Timeout waiting for action or player left", "error", err)
 		return nil, err
 	}
 	action, err := events.ToAction(e)

@@ -80,7 +80,7 @@ func (r *Round) Fold(id string) error {
 	r.Players[i].Active = false
 	r.InCount--
 
-	log.Logger.Debugf("set active state of player")
+	log.Logger.Debugf("Player [%s] folded to an Active=false", r.Players[i].Username)
 
 	utils.SendToAll(r.Players,
 		events.NewActionProcessedEvent(
@@ -89,7 +89,24 @@ func (r *Round) Fold(id string) error {
 			moneyUtils.Zero().Display(),
 			r.Bank.GetPlayerBet(r.Players[i].ID),
 			r.Bank.GetPlayerWallet(r.Players[i].ID),
+			r.Bank.GetPot(),
 			),
 	)
 	return nil
+}
+
+func (r *Round) Leave(id string) error {
+	i, err := r.searchByActiveID(id)
+	if err != nil {
+		return err
+	}
+
+	if i < 0 || i >= len(r.Players) {
+		return errors.New("something went wrong")
+	}
+	r.Players[i].Left = true
+	if r.InCount - 1 <= 0 {
+		r.End()
+	}
+	return r.Fold(id)
 }

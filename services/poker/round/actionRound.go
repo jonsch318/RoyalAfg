@@ -6,6 +6,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
@@ -61,33 +62,34 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 
 	//____Acquire actions_____
 
-	r.ActionTries(options)
+	err := r.ActionTries(options)
 
 	//_____Subsequent checks_____
-
-	if !options.Success {
-		log.Logger.Warnf("Actions were not successful the player is counted as folded")
-		options.SuccessfulAction = &events.Action{
-			Action:  events.FOLD,
-			Payload: moneyUtils.Zero(),
+	_, ok := err.(errors.InvalidActionError)
+	if err == nil || ok {
+		if err != nil && ok {
+			log.Logger.Warnf("Actions were not successful the player is counted as folded")
+			options.SuccessfulAction = &events.Action{
+				Action:  events.FOLD,
+				Payload: moneyUtils.Zero(),
+			}
+			r.Action(options)
 		}
-		r.Action(options)
-	}
-
-	//Sending results to clients
-	utils.SendToAll(r.Players,
-		events.NewActionProcessedEvent(
+		//Sending results to clients
+		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
 			options.SuccessfulAction.Action,
 			options.Current,
 			options.Payload.Display() ,
 			r.Bank.GetPlayerBet(options.PlayerId),
 			r.Bank.GetPlayerWallet(options.PlayerId),
-			),
-	)
+			r.Bank.GetPot(),
+		))
+		log.Logger.Debugf("Send results to clients")
+		time.Sleep(1 * time.Second)
+	}else {
+		log.Logger.Infof("Player folded during call")
+	}
 
-	log.Logger.Debugf("Send results to clients")
-
-	time.Sleep(1 * time.Second)
 
 	if !options.BlockingList.CheckIfEmpty() {
 		//Get next in blocking list
@@ -104,10 +106,28 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 	return
 }
 
-func (r *Round) ActionTries(options *ActionRoundOptions)  {
+
+
+func (r *Round) ActionTries(options *ActionRoundOptions) error {
 	for i := 3; i > 0 ; i-- {
+		if !r.Players[options.Current].Active {
+			return errors.PlayerFoldedError{}
+		}
 		action, err := r.waitForAction(options.Current, options.PreFlop, options.CanCheck)
-		if err != nil || action == nil {
+		if err != nil {
+			log.Logger.Warnf("Timeout exeeded or error while waiting for action")
+			if !r.Players[options.Current].Active {
+				log.Logger.Warnf("Player Inactive")
+				return errors.PlayerFoldedError{}
+			}
+			r.playerError(options.BlockingIndex, fmt.Sprintf("The action was not valid. %v more tries", i))
+
+		}
+		if action == nil {
+			if !r.Players[options.Current].Active {
+				log.Logger.Warnf("Player Inactive")
+				return errors.PlayerFoldedError{}
+			}
 			r.playerError(options.BlockingIndex, fmt.Sprintf("The action was not valid. %v more tries", i))
 			continue
 		}
@@ -121,13 +141,20 @@ func (r *Round) ActionTries(options *ActionRoundOptions)  {
 		}
 	}
 	log.Logger.Debugf("Action tries concluded")
+	if !options.Success {
+		return errors.InvalidActionError{}
+	}
+	return nil
 }
 
 func (r *Round) Action(options *ActionRoundOptions) {
 	defer log.Logger.Debugf("Action taken successfully: %v", options.Success)
 	switch options.SuccessfulAction.Action {
 	case events.FOLD:
-		_ = r.Fold(options.PlayerId)
+		err := r.Fold(options.PlayerId)
+		if err != nil {
+			log.Logger.Errorw("Error during folding", "error", err)
+		}
 		options.BlockingList.RemoveBlocking(options.BlockingIndex)
 		options.Success = true
 

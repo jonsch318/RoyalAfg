@@ -2,16 +2,14 @@ package bank
 
 import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 )
 
 //ConcludeRound resets the current round and adds the fair share of the to the winners wallets.
-func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo) []string {
+func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []string {
 	b.lock.Lock()
-
-
-
 
 	if winners == nil || b.Pot.IsZero() || b.Pot.IsNegative() {
 		log.Logger.Errorw("something went wrong so that the round cannot be concluded", "winners", winners, "pot", b.Pot.Display())
@@ -44,7 +42,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo) []string {
 
 		b.PlayerBets[player.Player.ID] = res // Change the bet. It would be reset soon anyway.
 
-		log.Logger.Infof("User [%v] wins share %s", player, shares[i].Display())
+		log.Logger.Infof("User [%v] wins share %s", player.String(), shares[i].Display())
 		ret[i] = shares[i].Display()
 	}
 
@@ -53,6 +51,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo) []string {
 	b.ExecuteQueue()
 	b.lock.Unlock()
 
+	b.UpdatePublicPlayerBuyIn(publicPlayers)
 	//Reset Bank values like pot, max bet, player bets etc...
 	b.Reset()
 

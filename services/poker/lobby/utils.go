@@ -16,7 +16,7 @@ func (l *Lobby) Count() int {
 }
 
 func (l *Lobby) SetPlayerCountLabel() {
-	log.Logger.Debugf("Players %v", l.Count())
+	log.Logger.Debugf("PlayerCount %v", l.Count())
 	err := l.sdk.SetLabel("players", strconv.Itoa(l.Count()))
 	if err != nil {
 		log.Logger.Warnw("error during player label set %v", "error", err.Error())

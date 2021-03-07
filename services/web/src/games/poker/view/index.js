@@ -14,28 +14,22 @@ const textureUrl = window.location.origin + "/static/games/poker/textures/cards.
 class View extends React.Component {
     constructor(props) {
         super(props);
+        this.gameStartInvoke = props.gameStart;
         this.gameState = props.game.state;
         this.game = props.game.state.state;
         this.loader = props.loader;
-
-        this.state = {
-            loaded: false
-        };
         PIXI.Loader.shared.reset();
     }
 
     componentDidMount() {
-        this.setState({ loaded: false });
-
         this.props.game.state.setOnGameStart(() => {
+            this.gameStartInvoke();
             this.gameStart();
         });
     }
 
     gameStart() {
         const d = document.getElementById("view");
-
-        this.setState({ loaded: true });
         PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH;
         this.app = new PIXI.Application({
             antialias: false,
@@ -65,15 +59,6 @@ class View extends React.Component {
 
         this.tableWidth = rW(200);
         this.tableHeight = rH(125);
-        // if (isMobile()) {
-        //     this.tableWidth = 85;
-        //     this.tableHeight = 50;
-        // }
-        // this.table.beginFill(0x1daf08);
-        // this.table.drawEllipse(this.tableWidth, this.tableHeight, this.tableWidth, this.tableHeight)
-        // //table.drawRoundedRect(0, 0, this.tableWidth * 2, this.tableHeight * 2, this.tableHeight)
-        // this.table.endFill();
-        // this.table.position.set(this.app.renderer.width / 2 - this.tableWidth, this.app.renderer.height / 2 - this.tableHeight)
 
         this.board.update({
             updatedWidth: () => {
@@ -125,6 +110,9 @@ class View extends React.Component {
         if (event === UpdateEvents.lobbyJoin) {
             this.players.updateFromState();
         }
+        if (event === UpdateEvents.gameStart) {
+            this.players.updateFromState();
+        }
         if (event === UpdateEvents.playerList) {
             this.players.updateFromState();
         }
@@ -149,14 +137,15 @@ class View extends React.Component {
     }
 
     render() {
-        return <div id="view">{!this.state.loaded ? <h1>Waiting for next game to start.</h1> : <></>}</div>;
+        return <div id="view"></div>;
     }
 }
 
 View.propTypes = {
     game: PropTypes.instanceOf(Game),
     loader: PropTypes.object,
-    router: PropTypes.object
+    router: PropTypes.object,
+    gameStart: PropTypes.func
 };
 
 export default withRouter(View);

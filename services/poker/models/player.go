@@ -16,6 +16,7 @@ type Player struct {
 	In       chan *Event
 	Active   bool
 	Close    chan bool
+	Left bool
 }
 
 func NewPlayer(username, id string, buyin int, in chan *Event, out chan []byte, close chan bool) *Player {
@@ -27,6 +28,7 @@ func NewPlayer(username, id string, buyin int, in chan *Event, out chan []byte, 
 		In:       in,
 		Active:   false,
 		Close:    close,
+		Left: false,
 	}
 }
 

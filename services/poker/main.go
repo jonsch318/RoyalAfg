@@ -1,10 +1,10 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	coresdk "agones.dev/agones/pkg/sdk"
@@ -81,7 +81,7 @@ func main() {
 				}
 				//Lobby is configured through kubernetes labels and is assigned a unique id.
 				lobbyConfigured = true
-			}else {
+			} else if !strings.HasPrefix(err.Error(), "key needed") {
 				logger.Errorw("Error during configuration", "error", err)
 			}
 		}
@@ -143,17 +143,17 @@ func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, 
 		return err
 	}
 
-	lobbyId, ok := labels["lobbyId"]
+	lobbyID, ok := labels["lobbyId"]
 	if !ok {
-		return errors.New("can not get the required information for the key lobbyId")
+		return fmt.Errorf("key needed [%v]", "lobbyId")
 	}
-	b.RegisterLobby(lobbyId)
+	b.RegisterLobby(lobbyID)
 
 	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{
 		Min:   min,
 		Max:   max,
 		Blind: blind,
-	}, index, lobbyId)
+	}, index, lobbyID)
 	return nil
 }
 
@@ -161,7 +161,7 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	valString, ok := labels[key]
 
 	if !ok {
-		return 0, errors.New("key needed")
+		return 0, fmt.Errorf("key needed [%v]", key)
 	}
 
 	val, err := strconv.Atoi(valString)

@@ -74,6 +74,14 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		return []byte(viper.GetString(serviceconfig.MatchMakerJWTKey)), nil
 	})
 
+	if err != nil {
+		log.Logger.Warnw("joinEvent was invalid", "error", err)
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
+		playerConn.CloseConnection(false)
+		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
+		return
+	}
+
 	var tokenDec *pokerModels.Token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
 		log.Logger.Debugf("Token values: %s, %s, %s", claims["username"], claims["id"], claims["buyIn"])
@@ -89,7 +97,15 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 	player := models.NewPlayer(tokenDec.Username, tokenDec.Id, tokenDec.BuyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
 	log.Logger.Debugf("joining player to lobby")
-	h.lby.Join(player)
+	err = h.lby.Join(player)
+
+	if err != nil {
+		log.Logger.Warnw("join was unsuccessful", "error", err)
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "error during joining process"))
+		playerConn.CloseConnection(false)
+		http.Error(rw, "VALIDATION_FAILED. Error during joining process", http.StatusBadRequest)
+		return
+	}
 
 	if h.lby.Count() == 0 {
 		log.Logger.Debugf("stopping shutdown")

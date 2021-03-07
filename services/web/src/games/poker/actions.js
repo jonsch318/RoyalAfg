@@ -2,8 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import Raise from "./actions/raise";
-
-const { PLAYER_ACTION } = require("./events/constants");
+import { PLAYER_ACTION } from "./events/constants";
 
 const Actions = ({ game, actions }) => {
     const send = ({ action, payload }) => {

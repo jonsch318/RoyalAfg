@@ -20,6 +20,8 @@ const GameRequiresUniquePlayers = "game_require_unique"
 
 const StepSleepDuration = "step_sleep_duration"
 
+const GameStartTimeout = "game_start_timeout"
+
 //SetDefaults configures all defaults
 func SetDefaults() {
 	viper.SetDefault(Port, 5000)
@@ -36,5 +38,6 @@ func SetDefaults() {
 	viper.SetDefault(GameRequiresUniquePlayers, false)
 
 	viper.SetDefault(StepSleepDuration, time.Second)
+	viper.SetDefault(GameStartTimeout, 15)
 
 }

@@ -59,7 +59,7 @@ func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
 		m.logger.Errorw("error during agones lobbies", "error", err)
 		return nil
 	}
-	m.logger.Info("Agones lists follwind")
+	m.logger.Info("Agones list decoded")
 
 	lobbies := make([][]models.LobbyBase, len(m.classes))
 	for _, gs := range list.Items {

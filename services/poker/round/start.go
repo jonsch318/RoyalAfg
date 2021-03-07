@@ -1,6 +1,8 @@
 package round
 
 import (
+	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/spf13/viper"
@@ -15,9 +17,10 @@ import (
 )
 
 func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
-	defer func(){
+	defer func() {
 		if r := recover(); r != nil {
 			log.Logger.Debugf("recovering in round start from %v", r)
+			debug.PrintStack()
 		}
 	}()
 	r.Players = players
@@ -40,20 +43,32 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 
 	//publish players and position
 	log.Logger.Debugf("Publishing players")
+	r.Bank.UpdatePublicPlayerBuyIn(r.PublicPlayers)
+	log.Logger.Debugf("Transmiting Public Player info %v", r.PublicPlayers)
 	for i := range r.Players {
-		utils.SendToPlayerInList(r.Players, i, events.NewGameStartEvent(publicPlayers, i))
+		if r.Players[i].ID != r.PublicPlayers[i].ID {
+			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
+		}
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i)); err != nil {
+			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
+			_ = r.Leave(r.Players[i].ID)
+		}
 	}
 
+	r.WhileNotEnded(func(){
+		r.sendDealer()
+	})
 	// Publish chosen Dealer
-	r.sendDealer()
 	time.Sleep(sleepTime)
 
-	//set predefined blinds
-	err := r.setBlinds()
-	if err != nil {
-		r.Bank.ConcludeRound(nil)
-		return
-	}
+	r.WhileNotEnded(func(){
+		//set predefined blinds
+		err := r.setBlinds()
+		if err != nil {
+			r.Bank.ConcludeRound(nil, r.PublicPlayers)
+			return
+		}
+	})
 
 	cards, err := random.SelectCards(5 + 2*int(r.InCount))
 
@@ -70,13 +85,12 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	}
 
 	// Set players hole cards
-	holeCards(r.Players, r.HoleCards, cards[4:])
+	r.holeCards(cards[4:])
 	log.Logger.Infof("Hole cards set")
-
 
 	time.Sleep(sleepTime)
 
-	r.WhileNotEnded(func(){
+	r.WhileNotEnded(func() {
 		r.actions(true)
 	})
 	log.Logger.Debugf("Generate cards")
@@ -102,24 +116,45 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 //Evaluate concludes this round and publishes all results to the bank service for performing the real transactions.
 func (r *Round) Evaluate() {
 	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
-	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board)
-	log.Logger.Infow("Winners determined")
+	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board, r.InCount)
+	log.Logger.Infow("Winners determined: %v", winners)
+	r.LogCards()
 
 	//Publish commands to bank service.
-	shares := r.Bank.ConcludeRound(winners)
-	r.Bank.UpdatePublicPlayerBuyIn(r.PublicPlayers)
+	shares := r.Bank.ConcludeRound(winners, r.PublicPlayers)
+
 
 	//Send winning results to clients. You could add the hole cards for clarity. But this can be added fairly easily.
 	winningPublic := make([]models.PublicPlayer, len(winners))
-	for _, w := range winners {
-		winningPublic = append(winningPublic, r.PublicPlayers[w.Position])
+	for i, w := range winners {
+		if r.PublicPlayers[w.Position].ID != w.Player.ID {
+			log.Logger.Errorf("Player and win info not synchronized")
+		}
+		winningPublic[i] = r.PublicPlayers[w.Position]
+		log.Logger.Debugf("Winning public %v", winningPublic[i])
 	}
+	log.Logger.Debugf("Winning Publics %v", winningPublic)
 	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 
+func (r *Round) LogCards() {
+	for _, player := range r.Players {
+		str := fmt.Sprintf("%s Cards: [ ", player.Username)
+		for _, card := range r.Board {
+			str += card.String() + ", "
+		}
+		card0 := r.HoleCards[player.ID][0]
+		card1 := r.HoleCards[player.ID][1]
+
+		str += card0.String() + ", "
+		str += card1.String() + " ]"
+
+		log.Logger.Debugf(str)
+	}
+}
 
 //SendBoardEvent is a little utility for sorting the right board event name for a given number of cards
-func (r *Round) SendBoardEvent(cardCount int){
+func (r *Round) SendBoardEvent(cardCount int) {
 	switch cardCount {
 	case 3:
 		utils.SendToAll(r.Players, events.NewFlopEvent(r.Board))

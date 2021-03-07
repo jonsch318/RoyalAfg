@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Layout from "../../../components/layout";
 import Join from "../../../games/poker/join";
@@ -6,6 +6,7 @@ import Lobbies from "../../../games/poker/lobbies";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { formatTitle } from "../../../utils/title";
+import { useSnackbar } from "notistack";
 
 export const PokerInfoContext = createContext({});
 
@@ -14,7 +15,9 @@ const PokerConnectError = ({ onRefresh, onBack }) => {
     return (
         <div className="bg-gray-200">
             <div className="bg-gray-200 p-20 pt-32 grid justify-center items-center">
-                <h1 className="font-sans text-5xl font-bold text-center inlines bg-white p-8 rounded-xl">Unable to connect to Poker Matchmaking</h1>
+                <h1 className="font-sans text-5xl font-bold text-center inlines bg-white p-8 rounded-xl">
+                    Unable to connect to the Poker matchmaking server
+                </h1>
             </div>
             <div className="pb-72 pt-32">
                 <div className="flex items-center justify-center bg-gray-200">
@@ -34,9 +37,16 @@ const PokerConnectError = ({ onRefresh, onBack }) => {
     );
 };
 
-const Poker = ({ info }) => {
+const Poker = ({ info, error }) => {
     const router = useRouter();
     const [lobby, setLobby] = useState({ i: -1, classIndex: -1 });
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        if (error !== "") {
+            enqueueSnackbar("Unable to reach the poker server", { variant: "error" });
+        }
+    }, [error]);
 
     const join = (params) => {
         router
@@ -83,9 +93,8 @@ export async function getServerSideProps() {
         if (!res.ok) {
             console.log("not ok: ", res.status);
             return {
-                redirect: {
-                    destination: "/games",
-                    permanent: true
+                props: {
+                    error: "Status invalid: " + res.status
                 }
             };
         }
@@ -95,49 +104,48 @@ export async function getServerSideProps() {
 
         if (!info || !info?.classes || !info?.classes.length || !info?.lobbies || !info?.lobbies.length) {
             return {
-                redirect: {
-                    destination: "/games",
-                    permanent: true
+                props: {
+                    error: "Status invalid: " + res.status
                 }
             };
         }
         return {
             props: {
-                info: info
+                info: info,
+                error: ""
             }
         };
     } catch (e) {
         console.log("e", e);
         return {
-            props: {},
-            redirect: {
-                destination: "/games",
-                permanent: true
+            props: {
+                error: "Error: " + e
             }
         };
     }
 
     /*  return {
-        props: {
-            info: {
-                classes: [
-                    { min: 1000, max: 4999, blind: 100 },
-                    { min: 5000, max: 14999, blind: 500 }
-                ],
-                lobbies: [
-                    [{ id: "abc", class: { min: 1000, max: 4999, blind: 100 }, classIndex: 0 }],
-                    [{ id: "def", class: { min: 5000, max: 14999, blind: 500 }, classIndex: 1 }]
-                ]
-            }
-        }
-    };*/
+props: {
+info: {
+  classes: [
+      { min: 1000, max: 4999, blind: 100 },
+      { min: 5000, max: 14999, blind: 500 }
+  ],
+  lobbies: [
+      [{ id: "abc", class: { min: 1000, max: 4999, blind: 100 }, classIndex: 0 }],
+      [{ id: "def", class: { min: 5000, max: 14999, blind: 500 }, classIndex: 1 }]
+  ]
+}
+}
+};*/
 }
 
 Poker.propTypes = {
     info: PropTypes.shape({
         lobbies: PropTypes.array,
         classes: PropTypes.array
-    })
+    }),
+    error: PropTypes.string
 };
 
 export default Poker;

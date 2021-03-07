@@ -62,3 +62,11 @@ func (b *Bank) GetPlayerWallet(id string) string {
 	}
 	return t.Display()
 }
+
+//GetPot returns the current pot value.
+func (b *Bank) GetPot() string {
+	//Have to lock to remove concurrent read and writes.
+	b.lock.RLock()
+	defer b.lock.RUnlock()
+	return b.Pot.Display()
+}
