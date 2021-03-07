@@ -1,0 +1,23 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+    name: royalafg-rabbitmq
+    annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+    release: kube-prom
+spec:
+  podMetricsEndpoints:
+  - interval: 15s
+    port: prometheus
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: rabbitmq
+  namespaceSelector:
+    any: true

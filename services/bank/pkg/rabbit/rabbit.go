@@ -1,7 +1,6 @@
 package rabbit
 
 import (
-	"encoding/json"
 	"log"
 
 	ycq "github.com/jetbasrawi/go.cqrs"
@@ -9,92 +8,66 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 )
 
-type EvenConsumer struct {
-	logger *zap.SugaredLogger
-	conn *amqp.Connection
-	ch *amqp.Channel
-	q amqp.Queue
-	bus ycq.EventBus
-	dispatcher ycq.Dispatcher
+type CommandHandler interface {
+	Handle(*amqp.Delivery)
 }
 
-func NewBankConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher ycq.Dispatcher) (*EvenConsumer, error) {
-	conn, err := amqp.Dial(viper.GetString(config.RabbitMQUrl))
-	if err != nil {
-		logger.Fatalw("Could not connect to RabbitMQ message broker", "error", err)
-		return nil, err
-	}
+type EventConsumer struct {
+	logger         *zap.SugaredLogger
+	conn           *amqp.Connection
+	ch             *amqp.Channel
+	q              amqp.Queue
+	bus            ycq.EventBus
+	dispatcher     ycq.Dispatcher
+	commandHandler CommandHandler
+}
 
-	ch, err := conn.Channel()
-	if err != nil {
-		logger.Fatalw("Could not connect to RabbitMQ channel", "error", err)
-		return nil, err
-	}
+func NewEventConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher ycq.Dispatcher, conn *amqp.Connection, ch *amqp.Channel, queue string, handler CommandHandler) (*EventConsumer, error) {
 
-	q, err := ch.QueueDeclare(viper.GetString(config.RabbitBankQueue), true, false, false, false, nil)
+	q, err := ch.QueueDeclare(queue, false, false, false, false, nil)
 	if err != nil {
 		logger.Fatalw("Could not declare RabbitMQ Queue", "error", err)
 		return nil, err
 	}
+	logger.Infof("Queue declared on %v", q.Name)
 
-	return &EvenConsumer{
-		logger: logger,
-		conn:   conn,
-		ch:     ch,
-		q:      q,
-		bus: bus,
-		dispatcher: dispatcher,
+	if err := ch.ExchangeDeclare(viper.GetString(config.RabbitExchange), "direct", true, false, false, false, nil); err != nil {
+		logger.Fatalw("Exchange Declare Error", "error", err)
+	}
+
+	err = ch.QueueBind(q.Name, q.Name, viper.GetString(config.RabbitExchange), false, nil)
+
+	if err != nil {
+		logger.Fatalw("Could not bind RabbitMQ Queue", "error", err)
+		return nil, err
+	}
+
+	return &EventConsumer{
+		logger:         logger,
+		conn:           conn,
+		ch:             ch,
+		q:              q,
+		bus:            bus,
+		dispatcher:     dispatcher,
+		commandHandler: handler,
 	}, nil
 }
 
-func (c *EvenConsumer) Start() error {
-	msgs, err := c.ch.Consume(c.q.Name, "", true, false, false,false, nil)
+func (c *EventConsumer) Start() error {
+	msgs, err := c.ch.Consume(c.q.Name, "", true, false, false, false, nil)
 	if err != nil {
 		c.logger.Fatalw("Could not consume declared RabbitMQ Queue", "error", err)
 	}
 
+	c.logger.Infof("Message received on queue: %v", c.q.Name)
 	log.Printf(" [*] Starting consuming rabbit messages.")
 	for d := range msgs {
-		log.Printf("Received a message: %s", d.Body)
-
-		cmd, err := readMessageBody(d.Body)
-		if err == nil {
-			switch cmd.CommandType {
-			case bank.Withdraw:
-				_ = c.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Withdraw{
-					Amount:  cmd.Amount,
-					GameId:  cmd.Game,
-					RoundId: cmd.Lobby,
-					Time: cmd.Time,
-				}))
-			case bank.Deposit:
-				_ = c.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Deposit{
-					Amount:  cmd.Amount,
-					GameId:  cmd.Game,
-					RoundId: cmd.Lobby,
-					Time: cmd.Time,
-				}))
-			}
-		}
+		log.Printf("Received a message [%s]: %s", c.q.Name, d.Body)
+		c.commandHandler.Handle(&d)
 	}
 
 	return nil
-}
-
-func readMessageBody(raw []byte) (*bank.Command, error){
-	cmd := bank.Command{}
-	err := json.Unmarshal(raw, &cmd)
-	return &cmd, err
-}
-
-
-func (c EvenConsumer) Close() {
-
-	c.ch.Close()
-	c.conn.Close()
 }

@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: eventstore-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/eventstoredata"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventstore
+spec:
+  selector:
+    app: eventstore
+  ports:
+  - port: 2113
+    targetPort: 2113
+    name: db
+  - port: 1113
+    targetPort: 1113
+    name: ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventstore-exporter
+spec:
+  selector:
+    app: eventstore-exporter
+  ports:
+  - port: 9448
+    targetPort: 9448
+    name: prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: eventstore-exporter
+  labels:
+    app: eventstore-exporter
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: eventstore-exporter
+  endpoints:
+  - port: prometheus
+    interval: 15s
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventstore-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventstore-exporter
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "eventstore:2113"
+      labels:
+        app: eventstore-exporter
+    spec:
+      containers:
+        - name: eventstore-exporter
+          image: docker.io/marcinbudny/eventstore_exporter
+          env:
+            - name: EVENTSTORE_URL
+              value: http://localhost:2113?tls=false
+            - name: CLUSTER_MODE
+              value: single
+          resources:
+              requests:
+                memory: 10Mi
+                cpu: 50m
+              limits:
+                memory: 100Mi
+                cpu: 150m
+          ports:
+            - protocol: TCP
+              containerPort: 9448
+              name: prometheus
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eventstore
+spec:
+  selector:
+    matchLabels:
+      app: eventstore
+  serviceName: eventstore
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+      labels:
+        app: eventstore
+    spec:
+      containers:
+      - name: eventstore
+        image: eventstore/eventstore:latest
+        args:
+          - --insecure
+          - --run-projections=All
+          - --enable-external-tcp 
+          - --enable-atom-pub-over-http
+        ports:
+          - containerPort: 2113
+            name: db
+          - containerPort: 1113
+            name: ui
+        volumeMounts:
+          - mountPath: "/var/lib/eventstore"
+            name: eventstore-pv-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: eventstore-pv-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi    

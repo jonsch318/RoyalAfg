@@ -1,0 +1,122 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-bank
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/bank`)
+      kind: Rule
+      services:
+        - name: royalafg-bank
+          port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-banktls
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: PathPrefix(`/api/bank`)
+      kind: Rule
+      services:
+        - name: royalafg-bank
+          port: 8080
+  tls:
+    certResolver: myresolver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-bank
+spec:
+  selector:
+    app: royalafg-bank
+  ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: royalafg-bank
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-bank
+data:
+  config.yaml: |
+    eventstore_url: http://localhost:2113?tls=false
+    rabbitmq_url: royalafg-rabbitmq.default.svc.cluster.local:5672
+    Prod: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-bank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: royalafg-bank
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "eventstore:2113"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-status": "update"
+        "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
+        "vault.hashicorp.com/agent-inject-template-rabbitmq.yaml": |
+          {{- with secret "rabbitmq/creds/royalafg" -}}
+          rabbitmq_username: {{.Data.username}}
+          rabbitmq_password: {{.Data.password}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+          jwt_signing_key: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": bank-role
+      labels:
+        app: royalafg-bank
+        service: bank
+    spec:
+      serviceAccountName: royalafg-bank
+      containers:
+        - name: royalafg-bank
+          image: docker.io/johnnys318/royalafg_bank:latest
+          env:
+            # - name: BANK_RABBITMQ_USERNAME
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: username
+            #       name: royalafg-rabbitmq-default-user
+            # - name: BANK_RABBITMQ_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: password
+            #       name: royalafg-rabbitmq-default-user
+          resources:
+              requests:
+                memory: 10Mi
+                cpu: 50m
+              limits:
+                memory: 100Mi
+                cpu: 150m
+          ports:
+            - protocol: TCP
+              containerPort: 8080
+          volumeMounts:
+            - name: royalafg-bank-config
+              mountPath: "/etc/royalafg-bank"
+      volumes:
+        - name: royalafg-bank-config
+          configMap:
+            name: royalafg-bank

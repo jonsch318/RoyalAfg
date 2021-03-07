@@ -2,7 +2,11 @@ package lobby
 
 import (
 	"errors"
+	"fmt"
 	"sort"
+	"strconv"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 )
@@ -17,19 +21,42 @@ func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {
 		return nil, errors.New("no registered buy in classes")
 	}
 
-	selection := m.lobbies[class]
+	gameserver, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+		TypeMeta:            metav1.TypeMeta{
+			Kind:       "agones.dev/v1",
+			APIVersion: "GameServer",
+		},
+		LabelSelector:       fmt.Sprintf("game=poker,class=%v", class),
+		Watch:               false,
+		AllowWatchBookmarks: false,
+	})
 
-	//Copy selection
-	rank := make([]models.LobbyBase, len(selection))
-	copy(rank, selection)
+	if err != nil  {
+		return nil, err
+	}
+
+	lobbies := make([]models.LobbyBase, len(gameserver.Items))
+	for _, gs := range gameserver.Items {
+		players, err := strconv.Atoi(gs.Labels["players"])
+		if err != nil {
+			continue
+		}
+
+		lobbies = append(lobbies, models.LobbyBase{
+			LobbyID:     gs.Labels["lobbyId"],
+			Class:       &m.classes[class],
+			ClassIndex:  class,
+			PlayerCount: players,
+		})
+	}
 
 	//Sort less [2,3,4,5, etc...]
-	sort.SliceStable(rank, func(i, j int) bool {
-		return biasForX(rank[i].PlayerCount, 9) < biasForX(rank[i].PlayerCount, 9)
+	sort.SliceStable(lobbies, func(i, j int) bool {
+		return biasForX(lobbies[i].PlayerCount, 9) < biasForX(lobbies[i].PlayerCount, 9)
 	})
 
 	//ordered list of lobbies to try
-	return rank, nil
+	return lobbies, nil
 }
 
 //

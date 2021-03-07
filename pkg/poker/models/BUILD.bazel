@@ -5,7 +5,9 @@ go_library(
     srcs = [
         "class.go",
         "lobby.go",
+        "token.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models",
     visibility = ["//visibility:public"],
+    deps = ["@com_github_form3tech_oss_jwt_go//:go_default_library"],
 )

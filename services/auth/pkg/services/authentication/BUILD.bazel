@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "authentication",
@@ -13,10 +13,28 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",
+        "//services/auth/config",
         "//services/auth/pkg/dto",
         "//services/auth/pkg/interfaces",
         "//services/auth/pkg/security",
         "//services/auth/pkg/services",
+        "@com_github_spf13_viper//:go_default_library",
         "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["login_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//mocks/services/auth/pkg/interfaces:go_default_library",
+        "//pkg/config:go_default_library",
+        "//pkg/models",
+        "//services/auth/config",
+        "//services/auth/pkg/security",
+        "@com_github_kamva_mgm//:go_default_library",
+        "@com_github_spf13_viper//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
     ],
 )

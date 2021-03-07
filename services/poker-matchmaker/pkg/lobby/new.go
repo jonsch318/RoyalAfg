@@ -28,8 +28,9 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	gsa := m.agonesClient.AllocationV1()
 
 	class := m.classes[classIndex]
-	serverLabels := make(map[string]string, 3)
+	serverLabels := make(map[string]string)
 	serverLabels["lobbyId"] = id
+	serverLabels["players"] = "0"
 	serverLabels["min-buy-in"] = strconv.Itoa(class.Min)
 	serverLabels["max-buy-in"] = strconv.Itoa(class.Max)
 	serverLabels["blind"] = strconv.Itoa(class.Blind)
@@ -56,14 +57,14 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 
 	allocationResponse, err := gsa.GameServerAllocations("default").Create(alloc)
 
-	m.logger.Warnw("Allocation", "error", err, "response", allocationResponse)
+	m.logger.Warnw("Allocation", "error", err, "lobbyId", id)
 
 	if err != nil {
 		return nil, err
 	}
 
 	if allocationResponse.Status.GameServerName == "" || len(allocationResponse.Status.Ports) <= 0 {
-		return nil, errors.New("No new server can be allocated")
+		return nil, errors.New("no new server can be allocated")
 	}
 
 	ip := allocationResponse.Status.Address
@@ -77,9 +78,9 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	}
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
-		LobbyID: id,
-		Class:   &m.classes[classIndex],
-		ClassIndex: classIndex,
+		LobbyID:     id,
+		Class:       &m.classes[classIndex],
+		ClassIndex:  classIndex,
 		PlayerCount: 0,
 	})
 

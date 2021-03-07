@@ -19,7 +19,7 @@ export const getSession = async ({ req, ctx } = {}) => {
     if (!req && ctx && ctx.req) {
         req = ctx.req;
     }
-
+    console.log("AUTH URL: ", _apiBaseUrl());
     try {
         const res = await fetch(`${_apiBaseUrl()}/session`, {
             credentials: "include",
@@ -100,7 +100,26 @@ export const signIn = async (args = {}) => {
         mode: "cors",
         body: JSON.stringify({ ...args })
     };
-    return _fetch(`${_apiBaseUrl()}/login`, options);
+    const res = await _fetch(`${_apiBaseUrl()}/login`, options);
+    await getSession();
+    return res;
+};
+
+export const register = async (args = {}) => {
+    console.log("REGISTER: ", `${_apiBaseUrl()}/register`);
+    console.log("regiser args: ", args);
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify({ ...args })
+    };
+    const res = await _fetch(`${_apiBaseUrl()}/register`, options);
+    await getSession();
+    return res;
 };
 
 export const signOut = async () => {
@@ -123,13 +142,17 @@ export const Provider = ({ children, session }) => {
 };
 
 const _apiBaseUrl = () => {
-    return `${process.env.NEXT_PUBLIC_AUTH_HOST}/api/auth`;
+    if (process.env.AUTH_HOST == undefined) {
+        if (window) {
+            return "/api/auth";
+        }
+    }
+    return `${process.env.AUTH_HOST}/api/auth`;
 };
 
 const _fetch = async (url, options) => {
     try {
-        await fetch(url, options);
-        return Promise.resolve();
+        return await fetch(url, options);
     } catch (error) {
         console.log("error during fetch", url, error);
         return Promise.reject(error);

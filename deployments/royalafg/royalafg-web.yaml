@@ -45,7 +45,15 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: royalafg-web
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-web
+data:
+  .env: |
+    NEXT_PUBLIC_AUTH_HOST: http://127.0.0.1:59683
+    NEXT_PUBLIC_POKER_TICKET_HOST: http://127.0.0.1:59683
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -60,6 +68,7 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "royalafg-poker-matchmaker:59683, royalafg-auth:5000"
       labels:
         app: royalafg-web
         service: web
@@ -71,3 +80,14 @@ spec:
           ports:
             - protocol: TCP
               containerPort: 3000
+          env:
+            - name: API_ADRESS
+              value: http://192.168.49.2:30745
+            - name: NEXT_PUBLIC_AUTH_HOST
+              value: http://127.0.0.1:5000
+            - name: AUTH_HOST
+              value: http://127.0.0.1:5000
+            - name: NEXT_PUBLIC_POKER_TICKET_HOST
+              value: http://127.0.0.1:59683
+            - name: POKER_INFO_HOST
+              value: http://127.0.0.1:59683

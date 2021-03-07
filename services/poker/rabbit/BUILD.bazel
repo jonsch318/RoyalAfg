@@ -6,7 +6,8 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/poker/serviceConfig:go_default_library",
+        "//pkg/errors:go_default_library",
+        "//services/poker/serviceconfig:go_default_library",
         "@com_github_spf13_viper//:go_default_library",
         "@com_github_streadway_amqp//:go_default_library",
         "@org_uber_go_zap//:go_default_library",

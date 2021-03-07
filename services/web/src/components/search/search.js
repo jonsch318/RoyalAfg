@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 
 import useDebounce from "../../hooks/debounce";
@@ -69,8 +70,10 @@ const SearchInput = () => {
                         style={{
                             width: inputWidth
                         }}>
-                        {isSearching && <span className="text-black">Searching...</span>}
-                        {!isSearching && <SearchResultList results={results} />}
+                        {
+                            //isSearching && <span className="text-black">Searching...</span>
+                        }
+                        <SearchResultList results={results} />
                     </div>
                 </div>
             )}

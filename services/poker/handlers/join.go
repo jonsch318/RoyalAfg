@@ -2,16 +2,17 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/spf13/viper"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/gorilla/websocket"
@@ -30,12 +31,7 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 
 	//Check if lobby is configured
 	if h.lby == nil {
-		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
-	}
-
-	//Check if lobby is configured
-	if h.lby == nil {
-		log.Printf("lobby is nil, because the game servers annotations where not changed yet")
+		log.Logger.Errorf("lobby is nil, because the game servers annotations where not changed yet")
 	}
 
 	conn, err := upgrader.Upgrade(rw, r, nil)
@@ -44,14 +40,11 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusBadGateway)
 	}
 
+	//create player connection abstraction. Used to send and receive messages.
 	playerConn := NewPlayerConn(conn)
-	playerConn.OnClose = func(err error) {
-		log.Printf("Closing err %v", err)
-		return
-	}
-
 	go playerConn.reader()
 	go playerConn.writer()
+
 
 	raw, err := utils.WaitUntilEventD(playerConn.In, 2*time.Minute)
 
@@ -64,9 +57,9 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 
 	joinEvent, err := events.ToJoinEvent(raw)
 	if err != nil {
-		log.Printf("joinEvent was invalid %v", err)
+		log.Logger.Warnw("joinEvent was invalid", "error", err)
 		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
-		_ = conn.Close()
+		playerConn.CloseConnection(false)
 		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
 		return
 	}
@@ -78,28 +71,44 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(viper.GetString(serviceConfig.MatchMakerJWTKey)), nil
+		return []byte(viper.GetString(serviceconfig.MatchMakerJWTKey)), nil
 	})
 
-	var username, id string
-	var buyIn int
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
-		username = claims["username"].(string)
-		id = claims["id"].(string)
-		buyIn = claims["buyIn"].(int)
-	} else {
-		log.Printf("joinEvent was invalid %v", err)
+	if err != nil {
+		log.Logger.Warnw("joinEvent was invalid", "error", err)
 		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
-		_ = conn.Close()
+		playerConn.CloseConnection(false)
 		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
 		return
 	}
 
-	player := models.NewPlayer(username, id, buyIn, playerConn.In, playerConn.Out, playerConn.Close)
+	var tokenDec *pokerModels.Token
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
+		log.Logger.Debugf("Token values: %s, %s, %s", claims["username"], claims["id"], claims["buyIn"])
+		tokenDec = pokerModels.FromToken(claims)
+	} else {
+		log.Logger.Warnw("joinEvent was invalid", "error", err)
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))
+		playerConn.CloseConnection(false)
+		http.Error(rw, "VALIDATION_FAILED. The joining event was not as the server expected", http.StatusBadRequest)
+		return
+	}
 
-	h.lby.Join(player)
+	player := models.NewPlayer(tokenDec.Username, tokenDec.Id, tokenDec.BuyIn, playerConn.In, playerConn.Out, playerConn.Close)
 
-	if len(h.lby.Players) == 0 {
+	log.Logger.Debugf("joining player to lobby")
+	err = h.lby.Join(player)
+
+	if err != nil {
+		log.Logger.Warnw("join was unsuccessful", "error", err)
+		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "error during joining process"))
+		playerConn.CloseConnection(false)
+		http.Error(rw, "VALIDATION_FAILED. Error during joining process", http.StatusBadRequest)
+		return
+	}
+
+	if h.lby.Count() == 0 {
+		log.Logger.Debugf("stopping shutdown")
 		h.stopShutdown <- true
 	}
 }

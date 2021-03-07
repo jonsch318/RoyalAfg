@@ -12,26 +12,12 @@ spec:
         - name: royalafg-auth
           port: 8080
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: royalafg-authtls
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: PathPrefix(`/api/auth`)
-      kind: Rule
-      services:
-        - name: royalafg-auth
-          port: 8080
-  tls:
-    certResolver: myresolver
----
 apiVersion: v1
 kind: Service
 metadata:
   name: royalafg-auth
+  labels:
+    app: royalafg-auth
 spec:
   selector:
     app: royalafg-auth
@@ -41,6 +27,21 @@ spec:
       targetPort: 8080
 
 ---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: royalafg-auth
+  labels:
+    app: royalafg-auth
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: royalafg-auth
+  endpoints:
+  - port: web
+    interval: 15s
+---    
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -50,10 +51,14 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: royalafg-auth
+  labels:
+    app: royalafg-auth
 data:
   config.yaml: |
     jwt_signing_key: testsecret
-
+    userservice_url: localhost:5200
+    cors_enabled: false
+    rabbitmq_url: royalafg-rabbitmq.default.svc.cluster.local:5672
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,6 +73,20 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:5200"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
+        "vault.hashicorp.com/agent-inject-template-rabbitmq.yaml": |
+          {{- with secret "rabbitmq/creds/royalafg" -}}
+          rabbitmq_username: {{.Data.username}}
+          rabbitmq_password: {{.Data.password}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+          jwt_signing_key: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": auth-role
       labels:
         app: royalafg-auth
         service: auth
@@ -76,10 +95,28 @@ spec:
       containers:
         - name: royalafg-auth
           image: docker.io/johnnys318/royalafg_auth:latest
+          env:
+            - name: GRPC_GO_LOG_VERBOSITY_LEVEL
+              value: "99"
+            - name: GRPC_GO_LOG_SEVERITY_LEVEL
+              value: info
+            # - name: AUTH_RABBITMQ_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: password
+            #       name: royalafg-rabbitmq-default-user
+            # - name: AUTH_RABBITMQ_USERNAME
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: username
+            #       name: royalafg-rabbitmq-default-user
           resources:
               requests:
                 memory: 10Mi
-                cpu: 80m
+                cpu: 50m
+              limits:
+                memory: 100Mi
+                cpu: 150m
           ports:
             - protocol: TCP
               containerPort: 8080

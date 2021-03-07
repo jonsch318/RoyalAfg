@@ -2,18 +2,21 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Rhymond/go-money"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 )
 
 func (h *Account) VerifyAmount(rw http.ResponseWriter, r *http.Request)  {
-	vals := r.URL.Query()
+	values := r.URL.Query()
 
-	userId := vals.Get("userId")
-	amount, err := strconv.Atoi(vals.Get("amount"))
+	userId := values.Get("userId")
+	amount, err := strconv.Atoi(values.Get("amount"))
 
 	if err != nil || amount < 0 {
 		http.Error(rw, "the amount has to be a positive number", http.StatusBadRequest)
@@ -22,13 +25,17 @@ func (h *Account) VerifyAmount(rw http.ResponseWriter, r *http.Request)  {
 	balance, err := h.balanceReadModel.GetAccountBalance(userId)
 
 	if err != nil {
-		log.Printf("Query error: %v", err)
+		log.Logger.Errorw("Query error", "error", err)
 		http.Error(rw, err.Error(), http.StatusNotFound)
 		return
 	}
-
+	res, err := money.New(int64(amount), currency.Code).LessThanOrEqual(balance)
+	if err != nil {
+		log.Logger.Errorw("verify comparison failed", "error", err)
+		res = false
+	}
 	_ = json.NewEncoder(rw).Encode(dtos.VerifyAmount{
-		VerificationResult: amount <= balance,
+		VerificationResult: res,
 	})
 
 }

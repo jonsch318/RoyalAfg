@@ -17,6 +17,8 @@ const JWTExpiresAt = "jwt_expiring_time"
 const SessionCookieName = "session_cookie_name"
 const SessionCookieExpiration = "session_cookie_expiration"
 
+const CorsEnabled = "cors_enabled"
+
 func RegisterDefaults() {
 
 	viper.SetDefault(Prod, false)
@@ -28,6 +30,8 @@ func RegisterDefaults() {
 
 	viper.SetDefault(SessionCookieName, "royalafg.session")
 	viper.SetDefault(SessionCookieExpiration, time.Hour*24*7)
+
+	viper.SetDefault(CorsEnabled, false)
 
 	RegisterRabbitDefaults()
 }

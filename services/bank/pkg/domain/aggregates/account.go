@@ -5,20 +5,23 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
 type Account struct {
 	*ycq.AggregateBase
-	Balance int
+	Balance *money.Money
 }
 
 func NewAccount(id string) *Account{
 	return &Account{
 		AggregateBase: ycq.NewAggregateBase(id),
-		Balance: 0,
+		Balance: currency.Zero(),
 	}
 }
 
@@ -27,11 +30,12 @@ func (a *Account) Create() error {
 		ID: a.AggregateID(),
 	}, ycq.Int(a.CurrentVersion())), true)
 
+	log.Logger.Infof("Create Account %v", a.AggregateID())
 	return nil
 }
 
-func (a *Account) Deposit(amount int, gameId, roundId string, time time.Time) error {
-	if amount <= 0 {
+func (a *Account) Deposit(amount *money.Money, gameId, roundId string, time time.Time) error {
+	if !amount.IsPositive() {
 		return errors.New("the amount has to be greater than 0")
 	}
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Deposited{
@@ -41,19 +45,23 @@ func (a *Account) Deposit(amount int, gameId, roundId string, time time.Time) er
 		RoundId: roundId,
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
+	log.Logger.Debugw("Deposit operation success","id", a.AggregateID(), "amount", amount.Display())
 
 	return nil
 }
 
-func (a *Account) Withdraw(amount int, gameId, roundId string, time time.Time) error {
+func (a *Account) Withdraw(amount *money.Money, gameId, roundId string, time time.Time) error {
 
 
-	if amount <= 0 {
+	if !amount.IsPositive() {
 		return errors.New("the amount which is to withdraw has to be greater than 0")
 	}
 
-	if amount > a.Balance{
-		return fmt.Errorf("the user cannot withdraw the given amount [%v] > [%v]", amount, a.Balance)
+	if res, err := amount.GreaterThan(a.Balance); res || err != nil {
+		if err != nil {
+			log.Logger.Errorw("Error during comparison", "error", err)
+		}
+		return fmt.Errorf("the user cannot withdraw the given amount [%v] > [%v]", amount.Display(), a.Balance.Display())
 	}
 
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Withdrawn{
@@ -63,6 +71,8 @@ func (a *Account) Withdraw(amount int, gameId, roundId string, time time.Time) e
 		RoundId: roundId,
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
+
+	log.Logger.Debugw("Withdraw operation success","id", a.AggregateID(), "amount", amount.Display())
 
 	return nil
 }
@@ -74,11 +84,20 @@ func (a *Account) Apply(message ycq.EventMessage, isNew bool) {
 
 	switch ev := message.Event().(type) {
 	case *events.AccountCreated:
-		a.Balance = 0
+		a.Balance = currency.Zero()
 	case *events.Deposited:
-		a.Balance = a.Balance +  ev.Amount
+		res, err := a.Balance.Add(ev.Amount)
+		if err != nil {
+			log.Logger.Errorw("Error during money addition", "error", err)
+			return
+		}
+		a.Balance = res
 	case *events.Withdrawn:
-		a.Balance = a.Balance - ev.Amount
-
+		res, err := a.Balance.Subtract(ev.Amount)
+		if err != nil {
+			log.Logger.Errorw("Error during money addition", "error", err)
+			return
+		}
+		a.Balance = res
 	}
 }

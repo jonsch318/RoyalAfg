@@ -1,13 +1,15 @@
 package round
 
 import (
+	"github.com/Rhymond/go-money"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
-	"sync"
+	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 )
 
 //Round is one game of a session. it results in everybody but one folding or a showdown
+//Probably this could be optimised into multiple structs.
 type Round struct {
 	//Players includes all the Players who have started this hand. After a fold the player is still included
 	Players         []models.Player
@@ -15,29 +17,25 @@ type Round struct {
 	Bank            *bank.Bank
 	Board           [5]models.Card
 	HoleCards       map[string][2]models.Card
-	InCount         byte
+	SmallBlind      *money.Money
 	Dealer          int
-	Ended           bool
-	cardGen         *utils.CardGenerator
-	EndCallback     func(int)
-	SmallBlind      int
 	bigBlindIndex   int
 	smallBlindIndex int
-	wg              sync.WaitGroup
+	InCount         byte
+	Ended           bool
 }
 
 //NewHand creates a new hand and sets the dealer to the next
-func NewHand(bank *bank.Bank, smallBlind int) *Round {
+func NewHand(b *bank.Bank, smallBlind int) *Round {
 
 	return &Round{
-		Bank:       bank,
-		cardGen:    utils.NewCardSelector(),
-		SmallBlind: smallBlind,
+		Bank:       b,
+		SmallBlind: moneyUtils.ConvertToIMoney(smallBlind),
 	}
 }
 
-func (h *Round) WhileNotEnded(f func()) {
-	if !h.Ended {
+func (r *Round) WhileNotEnded(f func()) {
+	if !r.Ended {
 		f()
 	}
 }

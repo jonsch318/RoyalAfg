@@ -72,7 +72,7 @@ func GetJWTMW() *jwtMW.JWTMiddleware {
 		ValidationKeyGetter: GetKeyGetter(viper.GetString(config.JWTSigningKey)),
 		UserProperty:        "user",
 		Extractor:           jwtMW.FromFirst(ExtractFromCookie, jwtMW.FromAuthHeader),
-		Debug:               true,
+		Debug:               !viper.GetBool("Prod"),
 		EnableAuthOnOptions: true,
 		SigningMethod:       jwt.SigningMethodHS256,
 	})

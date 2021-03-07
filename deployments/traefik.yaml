@@ -185,7 +185,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: traefik
-
+  labels:
+    app: traefik
 spec:
   type: NodePort 
   ports:
@@ -200,6 +201,21 @@ spec:
       port: 443
   selector:
     app: traefik
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik
+  labels:
+    app: traefik
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: traefik
+  endpoints:
+  - port: admin
+    interval: 15s
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -225,6 +241,8 @@ spec:
     metadata:
       labels:
         app: traefik
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
     spec:
       serviceAccountName: traefik-ingress-controller
       containers:
@@ -238,7 +256,10 @@ spec:
             - --entrypoints.websecure.Address=:443
             - --providers.kubernetesingress
             - --providers.kubernetescrd
+            - --providers.consul.endpoints=consul-consul-server.default:8500
+            - --providers.consul.rootkey=traefik
             - --metrics.prometheus=true
+            - --serversTransport.insecureSkipVerify=true
             - --certificatesresolvers.myresolver.acme.tlschallenge
             - --certificatesresolvers.myresolver.acme.email=jonas.max.schneider@gmail.com
             - --certificatesresolvers.myresolver.acme.storage=acme.json

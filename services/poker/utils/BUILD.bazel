@@ -6,7 +6,7 @@ go_library(
         "cards.go",
         "communication.go",
         "queue.go",
-        "utils.go",
+        "search.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils",
     visibility = ["//visibility:public"],

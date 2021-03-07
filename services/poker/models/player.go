@@ -1,29 +1,37 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/Rhymond/go-money"
+
+	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
+)
 
 type Player struct {
 	ID       string `json:"id" mapstructure:"buyin"`
 	Username string `json:"username" mapstructure:"buyin"`
-	BuyIn    int    `json:"buyin" mapstructure:"buyin"`
+	BuyIn    *money.Money    `json:"buyin" mapstructure:"buyin"`
 	Out      chan []byte
 	In       chan *Event
 	Active   bool
 	Close    chan bool
+	Left bool
 }
 
 func NewPlayer(username, id string, buyin int, in chan *Event, out chan []byte, close chan bool) *Player {
 	return &Player{
 		ID:       id,
 		Username: username,
-		BuyIn:    buyin,
+		BuyIn:    moneyUtils.ConvertToIMoney(buyin),
 		Out:      out,
 		In:       in,
 		Active:   false,
 		Close:    close,
+		Left: false,
 	}
 }
 
 func (p *Player) String() string {
-	return fmt.Sprintf("Player [%v]: %v has %d", p.ID, p.Username, p.BuyIn)
+	return fmt.Sprintf("Player [%s]: %vs has %s", p.ID, p.Username, p.BuyIn.Display())
 }

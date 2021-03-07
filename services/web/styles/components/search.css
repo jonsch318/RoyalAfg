@@ -1,6 +1,6 @@
 @responsive {
     .popup {
-        @apply bg-gray-200 px-5 py-8 rounded-b-md;
+        @apply bg-gray-400 px-5 md:p-0 py-8 md:py-0 rounded-lg;
         position: absolute;
         top: 2.25rem;
         z-index: 100;

@@ -23,13 +23,19 @@ push_auth:
 	bazel run //pkg/auth:push_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
 
 docker_build_search:
-	docker build -t ryl_search --build-arg service=./services/search/main.go .
+	docker build -t johnnys318/royalafg_search:latest --build-arg service=./services/search/main.go .
 
 docker_build_user:
-	docker build -t ryl_user --build-arg service=./services/user/main.go .
+	docker build -t johnnys318/royalafg_user:latest --build-arg service=./services/user/main.go .
+
+docker_build_auth:
+	docker build -t johnnys318/royalafg_auth:latest --build-arg service=./services/auth/main.go .
 
 docker_build_poker_matchmaker:
-	docker build -t royalafg_poker_match:latest --build-arg service=./services/poker-matchmaker/main.go .
+	docker build -t johnnys318/royalafg_poker_match:latest --build-arg service=./services/poker-matchmaker/main.go .
 
 docker_build_poker:
-	docker build -t royalafg_poker:latest --build-arg service=./services/poker/main.go .
+	docker build -t johnnys318/royalafg_poker:latest --build-arg service=./services/poker/main.go .
+
+docker_build_bank:
+	docker build -t johnnys318/royalafg_bank:latest --build-arg service=./services/bank/main.go .

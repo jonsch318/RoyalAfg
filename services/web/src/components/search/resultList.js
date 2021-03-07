@@ -1,19 +1,37 @@
 import React from "react";
 import Result from "./result";
 import PropTypes from "prop-types";
+import { AnimatePresence, motion } from "framer-motion";
 
-const SearchResultList = (props) => {
+const container = {};
+
+const items = {
+    initial: {
+        y: 10,
+        opacity: 0
+    },
+    animate: {
+        y: 0,
+        opacity: 1
+    }
+};
+
+const SearchResultList = ({ results }) => {
     return (
-        <ul className="py-4 md:py-0 bg-white md:bg-transparent">
-            {props.results.map((result) => (
-                <li key={result.name} className="px-5">
-                    <Result result={result} />
-                </li>
-            ))}
-            {props.results.length < 1 && (
-                <span className="text-black">Sorry nothing was found.</span>
-            )}
-        </ul>
+        <AnimatePresence>
+            <motion.ul className="py-4 md:py-2 md: px-4 bg-blue ">
+                {results.map((result) => (
+                    <motion.li variants={items} animate="animate" initial="initial" key={result.name} className="px-5">
+                        <Result result={result} />
+                    </motion.li>
+                ))}
+                {results.length < 1 && (
+                    <motion.li variants={items} animate="animate" initial="initial" className="px-5 text-black">
+                        Sorry nothing was found.
+                    </motion.li>
+                )}
+            </motion.ul>
+        </AnimatePresence>
     );
 };
 

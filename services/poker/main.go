@@ -1,10 +1,10 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	coresdk "agones.dev/agones/pkg/sdk"
@@ -12,17 +12,20 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/urfave/negroni"
+	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceConfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 )
 
 //main method is the entry point of the game server
@@ -32,11 +35,21 @@ func main() {
 
 	config.ReadStandardConfig("poker", logger)
 
-	serviceConfig.SetDefaults()
+	serviceconfig.SetDefaults()
+
+	viper.SetEnvPrefix("poker")
+	_ = viper.BindEnv(config.RabbitMQUsername)
+	_ = viper.BindEnv(config.RabbitMQPassword)
 
 	//connect to rabbitmq to send user commands
+	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
+	rabbitConn, err := rabbit.NewRabbitMessageBroker(logger, rabbitURL)
 
-	b := bank.NewBank()
+	if err != nil {
+		logger.Fatalw("Could not connect to service bus", "error", err)
+	}
+
+	b := bank.NewBank(rabbitConn)
 
 	//Register stop signal
 	go gameServer.DoSignal()
@@ -53,20 +66,29 @@ func main() {
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-	serviceConfig.SetDefaults()
+	serviceconfig.SetDefaults()
 
+	lobbyConfigured := false
+	shutDownStop := make(chan interface{})
 	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
-		err := SetLobby(b, lobbyInstance, gs, s)
-		if err == nil {
-			logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
+		if !lobbyConfigured {
+			err := SetLobby(b, lobbyInstance, gs, logger)
+			if err == nil {
+				logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
+				if lobbyInstance.Count() <= 0 {
+					go StartShutdownTimer(shutDownStop, s)
+				}
+				//Lobby is configured through kubernetes labels and is assigned a unique id.
+				lobbyConfigured = true
+			} else if !strings.HasPrefix(err.Error(), "key needed") {
+				logger.Errorw("Error during configuration", "error", err)
+			}
 		}
 	})
 	if err != nil {
 		logger.Fatalf("Error during sdk annotation subscription: %s", err)
 	}
-
-	shutDownStop := make(chan interface{})
 
 	//game
 	gameHandler := handlers.NewGame(lobbyInstance, s, shutDownStop)
@@ -78,25 +100,28 @@ func main() {
 
 	recoverMW := negroni.NewRecovery()
 	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation) {
-		s.Shutdown()
+		_ = s.Shutdown()
 	}
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery())
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery())
 	n.UseHandler(r)
 
-	s.Ready()
+	err = s.Ready()
+	if err != nil {
+		logger.Errorw("Error during sdk ready call", "error", err)
+	}
 
 	logger.Info("SDK Ready called")
-
-	go StartShutdownTimer(shutDownStop, s)
 
 	port := viper.GetString(config.HTTPPort)
 	utils.StartGracefully(logger, &http.Server{
 		Addr:    fmt.Sprintf(":%v", port),
 		Handler: n,
 	}, viper.GetDuration(config.GracefulShutdownTimeout))
+
+	rabbitConn.Close()
 }
 
-func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, sdk *sdk.SDK) error {
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, logger *zap.SugaredLogger) error {
 	labels := gs.GetObjectMeta().GetLabels()
 	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
@@ -118,17 +143,17 @@ func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, 
 		return err
 	}
 
-	lobbyId, ok := labels["lobbyId"]
+	lobbyID, ok := labels["lobbyId"]
 	if !ok {
-		return errors.New("can not get the required information for the key lobbyId")
+		return fmt.Errorf("key needed [%v]", "lobbyId")
 	}
-	b.RegisterLobby(lobbyId)
+	b.RegisterLobby(lobbyID)
 
 	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{
 		Min:   min,
 		Max:   max,
 		Blind: blind,
-	}, index)
+	}, index, lobbyID)
 	return nil
 }
 
@@ -136,7 +161,7 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	valString, ok := labels[key]
 
 	if !ok {
-		return 0, errors.New("key needed")
+		return 0, fmt.Errorf("key needed [%v]", key)
 	}
 
 	val, err := strconv.Atoi(valString)
@@ -148,12 +173,12 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 }
 
 func StartShutdownTimer(stop chan interface{}, s *sdk.SDK) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(2*time.Minute))
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(10*time.Minute))
 	select {
 	case _ = <-stop:
 		cancel()
 		//Cancel shutdown
 	case <-ctx.Done():
-		s.Shutdown()
+		_ = s.Shutdown()
 	}
 }

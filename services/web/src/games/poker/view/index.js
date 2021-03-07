@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import React from "react";
 import { Board } from "./board";
 import { Players } from "./players";
@@ -7,35 +7,29 @@ import PropTypes from "prop-types";
 import { Game } from "../connection/socket";
 import { UpdateEvents } from "../game/state";
 import { Notification } from "./notifcation";
-import { Router, withRouter } from "next/router";
+import { withRouter } from "next/router";
 
-const textureUrl = window.location.protocol + "//" + window.location.host + "/static/games/poker/textures/cards.json";
+const textureUrl = window.location.origin + "/static/games/poker/textures/cards.json";
 
 class View extends React.Component {
     constructor(props) {
         super(props);
+        this.gameStartInvoke = props.gameStart;
         this.gameState = props.game.state;
         this.game = props.game.state.state;
         this.loader = props.loader;
-
-        this.state = {
-            loaded: false
-        };
         PIXI.Loader.shared.reset();
     }
 
     componentDidMount() {
-        this.setState({ loaded: false });
-
         this.props.game.state.setOnGameStart(() => {
+            this.gameStartInvoke();
             this.gameStart();
         });
     }
 
     gameStart() {
         const d = document.getElementById("view");
-
-        this.setState({ loaded: true });
         PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH;
         this.app = new PIXI.Application({
             antialias: false,
@@ -65,15 +59,6 @@ class View extends React.Component {
 
         this.tableWidth = rW(200);
         this.tableHeight = rH(125);
-        // if (isMobile()) {
-        //     this.tableWidth = 85;
-        //     this.tableHeight = 50;
-        // }
-        // this.table.beginFill(0x1daf08);
-        // this.table.drawEllipse(this.tableWidth, this.tableHeight, this.tableWidth, this.tableHeight)
-        // //table.drawRoundedRect(0, 0, this.tableWidth * 2, this.tableHeight * 2, this.tableHeight)
-        // this.table.endFill();
-        // this.table.position.set(this.app.renderer.width / 2 - this.tableWidth, this.app.renderer.height / 2 - this.tableHeight)
 
         this.board.update({
             updatedWidth: () => {
@@ -88,7 +73,10 @@ class View extends React.Component {
         if (!PIXI.Loader.shared.resources[textureUrl]) {
             this.props.router.push("/games/poker");
         }
-        this.id = PIXI.Loader.shared.resources[textureUrl]?.textures;
+        this.id = PIXI.Loader.shared.resources[textureUrl].textures;
+
+        console.log("ID: ", this.id);
+        console.log("Texture Back", this.id["back.png"]);
 
         this.notification.reset();
         this.players.setup(this.id, {
@@ -98,6 +86,8 @@ class View extends React.Component {
             height: this.tableHeight
         });
         this.board.setup(this.id);
+
+        console.log("SETUP COMPLETE");
         this.app.ticker.add((delta) => this.gameLoop(delta));
     }
 
@@ -118,6 +108,9 @@ class View extends React.Component {
 
     updateFromState(event, data) {
         if (event === UpdateEvents.lobbyJoin) {
+            this.players.updateFromState();
+        }
+        if (event === UpdateEvents.gameStart) {
             this.players.updateFromState();
         }
         if (event === UpdateEvents.playerList) {
@@ -144,14 +137,15 @@ class View extends React.Component {
     }
 
     render() {
-        return <div id="view">{!this.state.loaded ? <h1>Waiting for next game to start.</h1> : <></>}</div>;
+        return <div id="view"></div>;
     }
 }
 
 View.propTypes = {
     game: PropTypes.instanceOf(Game),
     loader: PropTypes.object,
-    router: PropTypes.object
+    router: PropTypes.object,
+    gameStart: PropTypes.func
 };
 
 export default withRouter(View);

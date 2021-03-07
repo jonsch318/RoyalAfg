@@ -3,6 +3,8 @@ package config
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/pflag"
@@ -44,6 +46,29 @@ func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger) {
 
 	logger.Infow("Parsed config file", "file", viper.ConfigFileUsed())
 
+	ReadVaultSecrets()
+
 	RegisterDefaults()
 
+}
+
+func ReadVaultSecrets() {
+	items, err := ioutil.ReadDir("/vault/secrets")
+
+	if err != nil {
+		log.Printf("Error during configuration %v", err.Error())
+	}
+
+	for _, item := range items {
+		if item.IsDir() {
+			continue
+		}
+		b, _ := ioutil.ReadFile("/vault/secrets" + item.Name())
+		log.Printf("Config File: %s", string(b))
+		log.Printf("Configuring with file: %v", "/vault/secrets/"+item.Name())
+		viper.SetConfigFile("/vault/secrets/" + item.Name())
+		if err := viper.MergeInConfig(); err != nil {
+			log.Printf("Error during configuration %v", err.Error())
+		}
+	}
 }

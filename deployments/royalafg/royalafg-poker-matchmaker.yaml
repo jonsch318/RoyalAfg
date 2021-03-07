@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+    role: master
+    tier: backend
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: client
+---
+apiVersion: apps/v1  # API version
+kind: Deployment
+metadata:
+  name: redis-master # Unique name for the deployment
+  labels:
+    app: redis       # Labels to be applied to this deployment
+spec:
+  selector:
+    matchLabels:     # This deployment applies to the Pods matching these labels
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1        # Run a single pod in the deployment
+  template:          # Template for the pods that will be created by this deployment
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service": "redis"
+      labels:        # Labels to be applied to the Pods in this deployment
+        app: redis
+        role: master
+        tier: backend
+    spec:            # Spec for the container which will be run inside the Pod.
+      containers:
+      - name: master
+        image: redis
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: royalafg-poker-matchmaker
+data:
+  config.yaml: |
+    redis_url: localhost:6379
+    bank_service_url: localhost:8000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/poker`)
+      kind: Rule
+      services:
+        - name: royalafg-poker-matchmaker
+          port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  type: ClusterIP
+  selector:
+    app: royalafg-poker-matchmaker
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: 
+  name: royalafg-poker-matchmaker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: royalafg-poker-matchmaker-access
+subjects:
+  - kind: User
+    name: system:serviceaccount:default:royalafg-poker-matchmaker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: agones-allocator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: royalafg-poker-matchmaker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: royalafg-poker-matchmaker
+  template:
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "redis:6379, royalafg-bank:8000"
+        "vault.hashicorp.com/agent-inject": "true"
+        "vault.hashicorp.com/agent-inject-secret-poker.yaml": "kv-v2/poker"
+        "vault.hashicorp.com/agent-inject-template-poker.yaml": |
+          {{- with secret "kv-v2/poker" -}}
+          matchmaker_signing_key: {{.Data.data.signing_key}}
+          {{- end }}
+        "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+        "vault.hashicorp.com/agent-inject-template-session.yaml": |
+          {{- with secret "kv-v2/session-secret" -}}
+          jwt_signing_key: {{.Data.data.secret}}
+          {{- end }}
+        "vault.hashicorp.com/role": poker-role
+      labels:
+        app: royalafg-poker-matchmaker
+    spec:
+      serviceAccountName: royalafg-poker-matchmaker
+      containers:
+      - name: royalafg-poker-matchmaker
+        image: docker.io/johnnys318/royalafg_poker_match:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        ports:
+          - protocol: TCP
+            containerPort: 8080 
+        volumeMounts:
+          - mountPath: "/etc/royalafg-poker-matchmaker"
+            name: royalafg-poker-matchmaker-config
+      volumes:
+        - name: royalafg-poker-matchmaker-config
+          configMap:
+              name: royalafg-poker-matchmaker
+

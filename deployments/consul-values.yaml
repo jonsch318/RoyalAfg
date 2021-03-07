@@ -8,13 +8,13 @@ ui:
   
 connectInject: 
   enabled: true
-  default: true
 
 controller:
   enabled: true
 
 client:
   enabled: true
+  grpc: true
 
 server:
   replicas: 1
@@ -24,4 +24,4 @@ server:
     maxUnavailable: 0
 
 syncCatalog:
-  enabled: true
+  enabled: false

@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/negroni"
@@ -34,12 +36,22 @@ import (
 // Start starts the account service
 func Start(logger *zap.SugaredLogger) {
 
-	r := mux.NewRouter()
+	viper.SetEnvPrefix("auth")
+	viper.BindEnv(gConfig.RabbitMQUsername)
+	viper.BindEnv(gConfig.RabbitMQPassword)
 
-	// Grpc Setup
+	rabbitUrl := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(gConfig.RabbitMQUsername),viper.GetString(gConfig.RabbitMQPassword), viper.GetString(gConfig.RabbitMQUrl))
+	rabbitConn, err := rabbit.NewRabbitMessageBroker(logger, rabbitUrl)
+
+	if err != nil {
+		logger.Fatalw("Error during rabbit connection", "error", err)
+	}
+
+	// Grpc Setup set (use grpc.WithInsecure() explicitly or
 
 	logger.Infof("Auth service url %v trying to connect", viper.GetString(config.UserServiceUrl))
 	conn, err := grpc.Dial(viper.GetString(config.UserServiceUrl), grpc.WithInsecure())
+
 	if err != nil {
 		logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString(config.UserServiceUrl))
 	}
@@ -50,43 +62,43 @@ func Start(logger *zap.SugaredLogger) {
 
 	userServiceClient := protos.NewUserServiceClient(conn)
 
-
 	//Middleware config
 
-	metricsMiddleware := metricsMW.New(metricsMW.Config{
-		Recorder:               prometheus.NewRecorder(prometheus.Config{	}),
-		Service:                "authHTTP",
-	})
 
 	//services
 	userRepo := user.NewUserService(userServiceClient)
 	authService := authentication.NewService(userRepo)
 
 	// Handlers
-	authHandler := handlers.NewAuth(logger, authService)
+	authHandler := handlers.NewAuth(logger, authService, rabbitConn)
 
+	r := mux.NewRouter()
 	// Get Subrouters
-	postRouter := r.Methods(http.MethodPost).Subrouter()
-	getRouter := r.Methods(http.MethodGet).Subrouter()
-
-	postRouter.HandleFunc("/api/auth/register", authHandler.Register)
-	postRouter.HandleFunc("/api/auth/login", authHandler.Login)
+	r.HandleFunc("/api/auth/register", authHandler.Register).Methods(http.MethodPost)
+	r.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)
 
 	//Required Authenticated Request
-	postRouter.Handle("/api/auth/logout", mw.RequireAuth(authHandler.Logout))
-	getRouter.Handle("/api/auth/verify", mw.RequireAuth(authHandler.VerifyLoggedIn))
-	getRouter.HandleFunc("/api/auth/session", authHandler.Session)
+	r.Handle("/api/auth/logout", mw.RequireAuth(authHandler.Logout)).Methods(http.MethodPost)
+	r.Handle("/api/auth/verify", mw.RequireAuth(authHandler.VerifyLoggedIn)).Methods(http.MethodGet)
+	r.HandleFunc("/api/auth/session", authHandler.Session).Methods(http.MethodGet)
 
 	//Exposes metrics to prometheus
-	getRouter.Handle("/metrics", promhttp.Handler())
+	r.Handle("/metrics", promhttp.Handler())
 
-	cors := cors.New(cors.Options{
-		AllowedOrigins:         []string{"http://localhost:3000"},
-		AllowCredentials:       true,
-		Debug:                  false,
+	metricsMiddleware := metricsMW.New(metricsMW.Config{
+		Recorder: prometheus.NewRecorder(prometheus.Config{}),
+		Service:  "authHTTP",
 	})
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
+	if viper.GetBool(gConfig.CorsEnabled) {
+		cors := cors.New(cors.Options{
+			AllowedOrigins:   []string{"http://localhost:3000"},
+			AllowCredentials: true,
+			Debug:            true,
+		})
+		n.Use(cors)
+	}
 	n.UseHandler(r)
 
 	logger.Debug("Setup Routes")
@@ -94,7 +106,7 @@ func Start(logger *zap.SugaredLogger) {
 	// SERVER SETUP
 	port := viper.GetString(gConfig.HTTPPort)
 
-	logger.Warnf("HTTP Port set to %v",port)
+	logger.Warnf("HTTP Port set to %v", port)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
@@ -105,4 +117,6 @@ func Start(logger *zap.SugaredLogger) {
 	}
 
 	utils.StartGracefully(logger, srv, viper.GetDuration(gConfig.GracefulShutdownTimeout))
+
+	rabbitConn.Close()
 }

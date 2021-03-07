@@ -1,10 +1,11 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { Board } from "./board";
 import { isMobile } from "./utils";
 
 class Player extends PIXI.Container {
     constructor(id, options, state, index) {
         super();
+        this.id = id;
 
         this.state = state;
         this.playerState = this.state.getPlayerState(index);
@@ -38,8 +39,10 @@ class Player extends PIXI.Container {
         this.usernameLabel = new PIXI.Text("", { align: "center" });
         this.usernameLabel.resolution = 2;
         this.avatar = new PIXI.Graphics();
-        this.board = new Board(id, {
-            paddingX: 8,
+        this.board = new Board({});
+        this.board.setup(this.id);
+        this.board.update({
+            paddinX: 8,
             paddingY: 5,
             paddingCardX: 5
         });
@@ -115,11 +118,7 @@ class Player extends PIXI.Container {
 
         this.avatar.clear();
         this.avatar.beginFill(this.options.fillAvatar);
-        this.avatar.drawCircle(
-            this.options.avatarRadius,
-            this.options.avatarRadius,
-            this.options.avatarRadius
-        );
+        this.avatar.drawCircle(this.options.avatarRadius, this.options.avatarRadius, this.options.avatarRadius);
         this.avatar.endFill();
 
         if (this.playerState.cards.length <= 0) {
@@ -131,28 +130,15 @@ class Player extends PIXI.Container {
 
         this.calcWidth = this.options.width - 2 * this.options.marginX;
 
-        this.board.position.set(
-            this.calcWidth / 2 - this.board.width / 2 + this.options.marginX,
-            this.avatar.height + 2 * this.options.marginY
-        );
+        this.board.position.set(this.calcWidth / 2 - this.board.width / 2 + this.options.marginX, this.avatar.height + 2 * this.options.marginY);
         this.avatar.position.set(this.options.marginX, this.options.marginY);
-        this.usernameLabel.position.set(
-            this.calcWidth - this.options.avatarRadius,
-            this.avatar.height / 2
-        );
+        this.usernameLabel.position.set(this.calcWidth - this.options.avatarRadius, this.avatar.height / 2);
         this.buyInLabel.position.set(
-            this.calcWidth -
-                this.options.avatarRadius -
-                this.usernameLabel.width -
-                this.options.marginX,
+            this.calcWidth - this.options.avatarRadius - this.usernameLabel.width - this.options.marginX,
             this.avatar.height / 2
         );
         this.betLabel.position.set(
-            this.calcWidth -
-                this.options.avatarRadius -
-                this.usernameLabel.width -
-                2 * this.options.marginX -
-                this.buyInLabel.width,
+            this.calcWidth - this.options.avatarRadius - this.usernameLabel.width - 2 * this.options.marginX - this.buyInLabel.width,
             this.avatar.height / 2
         );
         this.dealerButton.position.set(
@@ -162,17 +148,8 @@ class Player extends PIXI.Container {
 
         if (this.playerState.waiting) {
             this.waiting.lineStyle(4, 0x000000);
-            this.waiting.arc(
-                this.options.avatarRadius,
-                this.options.avatarRadius,
-                this.options.avatarRadius,
-                0,
-                Math.PI
-            );
-            this.waiting.position.set(
-                this.avatar.position.x + this.options.avatarRadius,
-                this.avatar.position.y + this.options.avatarRadius
-            );
+            this.waiting.arc(this.options.avatarRadius, this.options.avatarRadius, this.options.avatarRadius, 0, Math.PI);
+            this.waiting.position.set(this.avatar.position.x + this.options.avatarRadius, this.avatar.position.y + this.options.avatarRadius);
             this.waiting.pivot.set(this.options.avatarRadius);
             this.waiting.visible = true;
         } else {
@@ -182,25 +159,13 @@ class Player extends PIXI.Container {
 
         this.background.clear();
         this.background.beginFill(this.options.background.value, this.options.background.alpha);
-        this.background.drawRoundedRect(
-            0,
-            0,
-            this.options.width,
-            this.topRow.height + 3 * this.options.marginY + this.board.height,
-            10
-        );
+        this.background.drawRoundedRect(0, 0, this.options.width, this.topRow.height + 3 * this.options.marginY + this.board.height, 10);
         this.background.endFill();
 
         if (!this.playerState.in) {
             this.background.clear();
             this.background.beginFill(0x000000, 0.25);
-            this.background.drawRoundedRect(
-                0,
-                0,
-                this.options.width,
-                this.topRow.height + 3 * this.options.marginY + this.board.height,
-                10
-            );
+            this.background.drawRoundedRect(0, 0, this.options.width, this.topRow.height + 3 * this.options.marginY + this.board.height, 10);
             this.background.endFill();
             this.activeBackground.visible = true;
         } else {

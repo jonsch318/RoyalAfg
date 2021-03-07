@@ -20,6 +20,7 @@ func GenerateCookie(token string, persistent bool) *http.Cookie {
 		Value:    token,
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	if !persistent {
@@ -33,13 +34,13 @@ func GetJwt(user *models.User) (string, error) {
 	signingKey := []byte(viper.GetString(config.JWTSigningKey))
 
 	claims := jwt.MapClaims{
-		"sub": user.ID,
-		"iss": viper.GetString(config.JWTIssuer),
-		"aud": []string{"royalafg.games", "localhost:3000"},
-		"exp": time.Now().Add(viper.GetDuration(config.JWTExpiresAt)),
-		"jti": uuid.New().String(),
+		"sub":      user.ID,
+		"iss":      viper.GetString(config.JWTIssuer),
+		"aud":      []string{"royalafg.games", "localhost:3000"},
+		"exp":      time.Now().Add(viper.GetDuration(config.JWTExpiresAt)),
+		"jti":      uuid.New().String(),
 		"username": user.Username,
-		"name": user.FullName,
+		"name":     user.FullName,
 	}
 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

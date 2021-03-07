@@ -47,7 +47,7 @@ func main() {
 	if err := ping(rdb); err != nil {
 		logger.Fatalw("Redis ping failed", "error", err)
 	}
-	logger.Info("Redis ping sucess")
+	logger.Info("Redis ping success")
 
 	kubeConfig, _ := rest.InClusterConfig()
 	agonesClient, _ := versioned.NewForConfig(kubeConfig)
@@ -79,7 +79,7 @@ func main() {
 		Debug:            false,
 	})
 
-	n := negroni.New(negroni.NewLogger(), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
+	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware), cors)
 	n.UseHandler(r)
 
 	// Start Application
@@ -89,7 +89,6 @@ func main() {
 	}
 
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))
-
 }
 
 func ping(client *redis.Client) error {

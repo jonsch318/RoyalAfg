@@ -6,23 +6,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ToMessage(user *models.User) *protos.User{
+func ToMessage(user *models.User) *protos.User {
 	return &protos.User{
-		Id: user.ID.Hex(),
-		Username: user.Username,
-		FullName: user.FullName,
+		Id:        user.ID.Hex(),
+		Username:  user.Username,
+		FullName:  user.FullName,
 		Birthdate: user.Birthdate,
-		Email: user.Email,
+		Hash:      user.Hash,
+		Email:     user.Email,
 	}
 }
 
-func FromMessage(message *protos.User) *models.User{
-	user :=  &models.User{
-		Username: message.Username,
-		Email: message.Email,
+func FromMessage(message *protos.User) *models.User {
+	user := &models.User{
+		Username:  message.Username,
+		Email:     message.Email,
 		Birthdate: message.Birthdate,
-		FullName: message.FullName,
-		Hash: message.Hash,
+		FullName:  message.FullName,
+		Hash:      message.Hash,
 	}
 	var err error
 	user.ID, err = primitive.ObjectIDFromHex(message.Id)

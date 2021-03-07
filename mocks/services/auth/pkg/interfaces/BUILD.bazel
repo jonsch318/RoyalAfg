@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "AuthenticationService.go",
+        "UserService.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/interfaces",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models",
+        "//services/auth/pkg/dto",
+        "@com_github_stretchr_testify//mock:go_default_library",
+    ],
+)

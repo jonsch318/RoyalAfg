@@ -23,7 +23,7 @@ const Account = () => {
                 <Front>{"Your Account " + session.user.name}</Front>
                 <div className="px-10 pb-10 bg-gray-200">
                     <ActionMenu>
-                        <ActionMenuLink href="/account/wallet">My Wallet</ActionMenuLink>
+                        <ActionMenuLink href="/wallet">My Wallet</ActionMenuLink>
                     </ActionMenu>
                 </div>
                 {session && session.user ? session.user.name : <></>}

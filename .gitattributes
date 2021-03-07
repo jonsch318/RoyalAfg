@@ -1,6 +1,9 @@
 #default behaviour for line endings convert to lf on push and change back to crlf on pull
 * text
-
+*.jpeg binary
+*.png binary
+*.jpg binary
+*.gif binary
 
 *.bazel text eol=lf
 WORKSPACE text eol=lf

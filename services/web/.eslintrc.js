@@ -1,5 +1,5 @@
 module.exports = {
-    root: true, // Make sure eslint picks up the serviceConfig at the root of the directory
+    root: true, // Make sure eslint picks up the config at the root of the directory
     parserOptions: {
         ecmaVersion: 2020, // Use the latest ecmascript standard
         sourceType: "module", // Allows using import/export statements
@@ -23,10 +23,31 @@ module.exports = {
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:jsx-a11y/recommended",
-        "plugin:prettier/recommended" // Make this the last element so prettier serviceConfig overrides other formatting rules
+        "plugin:prettier/recommended" // Make this the last element so prettier config overrides other formatting rules
     ],
     rules: {
         "prettier/prettier": ["error", {}, { usePrettierrc: true }], // Use our .prettierrc file as source,
-        "quotes": [2, "double"]
-    }
+        quotes: [2, "double"]
+    },
+    overrides: [
+        {
+            files: ["**/*.ts", "**/*.tsx"],
+            env: { browser: true, es6: true, node: true },
+            extends: [
+                "eslint:recommended",
+                "plugin:react/recommended",
+                "plugin:jsx-a11y/recommended",
+                "plugin:prettier/recommended",
+                "plugin:@typescript-eslint/eslint-recommended",
+                "plugin:@typescript-eslint/recommended"
+            ],
+            globals: { Atomics: "readonly", SharedArrayBuffer: "readonly" },
+            parser: "@typescript-eslint/parser",
+            plugins: ["@typescript-eslint"],
+            rules: {
+                "prettier/prettier": ["error", {}, { usePrettierrc: true }], // Use our .prettierrc file as source,
+                quotes: [2, "double"]
+            }
+        }
+    ]
 };

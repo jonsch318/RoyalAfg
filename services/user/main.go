@@ -1,7 +1,19 @@
 package main
 
-import "github.com/JohnnyS318/RoyalAfgInGo/services/user/cmd"
+import (
+	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/serviceconfig"
+)
 
 func main() {
-	cmd.Execute()
+	logger := log.RegisterService()
+	defer log.CleanLogger()
+
+	gConfig.ReadStandardConfig("user", logger)
+	serviceconfig.ConfigureDefaults()
+
+	pkg.Start(logger)
 }
