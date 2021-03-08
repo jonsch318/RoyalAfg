@@ -1,14 +1,16 @@
-import React from "react";
+import React, { FC } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/layout";
 import { signIn } from "../../hooks/auth";
 import PasswordBox from "../../components/form/passwordBox";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { getCSRF } from "../../hooks/auth/csrf";
 
-const Login = () => {
+const Login: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     console.log("URL: ", process.env.NEXT_PUBLIC_AUTH_HOST);
     const { register, handleSubmit, errors } = useForm();
     const onSubmit = async (data) => {
-        await signIn({ username: data.username, password: data.password });
+        await signIn({ username: data.username, password: data.password }, csrf);
     };
 
     return (
@@ -60,6 +62,15 @@ const Login = () => {
             </div>
         </Layout>
     );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const csrf = await getCSRF(context);
+    return {
+        props: {
+            csrf: csrf
+        }
+    };
 };
 
 export default Login;

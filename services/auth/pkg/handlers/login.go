@@ -5,6 +5,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
@@ -43,6 +44,7 @@ func Validate(dto dto.LoginDto) error {
 //	422: ValidationErrorResponse
 //	404: ErrorResponse
 //	401: ErrorResponse
+//	403: ErrorResponse
 //	500: ErrorResponse
 //	200: UserResponse
 //
@@ -52,6 +54,12 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
+
+	if err := mw.ValidateCSRF(r); err != nil {
+		h.l.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
 
 	loginDto := &dto.LoginDto{}
 

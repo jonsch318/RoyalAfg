@@ -16,6 +16,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/pokerConfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticketToken"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/serviceconfig"
 )
 
@@ -27,6 +28,12 @@ type TicketResponse struct {
 
 //GetTicketWithParams requests a ticket with lobby params
 func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
+	if err := mw.ValidateCSRF(r); err != nil {
+		h.logger.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
+
 	vals := r.URL.Query()
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 
@@ -68,6 +75,13 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 
 //GetTicketWithID requests a ticket with lobby id
 func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
+
+	if err := mw.ValidateCSRF(r); err != nil {
+		h.logger.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
+
 	vars := mux.Vars(r)
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

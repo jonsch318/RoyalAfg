@@ -11,6 +11,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
 )
 
@@ -19,6 +20,12 @@ type TransactionDto struct {
 }
 
 func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
+
+	if err := mw.ValidateCSRF(r); err != nil {
+		log.Logger.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
 
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 	var dto TransactionDto
@@ -45,6 +52,13 @@ func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (h Account) Withdraw(rw http.ResponseWriter, r *http.Request) {
+
+	if err := mw.ValidateCSRF(r); err != nil {
+		log.Logger.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
+
 
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

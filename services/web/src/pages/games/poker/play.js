@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 
 import Actions from "../../../games/poker/actions.js";
@@ -9,6 +10,7 @@ import { GameState } from "../../../games/poker/game/state.js";
 import { Game } from "../../../games/poker/connection/socket.js";
 import Loading from "../../../widgets/games/poker/loading";
 import { useSnackbar } from "notistack";
+import { getCSRF } from "../../../hooks/auth/csrf";
 
 const View = dynamic(import("../../../games/poker/view"), { ssr: false });
 
@@ -25,15 +27,28 @@ const _getUrl = (id) => {
     return `${url}/api/poker/ticket`;
 };
 
-const _fetch = async (url, params) => {
+const _fetch = async (url, params, args = {}, csrf = "") => {
     return fetch(`${url}?${params.toString()}`, {
         mode: "cors",
         credentials: "include",
-        method: "GET"
+        method: "POST",
+        headers: {
+            "X-CSRF-Token": csrf
+        },
+        body: JSON.stringify({ ...args })
     });
 };
 
-const Play = () => {
+export const getServerSideProps = async (context) => {
+    const csrf = await getCSRF(context);
+    return {
+        props: {
+            csrf: csrf
+        }
+    };
+};
+
+const Play = ({ csrf }) => {
     const [game, setGame] = useState({ start: () => console.log("Started before initializing") });
     const [joined, setJoined] = useState(false);
     const [loaded, setLoaded] = useState(false);
@@ -45,7 +60,16 @@ const Play = () => {
 
     useEffect(() => {
         const params = new URLSearchParams({ buyIn: buyIn, class: buyInClass });
-        _fetch(_getUrl(lobbyId), params)
+        _fetch(
+            _getUrl(lobbyId),
+            params,
+            {
+                buyIn: buyIn,
+                class: buyInClass,
+                lobbyId: lobbyId
+            },
+            csrf
+        )
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Connection could not be established");
@@ -107,6 +131,10 @@ const Play = () => {
             <Loading connecting={!joined} joined={lobbyInfo.count} minNumber={lobbyInfo.toStart} loaded={loaded} timeout={lobbyInfo.timeout} />
         </div>
     );
+};
+
+Play.propTypes = {
+    csrf: PropTypes.string
 };
 
 export default Play;
