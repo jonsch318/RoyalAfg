@@ -49,7 +49,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		if r.Players[i].ID != r.PublicPlayers[i].ID {
 			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
 		}
-		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i)); err != nil {
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.Pot.Display())); err != nil {
 			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
 			_ = r.Leave(r.Players[i].ID)
 		}

@@ -46,7 +46,8 @@ module.exports = {
             plugins: ["@typescript-eslint"],
             rules: {
                 "prettier/prettier": ["error", {}, { usePrettierrc: true }], // Use our .prettierrc file as source,
-                quotes: [2, "double"]
+                quotes: [2, "double"],
+                "react/prop-types": "off"
             }
         }
     ]

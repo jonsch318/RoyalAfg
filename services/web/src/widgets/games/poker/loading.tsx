@@ -2,6 +2,7 @@ import React, { FC, useEffect } from "react";
 import Back from "../../../components/layout/back";
 import ConnectionLoading from "./connecting";
 import WaitingForPlayers from "./waiting";
+import NextGameStart from "./nextGameStart";
 
 type LoadingProps = {
     connecting: boolean;
@@ -9,9 +10,10 @@ type LoadingProps = {
     minNumber?: number;
     loaded: boolean;
     timeout: number;
+    gameStarted: boolean;
 };
 
-const Loading: FC<LoadingProps> = ({ connecting, joined, minNumber, loaded, timeout }) => {
+const Loading: FC<LoadingProps> = ({ connecting, joined, minNumber, loaded, timeout, gameStarted }) => {
     console.log("Joined : ", joined, " Min Number: ", minNumber, " Connecting: ", connecting, "loading: ", loaded);
 
     useEffect(() => {
@@ -25,7 +27,8 @@ const Loading: FC<LoadingProps> = ({ connecting, joined, minNumber, loaded, time
         <>
             <div className="flex w-full justify-center items-center h-screen">
                 {connecting && <ConnectionLoading />}
-                {joined >= 0 && <WaitingForPlayers joined={joined} minNumber={minNumber} timeout={timeout} />}
+                {gameStarted && <NextGameStart />}
+                {joined >= 0 && !gameStarted && <WaitingForPlayers joined={joined} minNumber={minNumber} timeout={timeout} />}
             </div>
         </>
     );

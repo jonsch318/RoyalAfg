@@ -4,6 +4,7 @@ go_library(
     name = "mw",
     srcs = [
         "auth.go",
+        "csrf.go",
         "logging.go",
         "zap.go",
     ],

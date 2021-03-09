@@ -89,9 +89,9 @@ func (l *Lobby) FillLobbyPosition() {
 	public.SetBuyIn(l.Bank.GetPlayerWallet(public.ID))
 
 	//Send to currently active players. The joining player is not included. He will get a different confirmation
-	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players)))
+	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players), l.GameStarted))
 	//Send join confirmation to player
-	err := utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn))
+	err := utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn, l.GameStarted))
 	if err != nil {
 		log.Logger.Infof("Could not send to player")
 		if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
@@ -162,7 +162,7 @@ func (l *Lobby) PlayerRemoval() {
 	}
 
 	//Send leave event
-	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i))
+	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i,len(l.Players), l.GameStarted))
 
 	l.PlayerRemoval()
 }

@@ -16,6 +16,7 @@ go_library(
         "//pkg/mw",
         "//pkg/poker/pokerConfig:go_default_library",
         "//pkg/poker/ticketToken:go_default_library",
+        "//pkg/responses",
         "//services/poker-matchmaker/pkg/lobby:go_default_library",
         "//services/poker-matchmaker/serviceconfig:go_default_library",
         "@com_github_go_redis_redis_v8//:go_default_library",

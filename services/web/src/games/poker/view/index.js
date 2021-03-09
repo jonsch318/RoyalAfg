@@ -46,6 +46,12 @@ class View extends React.Component {
 
         PIXI.Loader.shared.add(textureUrl).load(this.setup.bind(this));
 
+        this.potLabel = new PIXI.Text("", {
+            fontFamily: "Poppins",
+            fontSize: 15
+        });
+        this.potLabel.position.set(this.app.screen.width - this.potLabel.width - 20, 20);
+
         this.table = new PIXI.Graphics();
         this.board = new Board(this.game);
 
@@ -107,6 +113,8 @@ class View extends React.Component {
     }
 
     updateFromState(event, data) {
+        this.potLabel.text = this.gameState.pot;
+        this.potLabel.position.set(this.app.screen.width - this.potLabel.width - 20, 20);
         if (event === UpdateEvents.lobbyJoin) {
             this.players.updateFromState();
         }

@@ -1,5 +1,3 @@
-import { LOBBY_INFO } from "../events/constants";
-
 const {
     JOIN_SUCCESS,
     GAME_START,
@@ -11,7 +9,9 @@ const {
     RIVER,
     GAME_END,
     HOLE_CARDS,
-    PLAYER_JOIN
+    PLAYER_JOIN,
+    LOBBY_INFO,
+    PLAYER_LEAVE
 } = require("../events/constants");
 const { BET, RAISE, FOLD, Action } = require("../models/action");
 const { Player } = require("../models/player");
@@ -71,13 +71,8 @@ class GameState {
             case JOIN_SUCCESS:
                 this.state.roundState = -2;
                 this.state.player = e.data.position;
-                for (let i = 0; i < e.data.players.length; i++) {
-                    if (this._findPlayer(e.data.players[i].id)) {
-                        continue;
-                    }
-                    this.state.players.push(new Player(e.data.players[i].username, e.data.players[i].id, e.data.players[i].buyIn));
-                    console.log("In Lobby it [", e.data.players[i].username, "] joined: ", e.data.players[i].buyIn);
-                }
+                this.state.players = [];
+                this._addPlayers(e.data.players);
                 this.state.wallet = e.data.wallet;
                 this.update({ event: UpdateEvents.lobbyJoin });
                 break;
@@ -90,9 +85,27 @@ class GameState {
                 }
                 this.lobby.playerCount = e.data.playerCount;
                 console.log({ count: this.lobby.playerCount, toStart: this.lobby.minPlayersToStart });
-                this.setLobbyInfo({ count: this.lobby.playerCount, toStart: this.lobby.minPlayersToStart, timeout: this.lobby.gameStartTimeout });
+                this.setLobbyInfo({
+                    count: this.lobby.playerCount,
+                    toStart: this.lobby.minPlayersToStart,
+                    timeout: this.lobby.gameStartTimeout,
+                    gameStarted: e.data.gameStarted
+                });
                 break;
-
+            case PLAYER_LEAVE:
+                if (this.state.players[e.data.index].id === e.data.player.id) {
+                    this.state.players.splice(e.data.index, 1);
+                }
+                this.lobby.playerCount = e.data.playerCount;
+                this.lobby.gameStarted = e.data.gameStarted;
+                this.setLobbyInfo({
+                    count: this.lobby.playerCount,
+                    toStart: this.lobby.minPlayersToStart,
+                    timeout: this.lobby.gameStartTimeout,
+                    gameStarted: this.lobby.gameStarted
+                });
+                this.update({ event: UpdateEvents.playerList });
+                break;
             case GAME_START:
                 this.resetState();
                 this.state.roundState = -1;
@@ -101,10 +114,8 @@ class GameState {
                 this.update({ event: UpdateEvents.notification });
                 this.onGameStart();
                 this.state.players = [];
-                for (let i = 0; i < e.data.players.length; i++) {
-                    this.state.players.push(new Player(e.data.players[i].username, e.data.players[i].id, e.data.players[i].buyIn));
-                    console.log("In Lobby it [", e.data.players[i].username, "] joined: ", e.data.players[i].buyIn);
-                }
+                this._addPlayers(e.data.players);
+                this.pot = e.data.pot;
                 this.update({ event: UpdateEvents.gameStart });
                 console.log("Players: ", this.state.players);
                 break;
@@ -251,6 +262,13 @@ class GameState {
         return this.state.players.find((obj) => {
             return obj.id === id;
         });
+    }
+
+    _addPlayers(players) {
+        for (let i = 0; i < players.length; i++) {
+            this.state.players.push(new Player(players[i].username, players[i].id, players[i].buyIn));
+            console.log("In Lobby it [", players[i].username, "] joined: ", players[i].buyIn);
+        }
     }
 }
 

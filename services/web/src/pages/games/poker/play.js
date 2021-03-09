@@ -128,7 +128,14 @@ const Play = ({ csrf }) => {
                     <View game={game} gameStart={() => setLoaded(true)} />
                 </div>
             )}
-            <Loading connecting={!joined} joined={lobbyInfo.count} minNumber={lobbyInfo.toStart} loaded={loaded} timeout={lobbyInfo.timeout} />
+            <Loading
+                connecting={!joined}
+                joined={lobbyInfo.count}
+                minNumber={lobbyInfo.toStart}
+                loaded={loaded}
+                timeout={lobbyInfo.timeout}
+                gameStarted={lobbyInfo.gameStarted}
+            />
         </div>
     );
 };
