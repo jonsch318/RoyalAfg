@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "bank",
     srcs = [
         "command.go",
         "types.go",
@@ -9,7 +9,7 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/bank",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/dtos:go_default_library",
-        "@com_github_rhymond_go_money//:go_default_library",
+        "//pkg/dtos",
+        "@com_github_rhymond_go_money//:go-money",
     ],
 )

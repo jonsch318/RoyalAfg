@@ -2,6 +2,7 @@ package lobby
 
 import (
 	"errors"
+	"runtime/debug"
 
 	"github.com/spf13/viper"
 
@@ -41,6 +42,7 @@ func (l *Lobby) Join(player *models.Player) error {
 
 	//Add player to queue
 	l.PlayerQueue.Enqueue(player)
+	l.SetPlayerCountLabel()
 
 	l.FillLobbyPosition()
 
@@ -114,6 +116,13 @@ func (l *Lobby) FillLobbyPosition() {
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.
 func (l *Lobby) WatchPlayerConnClose(playerIndex int) {
+	defer func() {
+		//Player removal was and is the most crashed situation of the game.
+		if r := recover(); r != nil {
+			log.Logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+		}
+	}()
+
 	//wait for closing message
 	_, ok := <-l.Players[playerIndex].Close
 

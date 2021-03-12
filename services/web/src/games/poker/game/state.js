@@ -1,3 +1,5 @@
+import { LOBBY_PAUSE } from "../events/constants";
+
 const {
     JOIN_SUCCESS,
     GAME_START,
@@ -104,6 +106,7 @@ class GameState {
                     timeout: this.lobby.gameStartTimeout,
                     gameStarted: this.lobby.gameStarted
                 });
+                console.log("Player Leaves ", e.data);
                 this.update({ event: UpdateEvents.playerList });
                 break;
             case GAME_START:
@@ -118,6 +121,13 @@ class GameState {
                 this.pot = e.data.pot;
                 this.update({ event: UpdateEvents.gameStart });
                 console.log("Players: ", this.state.players);
+                this.lobby.gameStarted = true;
+                this.setLobbyInfo({
+                    count: this.lobby.playerCount,
+                    toStart: this.lobby.minPlayersToStart,
+                    timeout: this.lobby.gameStartTimeout,
+                    gameStarted: this.lobby.gameStarted
+                });
                 break;
             case DEALER_SET:
                 this.state.dealer = e.data;
@@ -171,6 +181,16 @@ class GameState {
 
             case GAME_END:
                 this._handleGameEnd(e);
+                break;
+
+            case LOBBY_PAUSE:
+                this.lobby.playerCount = e.data.playerCount;
+                this.setLobbyInfo({
+                    count: this.lobby.playerCount,
+                    toStart: this.lobby.minPlayersToStart,
+                    timeout: this.lobby.gameStartTimeout,
+                    gameStarted: this.lobby.gameStarted
+                });
                 break;
             default:
                 break;
@@ -256,6 +276,15 @@ class GameState {
         this.update({ event: UpdateEvents.updateAllPlayers });
         this.update({ event: UpdateEvents.notification });
         this.update({ event: UpdateEvents.gameEnd });
+
+        this.lobby.gameStarted = false;
+
+        this.setLobbyInfo({
+            count: this.lobby.playerCount,
+            toStart: this.lobby.minPlayersToStart,
+            timeout: this.lobby.gameStartTimeout,
+            gameStarted: e.data.gameStarted
+        });
     }
 
     _findPlayer(id = "") {

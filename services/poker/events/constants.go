@@ -24,3 +24,5 @@ const TURN = "TURN"
 const RIVER = "RIVER"
 
 const GAME_END = "GAME_END"
+
+const LOBBY_PAUSE = "LOBBY_PAUSE"

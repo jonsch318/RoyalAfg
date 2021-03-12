@@ -5,7 +5,7 @@ go_library(
     srcs = ["hash.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_elithrar_simple_scrypt//:go_default_library"],
+    deps = ["@com_github_elithrar_simple_scrypt//:simple-scrypt"],
 )
 
 go_test(

@@ -49,5 +49,14 @@ func (l *Lobby) PrepareForRound()  {
 	l.FillLobbyPosition()
 	l.SetPlayerCountLabel()
 
-	log.Logger.Debugf("Removed PlayerCount Player Count: %v", l.PlayerCount)
+	for i := range l.Players {
+		// Set player states if player can bet in the round
+		if l.Bank.HasZeroWallet(l.Players[i].ID) || l.Players[i].Left {
+			l.Players[i].Active = false
+		}else {
+			l.Players[i].Active = true
+		}
+	}
+
+
 }

@@ -8,6 +8,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 )
 
@@ -22,26 +23,28 @@ func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {
 	}
 
 	gameserver, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
-		TypeMeta:            metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
 		},
-		LabelSelector:       fmt.Sprintf("game=poker,class=%v", class),
-		Watch:               false,
-		AllowWatchBookmarks: false,
+		LabelSelector:       fmt.Sprintf("game=poker, class-index=%v", class),
 	})
 
-	if err != nil  {
+	if err != nil {
 		return nil, err
 	}
 
 	lobbies := make([]models.LobbyBase, len(gameserver.Items))
 	for _, gs := range gameserver.Items {
 		players, err := strconv.Atoi(gs.Labels["players"])
+		log.Logger.Debugf("Lobby found: %v", models.LobbyBase{
+			LobbyID:    gs.Labels["lobbyId"],
+			Class:      &m.classes[class],
+			ClassIndex: class,
+		})
 		if err != nil {
 			continue
 		}
-
 		lobbies = append(lobbies, models.LobbyBase{
 			LobbyID:     gs.Labels["lobbyId"],
 			Class:       &m.classes[class],
@@ -54,6 +57,8 @@ func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {
 	sort.SliceStable(lobbies, func(i, j int) bool {
 		return biasForX(lobbies[i].PlayerCount, 9) < biasForX(lobbies[i].PlayerCount, 9)
 	})
+
+	log.Logger.Debugf("After sort: %v", lobbies)
 
 	//ordered list of lobbies to try
 	return lobbies, nil

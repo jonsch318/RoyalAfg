@@ -1,12 +1,12 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "gameServer",
     srcs = ["health.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer",
     visibility = ["//visibility:public"],
     deps = [
-        "@dev_agones_agones//pkg/util/signals:go_default_library",
-        "@dev_agones_agones//sdks/go:go_default_library",
+        "@dev_agones_agones//pkg/util/signals",
+        "@dev_agones_agones//sdks/go",
     ],
 )

@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "handlers",
     srcs = [
         "game.go",
         "gameSearch.go",
@@ -9,7 +9,7 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/search/pkg/interfaces:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "//services/search/pkg/interfaces",
+        "@org_uber_go_zap//:zap",
     ],
 )

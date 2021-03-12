@@ -1,4 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 go_library(
     name = "user_lib",
@@ -6,10 +8,10 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user",
     visibility = ["//visibility:private"],
     deps = [
-        "//pkg/config:go_default_library",
+        "//pkg/config",
         "//pkg/log",
-        "//services/user/pkg:go_default_library",
-        "//services/user/pkg/serviceconfig:go_default_library",
+        "//services/user/pkg",
+        "//services/user/pkg/serviceconfig",
     ],
 )
 
@@ -17,4 +19,19 @@ go_binary(
     name = "user",
     embed = [":user_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "royalafg_user",
+    embed = [":user_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_royalafg_user",
+    format = "Docker",
+    image = ":royalafg_user",
+    registry = "index.docker.io",
+    repository = "johnnys318/royalafg_user",
+    tag = "bazel",
 )

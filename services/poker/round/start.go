@@ -19,8 +19,7 @@ import (
 func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Logger.Debugf("recovering in round start from %v", r)
-			debug.PrintStack()
+			log.Logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
 		}
 	}()
 	r.Players = players

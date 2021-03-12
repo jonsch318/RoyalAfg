@@ -44,18 +44,16 @@ func main() {
 	//connect to rabbitmq to send user commands
 	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
 	rabbitConn, err := rabbit.NewRabbitMessageBroker(logger, rabbitURL)
-
 	if err != nil {
 		logger.Fatalw("Could not connect to service bus", "error", err)
 	}
-
-	b := bank.NewBank(rabbitConn)
+	defer rabbitConn.Close()
 
 	//Register stop signal
 	go gameServer.DoSignal()
 
 	//Creating agones sdk instance to communicate with the game server orchestrator
-	logger.Info("Creating SDK instance")
+	logger.Infof("Creating SDK instance")
 	s, err := sdk.NewSDK()
 	if err != nil {
 		logger.Fatalf("Error during sdk connection, %v", err)
@@ -66,10 +64,11 @@ func main() {
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-	serviceconfig.SetDefaults()
+
 
 	lobbyConfigured := false
 	shutDownStop := make(chan interface{})
+	b := bank.NewBank(rabbitConn)
 	lobbyInstance := lobby.NewLobby(b, s)
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
 		if !lobbyConfigured {
@@ -95,14 +94,10 @@ func main() {
 
 	//gorilla router instance
 	r := mux.NewRouter()
-	r.HandleFunc("/api/poker/join", gameHandler.Join).Methods(http.MethodGet)
 	r.HandleFunc("/api/poker/health", gameHandler.Health).Methods(http.MethodGet)
+	r.HandleFunc("/api/poker/join", gameHandler.Join) //Websocket join
 
-	recoverMW := negroni.NewRecovery()
-	recoverMW.PanicHandlerFunc = func(information *negroni.PanicInformation) {
-		_ = s.Shutdown()
-	}
-	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery())
+	n := negroni.New(negroni.NewRecovery(), mw.NewLogger(logger.Desugar()))
 	n.UseHandler(r)
 
 	err = s.Ready()
@@ -118,7 +113,7 @@ func main() {
 		Handler: n,
 	}, viper.GetDuration(config.GracefulShutdownTimeout))
 
-	rabbitConn.Close()
+
 }
 
 func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, logger *zap.SugaredLogger) error {

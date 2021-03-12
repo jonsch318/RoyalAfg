@@ -18,7 +18,9 @@ export const ACTION_PROCESSED = "ACTION_PROCESSED";
 
 export const PLAYER_LEAVE = "PLAYER_LEAVE";
 
-export const GAME_END = "GAME_END";
 export const FLOP = "FLOP";
 export const TURN = "TURN";
 export const RIVER = "RIVER";
+
+export const GAME_END = "GAME_END";
+export const LOBBY_PAUSE = "LOBBY_PAUSE";

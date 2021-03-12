@@ -70,3 +70,14 @@ func (b *Bank) GetPot() string {
 	defer b.lock.RUnlock()
 	return b.Pot.Display()
 }
+
+//HasZeroWallet returns true if the player has zero money left in his wallet or no bank wallet could be found with this id.
+func (b *Bank) HasZeroWallet(id string) bool{
+	b.lock.RLock()
+	defer b.lock.RUnlock()
+	t, ok := b.PlayerWallet[id]
+	if !ok {
+		return true
+	}
+	return !t.IsPositive()
+}
