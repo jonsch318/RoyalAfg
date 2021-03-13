@@ -4,6 +4,7 @@ import CurrencyInput from "react-currency-input-field";
 import Layout from "../../components/layout";
 import { useRouter } from "next/router";
 import { getCSRF } from "../../hooks/auth/csrf";
+import { useSnackbar } from "notistack";
 
 export const getServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
@@ -19,6 +20,8 @@ const Deposit = ({ csrf }) => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [amount, setAmount] = useState(-1);
+    const { enqueueSnackbar } = useSnackbar();
+    const router = useRouter();
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -36,16 +39,18 @@ const Deposit = ({ csrf }) => {
             })
         });
 
-        if (res.ok) {
+        if (!res.ok) {
             setLoading(false);
             setSuccess(false);
             console.log("Error during response: ", res);
+            enqueueSnackbar("Error during depositing", { variant: "error" });
             return;
         }
 
         setLoading(false);
         setSuccess(true);
-        return;
+        enqueueSnackbar("Deposited successfully", { variant: "success" });
+        router.push("/wallet").then();
     };
 
     return (
