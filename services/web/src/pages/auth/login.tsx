@@ -5,12 +5,23 @@ import { signIn } from "../../hooks/auth";
 import PasswordBox from "../../components/form/passwordBox";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
+import { useRouter } from "next/router";
 
 const Login: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     console.log("URL: ", process.env.NEXT_PUBLIC_AUTH_HOST);
     const { register, handleSubmit, errors } = useForm();
-    const onSubmit = async (data) => {
-        await signIn({ username: data.username, password: data.password }, csrf);
+    const router = useRouter();
+    const onSubmit = (data) => {
+        signIn({ username: data.username, password: data.password }, csrf)
+            .then((res) => {
+                console.log("Refreshing: ", router.asPath);
+                if (res.ok) {
+                    window.location.href = "/";
+                }
+            })
+            .catch(() => {
+                console.log("Refreshing: ", router.asPath);
+            });
     };
 
     return (

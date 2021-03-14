@@ -27,8 +27,6 @@ export const getSession = async ({ req, ctx } = {}) => {
             method: "get",
             mode: "cors"
         });
-        if (res.statusCode === 404) {
-        }
         if (!res.ok) throw res.statusCode;
         return await res.json();
     } catch (error) {
@@ -91,8 +89,6 @@ const _useSessionHook = (session) => {
 };
 
 export const signIn = async (args = {}, csrfToken = "") => {
-    console.log("LOGIN: ", `${_apiBaseUrl()}/login`);
-    console.log("signin: ", args, " CSRF: ", csrfToken);
     const options = {
         method: "POST",
         headers: {

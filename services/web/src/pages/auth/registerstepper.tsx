@@ -13,6 +13,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
+import { router } from "next/client";
 
 export type RegisterDto = {
     username: string;
@@ -100,7 +101,10 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
         ).then((res) => {
             if (res.ok) {
                 enqueueSnackbar("Successfully Registered", { variant: "success" });
-                Router.reload();
+                console.log("Refreshing: ", router.asPath);
+                if (res.ok && typeof window !== undefined) {
+                    window.location.href = "/";
+                }
             } else {
                 enqueueSnackbar("Something went wrong! Error code [" + res.status + "] " + res.statusText, { variant: "error" });
                 handleReset();

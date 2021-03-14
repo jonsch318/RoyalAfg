@@ -44,8 +44,11 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
             },
             csrf
         );
-        if (!res.ok) {
+        if (res.ok) {
             enqueueSnackbar("Successfully Registered", { variant: "success" });
+            if (typeof window !== undefined) {
+                window.location.href = "/";
+            }
         }
     };
 
