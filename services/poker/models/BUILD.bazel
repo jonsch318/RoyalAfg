@@ -12,8 +12,8 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/poker/money:go_default_library",
-        "@com_github_go_ozzo_ozzo_validation//:go_default_library",
-        "@com_github_rhymond_go_money//:go_default_library",
+        "//services/poker/money",
+        "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
+        "@com_github_rhymond_go_money//:go-money",
     ],
 )

@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "protos",
     srcs = [
         "UserServiceClient.go",
         "UserServiceServer.go",
@@ -10,7 +10,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/protos",
-        "@com_github_stretchr_testify//mock:go_default_library",
+        "@com_github_stretchr_testify//mock",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

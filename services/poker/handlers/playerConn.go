@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"runtime/debug"
 	"sync"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
@@ -16,6 +17,7 @@ type PlayerConn struct {
 	Close   chan bool
 	conn    *websocket.Conn
 	lock sync.Mutex
+	Closed bool
 }
 
 func NewPlayerConn(conn *websocket.Conn) *PlayerConn {
@@ -25,6 +27,7 @@ func NewPlayerConn(conn *websocket.Conn) *PlayerConn {
 		Out:   make(chan []byte),
 		In:    make(chan *models.Event),
 		Close: make(chan bool),
+		Closed: false,
 	}
 }
 
@@ -102,9 +105,13 @@ func (p *PlayerConn) writer() {
 func (p *PlayerConn) CloseConnection(unexpected bool){
 	defer func() {
 		if r := recover(); r != nil {
-			log.Logger.Debugf("recovering in round start from %v", r)
+			log.Logger.Debugf("recovering in round start from %v Stack: \n %v", r, string(debug.Stack()))
 		}
 	}()
+
+	if p.Closed {
+		return
+	}
 
 	log.Logger.Warnw("Closing Connection", "unexpected", unexpected)
 
@@ -126,6 +133,7 @@ func (p *PlayerConn) CloseConnection(unexpected bool){
 	default:
 		//Message close event
 		log.Logger.Warnf("Closing channel")
+		p.Closed = true
 		close(p.Close)
 	}
 

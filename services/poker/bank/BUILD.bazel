@@ -15,12 +15,12 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/bank:go_default_library",
+        "//pkg/bank",
         "//pkg/log",
         "//services/poker/models",
-        "//services/poker/money:go_default_library",
-        "//services/poker/rabbit:go_default_library",
+        "//services/poker/money",
+        "//services/poker/rabbit",
         "//services/poker/showdown",
-        "@com_github_rhymond_go_money//:go_default_library",
+        "@com_github_rhymond_go_money//:go-money",
     ],
 )

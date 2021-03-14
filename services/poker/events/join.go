@@ -24,54 +24,60 @@ func ToJoinEvent(raw *models.Event) (*JoinEvent, error) {
 }
 
 type LobbyInfo struct {
-	LobbyID     string `json:"lobbyId"`
-	MaxBuyIn    int    `json:"maxBuyIn"`
-	MinBuyIn    int    `json:"minBuyIn"`
-	Blind       int    `json:"blind"`
-	MinToStart  int    `json:"minPlayersToStart"`
-	PlayerCount int    `json:"playerCount"`
-	GameStartTimeout int `json:"gameStartTimeout"`
-	GameStarted bool   `json:"gameStarted"`
+	LobbyID          string `json:"lobbyId"`
+	MaxBuyIn         int    `json:"maxBuyIn"`
+	MinBuyIn         int    `json:"minBuyIn"`
+	Blind            int    `json:"blind"`
+	MinToStart       int    `json:"minPlayersToStart"`
+	PlayerCount      int    `json:"playerCount"`
+	GameStartTimeout int    `json:"gameStartTimeout"`
+	GameStarted      bool   `json:"gameStarted"`
 }
 
 //NewLobbyInfoEvent
-func NewLobbyInfoEvent(lobbyId string, players, minToStart, maxBuyIn, minBuyIn, blind, gameStartTimeout int, gameStarted bool ) *models.Event {
+func NewLobbyInfoEvent(lobbyId string, players, minToStart, maxBuyIn, minBuyIn, blind, gameStartTimeout int, gameStarted bool) *models.Event {
 	return models.NewEvent(LOBBY_INFO, &LobbyInfo{
-		LobbyID:     lobbyId,
-		MaxBuyIn:    maxBuyIn,
-		MinBuyIn:    minBuyIn,
-		Blind:       blind,
-		MinToStart:  minToStart,
-		PlayerCount: players,
-		GameStarted: gameStarted,
+		LobbyID:          lobbyId,
+		MaxBuyIn:         maxBuyIn,
+		MinBuyIn:         minBuyIn,
+		Blind:            blind,
+		MinToStart:       minToStart,
+		PlayerCount:      players,
+		GameStarted:      gameStarted,
 		GameStartTimeout: gameStartTimeout,
 	})
 }
 
 type JoinSuccess struct {
-	Players  []models.PublicPlayer `json:"players"`
-	Wallet   string                `json:"wallet"`
-	Position int                   `json:"position"`
+	Players     []models.PublicPlayer `json:"players"`
+	Wallet      string                `json:"wallet"`
+	Position    int                   `json:"position"`
+	GameStarted bool                  `json:"gameStarted"`
 }
 
-func NewJoinSuccessEvent(players []models.PublicPlayer, position int, wallet string) *models.Event {
+func NewJoinSuccessEvent(players []models.PublicPlayer, position int, wallet string, gameStarted bool) *models.Event {
 	return models.NewEvent(JOIN_SUCCESS, &JoinSuccess{
-		Players:  players,
-		Position: position,
-		Wallet:   wallet,
+		Players:     players,
+		Position:    position,
+		Wallet:      wallet,
+		GameStarted: gameStarted,
 	})
 }
 
 //PlayerLeavesEvent messages that a player left
 type PlayerLeavesEvent struct {
-	Player *models.PublicPlayer `json:"player"`
-	Index  int                  `json:"index"`
+	Player      *models.PublicPlayer `json:"player"`
+	Index       int                  `json:"index"`
+	PlayerCount int `json:"playerCount"`
+	GameStarted bool                 `json:"gameStarted"`
 }
 
-func NewPlayerLeavesEvent(player *models.PublicPlayer, i int) *models.Event {
+func NewPlayerLeavesEvent(player *models.PublicPlayer, i, playerCount int, gameStarted bool) *models.Event {
 	return models.NewEvent(PLAYER_LEAVE, &PlayerLeavesEvent{
-		Player: player,
-		Index:  i,
+		Player:      player,
+		Index:       i,
+		PlayerCount: playerCount,
+		GameStarted: gameStarted,
 	})
 }
 
@@ -80,13 +86,15 @@ type PlayerJoinEvent struct {
 	Player      *models.PublicPlayer `json:"player"`
 	Index       int                  `json:"index"`
 	PlayerCount int                  `json:"playerCount"`
+	GameStarted bool                 `json:"gameStarted"`
 }
 
 //NewPlayerJoinEvent creates a player join event for all other players to receive. The joining player receives a join success message
-func NewPlayerJoinEvent(player *models.PublicPlayer, index, playerCount int) *models.Event {
+func NewPlayerJoinEvent(player *models.PublicPlayer, index, playerCount int, gameStarted bool) *models.Event {
 	return models.NewEvent(PLAYER_JOIN, &PlayerJoinEvent{
 		Player:      player,
 		Index:       index,
 		PlayerCount: playerCount,
+		GameStarted: gameStarted,
 	})
 }

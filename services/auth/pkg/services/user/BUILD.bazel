@@ -13,8 +13,8 @@ go_library(
     deps = [
         "//pkg/models",
         "//pkg/protos",
-        "@com_github_go_ozzo_ozzo_validation//:go_default_library",
-        "@com_github_go_ozzo_ozzo_validation_v4//is:go_default_library",
-        "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
+        "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
+        "@com_github_go_ozzo_ozzo_validation_v4//is",
+        "@org_mongodb_go_mongo_driver//bson/primitive",
     ],
 )

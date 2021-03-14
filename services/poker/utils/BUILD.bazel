@@ -10,7 +10,10 @@ go_library(
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils",
     visibility = ["//visibility:public"],
-    deps = ["//services/poker/models"],
+    deps = [
+        "//pkg/log",
+        "//services/poker/models",
+    ],
 )
 
 go_test(

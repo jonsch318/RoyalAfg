@@ -88,6 +88,10 @@ func (r *Round) RecursiveAction(options *ActionRoundOptions){
 		time.Sleep(1 * time.Second)
 	}else {
 		log.Logger.Infof("Player folded during call")
+		options.SuccessfulAction = &events.Action{
+			Action:  events.FOLD,
+			Payload: moneyUtils.Zero(),
+		}
 	}
 
 
@@ -187,6 +191,7 @@ func (r *Round) Action(options *ActionRoundOptions) {
 		err := r.Bank.PerformRaise(options.PlayerId, options.Payload)
 		if err == nil {
 			options.Success = true
+			options.CanCheck = false
 			options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
 			return
 		}

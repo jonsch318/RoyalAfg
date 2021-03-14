@@ -1,12 +1,12 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "money",
     srcs = [
         "convert.go",
         "currency.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_rhymond_go_money//:go_default_library"],
+    deps = ["@com_github_rhymond_go_money//:go-money"],
 )

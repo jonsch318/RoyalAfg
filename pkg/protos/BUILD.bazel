@@ -24,6 +24,6 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",
-        "@org_mongodb_go_mongo_driver//bson/primitive:go_default_library",
+        "@org_mongodb_go_mongo_driver//bson/primitive",
     ],
 )

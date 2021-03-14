@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Lobby from "./join/lobby";
 import Chip from "./join/chip";
 import PropTypes from "prop-types";

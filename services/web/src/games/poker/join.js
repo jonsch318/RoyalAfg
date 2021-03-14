@@ -3,24 +3,29 @@ import PropTypes from "prop-types";
 import { PokerInfoContext } from "../../pages/games/poker";
 import CurrencyInput from "react-currency-input-field";
 import { useRouter } from "next/router";
+import { useSnackbar } from "notistack";
 
-const GetClass = (classes, v, setLobby) => {
+//Selects the class in that the buy in falls. Returns true if a warning should be displayed
+const GetClass = (classes, v, setLobby, lobby) => {
     let val = v * 100;
     for (let i = 0; i < classes.length; i++) {
         if (classes[i].min < val && classes[i].max > val) {
-            console.log("Set Lobby: ", i);
-            setLobby({ class: classes[i], classIndex: i, changeClass: true });
-            return i;
+            if (i !== lobby.classIndex) {
+                setLobby({ class: classes[i], classIndex: i, changeClass: true }); //selected lobby is in a different class.
+                return true;
+            }
+            return false;
         }
     }
     setLobby({ class: {}, classIndex: -1 });
-    return -1;
+    return v !== 0;
 };
 
 const Join = ({ onJoin, classes }) => {
     const { lobby, setLobby } = useContext(PokerInfoContext);
     const [buyIn, setBuyIn] = useState();
     const { locale } = useRouter();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (lobby?.class?.min) {
@@ -41,7 +46,7 @@ const Join = ({ onJoin, classes }) => {
             class: lobby.classIndex
         };
         console.log(values);
-        onJoin(values);
+        if (lobby) onJoin(values);
     };
 
     if (!classes || !classes.length) {
@@ -60,8 +65,12 @@ const Join = ({ onJoin, classes }) => {
                     intlConfig={{ locale: locale, currency: "USD" }}
                     value={buyIn}
                     onValueChange={(val) => {
-                        GetClass(classes, parseFloat(val), setLobby);
                         setBuyIn(val);
+                    }}
+                    onBlur={() => {
+                        if (GetClass(classes, parseFloat(buyIn), setLobby, lobby)) {
+                            enqueueSnackbar("Entered Buy In was invalid", { variant: "warning" });
+                        }
                     }}
                     allowNegativeValue={false}
                 />

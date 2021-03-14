@@ -2,6 +2,7 @@ package lobby
 
 import (
 	"errors"
+	"runtime/debug"
 
 	"github.com/spf13/viper"
 
@@ -41,6 +42,7 @@ func (l *Lobby) Join(player *models.Player) error {
 
 	//Add player to queue
 	l.PlayerQueue.Enqueue(player)
+	l.SetPlayerCountLabel()
 
 	l.FillLobbyPosition()
 
@@ -89,9 +91,9 @@ func (l *Lobby) FillLobbyPosition() {
 	public.SetBuyIn(l.Bank.GetPlayerWallet(public.ID))
 
 	//Send to currently active players. The joining player is not included. He will get a different confirmation
-	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players)))
+	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players), l.GameStarted))
 	//Send join confirmation to player
-	err := utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn))
+	err := utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn, l.GameStarted))
 	if err != nil {
 		log.Logger.Infof("Could not send to player")
 		if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
@@ -114,6 +116,13 @@ func (l *Lobby) FillLobbyPosition() {
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.
 func (l *Lobby) WatchPlayerConnClose(playerIndex int) {
+	defer func() {
+		//Player removal was and is the most crashed situation of the game.
+		if r := recover(); r != nil {
+			log.Logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+		}
+	}()
+
 	//wait for closing message
 	_, ok := <-l.Players[playerIndex].Close
 
@@ -162,7 +171,7 @@ func (l *Lobby) PlayerRemoval() {
 	}
 
 	//Send leave event
-	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i))
+	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i,len(l.Players), l.GameStarted))
 
 	l.PlayerRemoval()
 }

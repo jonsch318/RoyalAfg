@@ -2,7 +2,7 @@ import { JOIN } from "../events/constants";
 import { SendCreateEvent, SendEvent } from "../events/event";
 
 class Game {
-    constructor(state, ticket, onClose) {
+    constructor(state, ticket, onClose, csrf) {
         this.state = state;
         this.ticket = ticket;
         this.onClose = onClose;

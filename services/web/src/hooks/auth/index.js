@@ -88,13 +88,12 @@ const _useSessionHook = (session) => {
     return [data, loading];
 };
 
-export const signIn = async (args = {}) => {
-    console.log("LOGIN: ", `${_apiBaseUrl()}/login`);
-    console.log("signin: ", args);
+export const signIn = async (args = {}, csrfToken = "") => {
     const options = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
         },
         credentials: "include",
         mode: "cors",
@@ -105,13 +104,14 @@ export const signIn = async (args = {}) => {
     return res;
 };
 
-export const register = async (args = {}) => {
+export const register = async (args = {}, csrfToken = "") => {
     console.log("REGISTER: ", `${_apiBaseUrl()}/register`);
-    console.log("regiser args: ", args);
+    console.log("regiser args: ", args, " CSRF: ", csrfToken);
     const options = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
         },
         credentials: "include",
         mode: "cors",

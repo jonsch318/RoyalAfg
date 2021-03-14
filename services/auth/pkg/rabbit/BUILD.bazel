@@ -1,15 +1,15 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "rabbit",
     srcs = ["rabbit.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/config:go_default_library",
-        "//pkg/errors:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-        "@com_github_streadway_amqp//:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "//pkg/config",
+        "//pkg/errors",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_streadway_amqp//:amqp",
+        "@org_uber_go_zap//:zap",
     ],
 )

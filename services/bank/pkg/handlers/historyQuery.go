@@ -21,7 +21,6 @@ func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 	i := 0
 
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
-	log.Logger.Debugw("Claims decoded", claims)
 	history, err := h.historyReadModel.GetAccountHistory(claims.ID, i, 25)
 
 	if err != nil {
@@ -29,8 +28,6 @@ func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, err.Error(), http.StatusNotFound)
 		return
 	}
-
-	log.Logger.Debugw("History Query sending", "history", history)
 
 	_ = json.NewEncoder(rw).Encode(&HistoryQueryDto{
 		UserID:  claims.ID,

@@ -9,9 +9,9 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/log",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_mitchellh_go_homedir//:go_default_library",
-        "@in_gopkg_natefinch_lumberjack_v2//:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
-        "@org_uber_go_zap//zapcore:go_default_library",
+        "@com_github_mitchellh_go_homedir//:go-homedir",
+        "@in_gopkg_natefinch_lumberjack_v2//:lumberjack_v2",
+        "@org_uber_go_zap//:zap",
+        "@org_uber_go_zap//zapcore",
     ],
 )

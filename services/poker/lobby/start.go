@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 
 	"github.com/spf13/viper"
 )
@@ -17,6 +20,12 @@ import (
 func (l *Lobby) Start() {
 	// SETUP
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+			}
+		}()
+
 		for l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 			log.Logger.Debug("Start timer")
 
@@ -61,12 +70,6 @@ func (l *Lobby) Start() {
 
 			log.Logger.Debugf("Dealer chosen %v", l.dealer)
 
-			for i := range l.Players {
-				// Set player states to active
-				l.Players[i].Active = true
-			}
-
-			log.Logger.Debugf("Set Player to active state")
 
 			l.lock.Lock()
 			l.GameStarted = true
@@ -96,5 +99,8 @@ func (l *Lobby) Start() {
 				}
 			}
 		}
+
+		//Lobby has to not enough players to continue. Returning to a waiting state
+		utils.SendToAll(l.Players, events.NewLobbyPauseEvent(l.PublicPlayers, l.Count()))
 	}()
 }

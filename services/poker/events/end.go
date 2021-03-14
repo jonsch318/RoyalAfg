@@ -13,3 +13,15 @@ func NewGameEndEvent(winners []models.PublicPlayer, shares string) *models.Event
 		Shares:   shares,
 	})
 }
+
+type LobbyPause struct {
+	Players []models.PublicPlayer `json:"players"`
+	PlayerCount int `json:"playerCount"`
+}
+
+func NewLobbyPauseEvent(players []models.PublicPlayer, playerCount int) *models.Event  {
+	return models.NewEvent(LOBBY_PAUSE, &LobbyPause{
+		Players: players,
+		PlayerCount: playerCount,
+	})
+}

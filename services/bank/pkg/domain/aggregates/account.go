@@ -18,10 +18,10 @@ type Account struct {
 	Balance *money.Money
 }
 
-func NewAccount(id string) *Account{
+func NewAccount(id string) *Account {
 	return &Account{
 		AggregateBase: ycq.NewAggregateBase(id),
-		Balance: currency.Zero(),
+		Balance:       currency.Zero(),
 	}
 }
 
@@ -38,6 +38,7 @@ func (a *Account) Deposit(amount *money.Money, gameId, roundId string, time time
 	if !amount.IsPositive() {
 		return errors.New("the amount has to be greater than 0")
 	}
+	prev := a.Balance.Display()
 	a.Apply(ycq.NewEventMessage(a.AggregateID(), &events.Deposited{
 		ID:      a.AggregateID(),
 		Amount:  amount,
@@ -45,18 +46,16 @@ func (a *Account) Deposit(amount *money.Money, gameId, roundId string, time time
 		RoundId: roundId,
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
-	log.Logger.Debugw("Deposit operation success","id", a.AggregateID(), "amount", amount.Display())
+	log.Logger.Debugw("Deposit operation success", "id", a.AggregateID(), "amount", amount.Display(), "total", a.Balance.Display(), "previousTotal", prev)
 
 	return nil
 }
 
 func (a *Account) Withdraw(amount *money.Money, gameId, roundId string, time time.Time) error {
-
-
 	if !amount.IsPositive() {
 		return errors.New("the amount which is to withdraw has to be greater than 0")
 	}
-
+	prev := a.Balance.Display()
 	if res, err := amount.GreaterThan(a.Balance); res || err != nil {
 		if err != nil {
 			log.Logger.Errorw("Error during comparison", "error", err)
@@ -72,7 +71,7 @@ func (a *Account) Withdraw(amount *money.Money, gameId, roundId string, time tim
 		Time:    time,
 	}, ycq.Int(a.CurrentVersion())), true)
 
-	log.Logger.Debugw("Withdraw operation success","id", a.AggregateID(), "amount", amount.Display())
+	log.Logger.Debugw("Withdraw operation success", "id", a.AggregateID(), "amount", amount.Display(), "total", a.Balance.Display(), "previousTotal", prev)
 
 	return nil
 }

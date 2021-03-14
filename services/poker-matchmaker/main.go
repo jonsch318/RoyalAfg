@@ -62,8 +62,8 @@ func main() {
 	ticketHandler := handlers.NewTicket(logger, rdb, agonesClient, manager)
 
 	r := mux.NewRouter()
-	r.Handle("/api/poker/ticket", mw.RequireAuth(ticketHandler.GetTicketWithParams)).Methods(http.MethodGet).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
-	r.Handle("/api/poker/ticket/{id}", mw.RequireAuth(ticketHandler.GetTicketWithID)).Methods(http.MethodGet).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
+	r.Handle("/api/poker/ticket", mw.RequireAuth(ticketHandler.GetTicketWithParams)).Methods(http.MethodPost).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
+	r.Handle("/api/poker/ticket/{id}", mw.RequireAuth(ticketHandler.GetTicketWithID)).Methods(http.MethodPost).Queries("class", "{class:[0-9]+}", "buyIn", "{buyIn:[0-9]+}")
 	r.HandleFunc("/api/poker/pokerinfo", ticketHandler.PokerInfo).Methods(http.MethodGet)
 	r.HandleFunc("/api/poker/classinfo", ticketHandler.ClassInfo).Methods(http.MethodGet)
 	r.Handle("/metrics", promhttp.Handler())

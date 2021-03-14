@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/models",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_go_ozzo_ozzo_validation//:go_default_library",
-        "@com_github_go_ozzo_ozzo_validation//is:go_default_library",
-        "@com_github_kamva_mgm//:go_default_library",
+        "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
+        "@com_github_go_ozzo_ozzo_validation//is",
+        "@com_github_kamva_mgm//:mgm",
     ],
 )

@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "lobby",
     srcs = [
         "classes.go",
         "connect.go",
@@ -14,11 +14,12 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/poker/models:go_default_library",
-        "@com_github_go_redis_redis_v8//:go_default_library",
-        "@dev_agones_agones//pkg/apis/allocation/v1:go_default_library",
-        "@dev_agones_agones//pkg/client/clientset/versioned:go_default_library",
-        "@io_k8s_apimachinery//pkg/apis/meta/v1:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "//pkg/log",
+        "//pkg/poker/models",
+        "@com_github_go_redis_redis_v8//:redis",
+        "@dev_agones_agones//pkg/apis/allocation/v1:allocation",
+        "@dev_agones_agones//pkg/client/clientset/versioned",
+        "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",
+        "@org_uber_go_zap//:zap",
     ],
 )

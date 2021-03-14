@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "config",
     srcs = [
         "constants.go",
         "defaults.go",
@@ -11,9 +11,9 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/config",
     visibility = ["//visibility:public"],
     deps = [
-        "@com_github_mitchellh_go_homedir//:go_default_library",
-        "@com_github_spf13_pflag//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "@com_github_mitchellh_go_homedir//:go-homedir",
+        "@com_github_spf13_pflag//:pflag",
+        "@com_github_spf13_viper//:viper",
+        "@org_uber_go_zap//:zap",
     ],
 )

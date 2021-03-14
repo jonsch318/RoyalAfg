@@ -1,9 +1,9 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "interfaces",
     srcs = ["gameSearch.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/interfaces",
     visibility = ["//visibility:public"],
-    deps = ["//services/search/pkg/dto:go_default_library"],
+    deps = ["//services/search/pkg/dto"],
 )

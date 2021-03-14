@@ -33,17 +33,17 @@ const Index: FC = () => {
                                         delay: 0.1
                                     }
                                 }}>
-                                <h1 className="text-8xl text-center z-50 my-44">Royalafg</h1>
+                                <h1 className="md:text-8xl text-7xl text-center z-50 md:my-44 mt-16 mb-24">Royalafg</h1>
                             </motion.div>
                         </div>
 
-                        <div className="flex justify-center items-center mt-52 mb-64">
+                        <div className="flex justify-center items-center mt-52 md:mb-64 mb-44">
                             <Link href={session ? "/game" : "/auth/register"}>
                                 <motion.button
                                     whileHover={{ scale: 1.15, transition: { duration: 0.2, ease: "easeInOut" } }}
                                     initial={{ y: 50 }}
                                     animate={{ y: 0, transition: { duration: 0.4, ease: "backIn" } }}
-                                    className="my-auto px-24 py-2 bg-black text-white hover:bg-blue-600 transition-colors  rounded-md text-2xl">
+                                    className="my-auto px-24 py-2 bg-black text-white hover:bg-blue-600 transition-colors  rounded-md md:text-2xl text-lg">
                                     <span>{session ? f("PlayAuthenticated") : f("PlayUnauthenticated")}</span>
                                 </motion.button>
                             </Link>
@@ -51,8 +51,8 @@ const Index: FC = () => {
                     </div>
                     <article>
                         <h1 className="font-sans text-4xl font-semibold text-center">{f("WelcomeHeader")}</h1>
-                        <div className="grid grid-cols-2 px-32 my-12">
-                            <Image src="/index/play.jpg" alt="Play" className="rounded-l-lg" width="500" height="500" />
+                        <div className="grid md:grid-cols-2 grid-cols-1 md:px-32 px-8 my-12">
+                            <Image src="/index/play.jpg" alt="Play" className="rounded-l-lg" width="500px" height="400px" />
                             <div className="p-12 bg-gray-200 rounded-r-lg">
                                 <p className="text-center">{f("WelcomeArticle")}</p>
                             </div>

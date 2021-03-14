@@ -11,6 +11,9 @@ import Information from "../../widgets/auth/information";
 import { useSnackbar } from "notistack";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { getCSRF } from "../../hooks/auth/csrf";
+import { router } from "next/client";
 
 export type RegisterDto = {
     username: string;
@@ -38,7 +41,16 @@ function getStepContent(step: number, handleNext: () => void, handleBack: () => 
 
 const defaultDto = { username: "", password: "", email: "", fullName: "", birthdate: new Date(), acceptTerms: false };
 
-const Register: FC = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const csrf = await getCSRF(context);
+    return {
+        props: {
+            csrf: csrf
+        }
+    };
+};
+
+const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set<number>());
     const steps = getSteps();
@@ -77,16 +89,22 @@ const Register: FC = () => {
 
     const onSubmit = (): Promise<void> => {
         console.log("Register");
-        return registerAccount({
-            username: dto.username,
-            password: dto.password,
-            email: dto.email,
-            birthdate: moment(dto.birthdate).format(),
-            fullName: dto.fullName
-        }).then((res) => {
+        return registerAccount(
+            {
+                username: dto.username,
+                password: dto.password,
+                email: dto.email,
+                birthdate: moment(dto.birthdate).format(),
+                fullName: dto.fullName
+            },
+            csrf
+        ).then((res) => {
             if (res.ok) {
                 enqueueSnackbar("Successfully Registered", { variant: "success" });
-                Router.reload();
+                console.log("Refreshing: ", router.asPath);
+                if (res.ok && typeof window !== undefined) {
+                    window.location.href = "/";
+                }
             } else {
                 enqueueSnackbar("Something went wrong! Error code [" + res.status + "] " + res.statusText, { variant: "error" });
                 handleReset();

@@ -15,8 +15,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//services/poker/models",
-        "//services/poker/money:go_default_library",
-        "@com_github_mitchellh_mapstructure//:go_default_library",
-        "@com_github_rhymond_go_money//:go_default_library",
+        "//services/poker/money",
+        "@com_github_mitchellh_mapstructure//:mapstructure",
+        "@com_github_rhymond_go_money//:go-money",
     ],
 )

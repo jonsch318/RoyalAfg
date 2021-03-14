@@ -14,22 +14,21 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )
 
-
 type AccountBalanceQuery struct {
 	accounts map[string]*money.Money
-	repo *repositories.Account
+	repo     *repositories.Account
 }
 
-func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery  {
+func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery {
 	return &AccountBalanceQuery{
 		accounts: make(map[string]*money.Money),
-		repo: repo,
+		repo:     repo,
 	}
 }
 
-func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
+func (q *AccountBalanceQuery) Handle(message ycq.EventMessage) {
 
-	log.Logger.Debugf("Read Model handle %v", message)
+	log.Logger.Debugf("Balance Read Model handle invoked")
 
 	switch ev := message.Event().(type) {
 	case *events.AccountCreated:
@@ -42,7 +41,7 @@ func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 			log.Logger.Errorf("the account was not created")
 			return
 		}
-		log.Logger.Debugf("Deposited [%v] %v", message.AggregateID(), ev.Amount)
+		log.Logger.Debugf("Deposited [%v] %v", message.AggregateID(), ev.Amount.Display())
 		res, err := a.Add(ev.Amount)
 		if err != nil {
 			log.Logger.Errorw("balance read model could not handle event", "error", err)
@@ -52,7 +51,7 @@ func (q *AccountBalanceQuery) Handle(message ycq.EventMessage)  {
 
 	case *events.Withdrawn:
 		a, err := q.GetAccountBalance(message.AggregateID())
-		if err != nil{
+		if err != nil {
 			log.Logger.Debugf("the account was not created")
 			return
 		}
@@ -76,6 +75,8 @@ func (q *AccountBalanceQuery) GetAccountBalance(id string) (*money.Money, error)
 			return nil, errors.New("the account with the given id does not exist")
 		}
 
+		log.Logger.Warnf("Loaded Unloaded Aggregate [%s]", id)
+		q.accounts[id] = item.Balance
 		return item.Balance, nil
 	}
 

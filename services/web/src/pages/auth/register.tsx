@@ -8,6 +8,8 @@ import { formatTitle } from "../../utils/title";
 import PasswordBox from "../../components/form/passwordBox";
 import { useSnackbar } from "notistack";
 import Checkbox from "@material-ui/core/Checkbox";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { getCSRF } from "../../hooks/auth/csrf";
 
 type RegisterDto = {
     username: string;
@@ -17,21 +19,36 @@ type RegisterDto = {
     fullName: string;
 };
 
-const Register: FC = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const csrf = await getCSRF(context);
+    return {
+        props: {
+            csrf: csrf
+        }
+    };
+};
+
+const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const { register, handleSubmit, errors } = useForm<RegisterDto>();
     const { enqueueSnackbar } = useSnackbar();
 
     const onSubmit = async (data) => {
         console.log("Register");
-        const res = await registerAccount({
-            username: data.username,
-            password: data.password,
-            email: data.email,
-            birthdate: new Date(data.birthdate).getTime() / 1000,
-            fullName: data.fullName
-        });
-        if (!res.ok) {
+        const res = await registerAccount(
+            {
+                username: data.username,
+                password: data.password,
+                email: data.email,
+                birthdate: new Date(data.birthdate).getTime() / 1000,
+                fullName: data.fullName
+            },
+            csrf
+        );
+        if (res.ok) {
             enqueueSnackbar("Successfully Registered", { variant: "success" });
+            if (typeof window !== undefined) {
+                window.location.href = "/";
+            }
         }
     };
 

@@ -5,5 +5,5 @@ go_library(
     srcs = ["config.go"],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs/config",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_spf13_viper//:go_default_library"],
+    deps = ["@com_github_spf13_viper//:viper"],
 )

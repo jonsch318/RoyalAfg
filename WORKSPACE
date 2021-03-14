@@ -1,4 +1,4 @@
-workspace(name = "go_monorepo")
+workspace(name = "Royalafg")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -31,14 +31,72 @@ load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 protobuf_deps()
 
-# Docker rules
+# Go rules
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "7c10271940c6bce577d51a075ae77728964db285dac0a46614a7934dc34303e6",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.26.0/rules_go-v0.26.0.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.26.0/rules_go-v0.26.0.tar.gz",
+    ],
+)
 
-# Download the rules_docker repository at release v0.14.3
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.16")
+
+http_archive(
+    name = "bazel_gazelle",
+    sha256 = "62ca106be173579c0a167deb23358fdfe71ffa1e4cfdddf5582af26520f1c66f",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/v0.23.0/bazel-gazelle-v0.23.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.23.0/bazel-gazelle-v0.23.0.tar.gz",
+    ],
+)
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+
+gazelle_dependencies()
+
+load("//:deps.bzl", "go_dependencies")
+
+#gazelle:repository_macro deps.bzl%go_dependencies
+go_dependencies()
+
+#go_repository(
+#    name = "io_k8s_api",
+#    build_file_proto_mode = "disable_global",
+#    commit = "a191abe0b71e00ce4cde58af8002aa4c1a8bb068",
+#    importpath = "k8s.io/api",
+#)
+
+#Docker
+
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
     strip_prefix = "rules_docker-0.15.0",
     urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.15.0/rules_docker-v0.15.0.tar.gz"],
+)
+
+# Load the macro that allows you to customize the docker toolchain configuration.
+load(
+    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure = "toolchain_configure",
+)
+
+docker_toolchain_configure(
+    name = "docker_config",
+    # Replace this with an absolute path to a directory which has a custom docker
+    # client config.json. Note relative paths are not supported.
+    # Docker allows you to specify custom authentication credentials
+    # in the client configuration JSON file.
+    # See https://docs.docker.com/engine/reference/commandline/cli/#configuration-files
+    # for more details.
+    client_config = "/home/jonas/.docker",
+    docker_path = "/usr/bin/docker",
 )
 
 load(
@@ -48,61 +106,18 @@ load(
 
 container_repositories()
 
-load(
-    "@io_bazel_rules_docker//repositories:go_repositories.bzl",
-    container_go_deps = "go_deps",
+load("@io_bazel_rules_docker//container:pull.bzl", "container_pull")
+
+container_pull(
+    name = "alpine_linux_amd64",
+    registry = "index.docker.io",
+    repository = "library/alpine",
+    tag = "3.8",
 )
-
-container_go_deps()
-
-
-
 
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",
 )
+
 _go_image_repos()
-
-
-# Go rules
-http_archive(
-    name = "io_bazel_rules_go",
-    sha256 = "6f111c57fd50baf5b8ee9d63024874dd2a014b069426156c55adbf6d3d22cb7b",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.25.0/rules_go-v0.25.0.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.25.0/rules_go-v0.25.0.tar.gz",
-    ],
-)
-
-http_archive(
-    name = "bazel_gazelle",
-    sha256 = "b85f48fa105c4403326e9525ad2b2cc437babaa6e15a3fc0b1dbab0ab064bc7c",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/v0.22.2/bazel-gazelle-v0.22.2.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.22.2/bazel-gazelle-v0.22.2.tar.gz",
-    ],
-)
-
-load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-
-go_rules_dependencies()
-
-go_register_toolchains()
-
-gazelle_dependencies()
-
-load("//:deps.bzl", "go_dependencies")
-
-# gazelle:repository_macro deps.bzl%go_dependencies
-go_dependencies()
-
-load("@bazel_gazelle//:deps.bzl", "go_repository")
-
-go_repository(
-    name = "io_k8s_api",
-    build_file_proto_mode = "disable_global",
-    commit = "a191abe0b71e00ce4cde58af8002aa4c1a8bb068",
-    importpath = "k8s.io/api",
-)

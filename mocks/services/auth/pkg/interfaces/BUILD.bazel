@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "interfaces",
     srcs = [
         "AuthenticationService.go",
         "UserService.go",
@@ -11,6 +11,6 @@ go_library(
     deps = [
         "//pkg/models",
         "//services/auth/pkg/dto",
-        "@com_github_stretchr_testify//mock:go_default_library",
+        "@com_github_stretchr_testify//mock",
     ],
 )

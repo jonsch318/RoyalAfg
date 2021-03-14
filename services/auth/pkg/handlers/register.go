@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
@@ -31,6 +32,7 @@ import (
 // 	Responses:
 // 		default: ErrorResponse
 //		400: ErrorResponse
+//		403: ErrorResponse
 //		422: ValidationErrorResponse
 //		500: ErrorResponse
 //		200: UserResponse
@@ -39,6 +41,12 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
+
+	if err := mw.ValidateCSRF(r); err != nil {
+		h.l.Errorw("could not validate csrf token", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		return
+	}
 
 	registerDto := &dto.RegisterDto{}
 	err := FromJSON(registerDto, r.Body)
@@ -101,7 +109,13 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
 		return
 	}
-	h.Rabbit.PublishCommand(command.EventType, buf.Bytes())
+	err = h.Rabbit.PublishCommand(command.EventType, buf.Bytes())
+
+	if err != nil {
+		h.l.Errorw("Could not publish command", "error", err)
+		responses.JSONError(rw, &responses.ErrorResponse{Error: "Could not publish command to rabbitmq"}, http.StatusInternalServerError)
+		return
+	}
 
 	err = ToJSON(dto.NewUserDTO(user), rw)
 	if err != nil {

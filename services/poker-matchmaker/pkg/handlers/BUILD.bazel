@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "go_default_library",
+    name = "handlers",
     srcs = [
         "classes.go",
         "handler.go",
@@ -11,17 +11,18 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/dtos:go_default_library",
-        "//pkg/errors:go_default_library",
+        "//pkg/dtos",
+        "//pkg/errors",
         "//pkg/mw",
-        "//pkg/poker/pokerConfig:go_default_library",
-        "//pkg/poker/ticketToken:go_default_library",
-        "//services/poker-matchmaker/pkg/lobby:go_default_library",
-        "//services/poker-matchmaker/serviceconfig:go_default_library",
-        "@com_github_go_redis_redis_v8//:go_default_library",
-        "@com_github_gorilla_mux//:go_default_library",
-        "@com_github_spf13_viper//:go_default_library",
-        "@dev_agones_agones//pkg/client/clientset/versioned:go_default_library",
-        "@org_uber_go_zap//:go_default_library",
+        "//pkg/poker/pokerConfig",
+        "//pkg/poker/ticketToken",
+        "//pkg/responses",
+        "//services/poker-matchmaker/pkg/lobby",
+        "//services/poker-matchmaker/serviceconfig",
+        "@com_github_go_redis_redis_v8//:redis",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_spf13_viper//:viper",
+        "@dev_agones_agones//pkg/client/clientset/versioned",
+        "@org_uber_go_zap//:zap",
     ],
 )

@@ -80,8 +80,11 @@ class Player extends PIXI.Container {
             ...this.options,
             ...options
         };
+        if (!this.playerState) {
+            return;
+        }
 
-        this.usernameLabel.text = this.playerState.username;
+        this.usernameLabel.text = this.playerState?.username;
         this.usernameLabel.style = {
             fontFamily: this.options.fontFamily,
             fontSize: this.options.fontSize,
@@ -100,7 +103,7 @@ class Player extends PIXI.Container {
             this.dealerButton.visible = true;
         }
 
-        this.buyInLabel.text = this.playerState.buyIn;
+        this.buyInLabel.text = this.playerState?.buyIn;
         this.buyInLabel.style = {
             fontFamily: this.options.fontFamily,
             fontSize: this.options.fontSize,
@@ -108,7 +111,7 @@ class Player extends PIXI.Container {
         };
         this.buyInLabel.pivot.set(this.buyInLabel.width, 0);
 
-        this.betLabel.text = this.playerState.bet;
+        this.betLabel.text = this.playerState?.bet;
         this.betLabel.style = {
             fontFamily: this.options.fontFamily,
             fontSize: this.options.fontSize,
@@ -121,11 +124,11 @@ class Player extends PIXI.Container {
         this.avatar.drawCircle(this.options.avatarRadius, this.options.avatarRadius, this.options.avatarRadius);
         this.avatar.endFill();
 
-        if (this.playerState.cards.length <= 0) {
+        if (this.playerState?.cards.length <= 0) {
             this.board.clear();
         } else {
             // updateCards
-            this.board.pushOrUpdate(this.playerState.cards);
+            this.board.pushOrUpdate(this.playerState?.cards);
         }
 
         this.calcWidth = this.options.width - 2 * this.options.marginX;
@@ -146,7 +149,7 @@ class Player extends PIXI.Container {
             this.options.avatarRadius + this.options.marginX
         );
 
-        if (this.playerState.waiting) {
+        if (this.playerState?.waiting) {
             this.waiting.lineStyle(4, 0x000000);
             this.waiting.arc(this.options.avatarRadius, this.options.avatarRadius, this.options.avatarRadius, 0, Math.PI);
             this.waiting.position.set(this.avatar.position.x + this.options.avatarRadius, this.avatar.position.y + this.options.avatarRadius);
@@ -162,7 +165,7 @@ class Player extends PIXI.Container {
         this.background.drawRoundedRect(0, 0, this.options.width, this.topRow.height + 3 * this.options.marginY + this.board.height, 10);
         this.background.endFill();
 
-        if (!this.playerState.in) {
+        if (!this.playerState?.in) {
             this.background.clear();
             this.background.beginFill(0x000000, 0.25);
             this.background.drawRoundedRect(0, 0, this.options.width, this.topRow.height + 3 * this.options.marginY + this.board.height, 10);
