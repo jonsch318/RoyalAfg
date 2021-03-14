@@ -30,7 +30,6 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	log.Logger.Debugf("Start called reseting bank and initializing")
 
 	//Initializing start
-	r.Bank.Reset()
 	r.Dealer = dealer
 	r.Players = players
 	r.InCount = byte(len(players))
@@ -48,7 +47,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		if r.Players[i].ID != r.PublicPlayers[i].ID {
 			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
 		}
-		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.Pot.Display())); err != nil {
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.GetPot())); err != nil {
 			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
 			_ = r.Leave(r.Players[i].ID)
 		}

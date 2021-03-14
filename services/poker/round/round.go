@@ -14,7 +14,7 @@ type Round struct {
 	//Players includes all the Players who have started this hand. After a fold the player is still included
 	Players         []models.Player
 	PublicPlayers   []models.PublicPlayer
-	Bank            *bank.Bank
+	Bank            bank.Interface
 	Board           [5]models.Card
 	HoleCards       map[string][2]models.Card
 	SmallBlind      *money.Money
@@ -26,10 +26,10 @@ type Round struct {
 }
 
 //NewHand creates a new hand and sets the dealer to the next
-func NewHand(b *bank.Bank, smallBlind int) *Round {
+func NewHand(b bank.Interface, smallBlind int) *Round {
 
 	return &Round{
-		Bank:       b,
+		Bank:      b,
 		SmallBlind: moneyUtils.ConvertToIMoney(smallBlind),
 	}
 }

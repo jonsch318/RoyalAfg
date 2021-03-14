@@ -9,8 +9,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 )
 
-//Bet handles the betting process for a given player and Amount
-func (b *Bank) Bet(id string, amount *money.Money) error {
+//bet handles the betting process for a given player and Amount
+func (b *Bank) bet(id string, amount *money.Money) error {
 
 	b.lock.Lock()
 	defer b.lock.Unlock()

@@ -48,18 +48,18 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 
 	//Will send the compressed commands to the rabbitmq message broker, so that the bank service will transact these changes.
 	//We do this this way to add resiliency, so that when this service crashes no money will be lost, because everything is compressed into one command which is published at the end of the game.
-	b.ExecuteQueue()
+	b.executeQueue()
 	b.lock.Unlock()
 
 	b.UpdatePublicPlayerBuyIn(publicPlayers)
 	//Reset Bank values like pot, max bet, player bets etc...
-	b.Reset()
+	b.reset()
 
 	return ret
 }
 
-//Reset resets the state of the Bank for a new round
-func (b *Bank) Reset() {
+//reset resets the state of the Bank for a new round
+func (b *Bank) reset() {
 	log.Logger.Debugf("Reseting bank for a new round")
 	b.lock.Lock()
 	defer b.lock.Unlock()

@@ -42,7 +42,7 @@ func (l *BlockingList) AddBlocking(k int) error {
 	return nil
 }
 
-func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, bank *bank.Bank) []int {
+func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, bank bank.Interface) []int {
 	l.list = nil
 	for j := 1; j <= len(players); j++ {
 		i := (j + k) % len(players)

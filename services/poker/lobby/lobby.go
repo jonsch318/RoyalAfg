@@ -22,7 +22,7 @@ type Lobby struct {
 	PublicPlayers []models.PublicPlayer
 	PlayerQueue   *queue.PlayerQueue
 	RemovalQueue *queue.PlayerQueue
-	Bank          *bank.Bank
+	Bank          bank.Interface
 	round         *round.Round
 	sdk           *sdk.SDK
 	dealer        int
@@ -31,13 +31,13 @@ type Lobby struct {
 }
 
 //NewLobby creates a new lobby object
-func NewLobby(bank *bank.Bank, sdk *sdk.SDK) *Lobby {
+func NewLobby(b bank.Interface, sdk *sdk.SDK) *Lobby {
 	return &Lobby{
 		Players:     make([]models.Player, 0),
 		PublicPlayers: make([]models.PublicPlayer, 0),
 		PlayerQueue: queue.New(),
 		RemovalQueue: queue.New(),
-		Bank:        bank,
+		Bank:        b,
 		dealer:      -1,
 		c:           make(chan bool, 1),
 		sdk:         sdk,

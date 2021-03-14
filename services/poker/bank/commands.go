@@ -9,7 +9,7 @@ import (
 )
 
 
-func (b *Bank) PublishCommand(command *bank.Command) error {
+func (b *Bank) publishCommand(command *bank.Command) error {
 
 	//Fill all fields.
 	command.Lobby = b.LobbyId
@@ -30,8 +30,8 @@ func (b *Bank) PublishCommand(command *bank.Command) error {
 	return nil
 }
 
-//Publishes all commands queued. Usually at the end of the game
-func (b *Bank) ExecuteQueue()  {
+//executeQueue Publishes all commands queued. Usually at the end of the game
+func (b *Bank) executeQueue()  {
 	//This could be done via a command queue, that everything adds to. (Could include more information about games. But this is simpler.
 	for k, val := range b.PlayerBets	 {
 		if val.IsZero(){
@@ -51,6 +51,6 @@ func (b *Bank) ExecuteQueue()  {
 		log.Logger.Debugw("Publishing command", "cmd", cmd)
 
 		//Retry functionality should be implemented here. A crucial peace to send all events to the bank. Add redundancy
-		_ = b.PublishCommand(cmd)
+		_ = b.publishCommand(cmd)
 	}
 }

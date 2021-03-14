@@ -27,7 +27,7 @@ func (r *Round) setBlinds() error {
 			}
 		}
 
-		err := r.Bank.Bet(r.Players[i].ID, r.SmallBlind)
+		err := r.Bank.PerformBlind(r.Players[i].ID, r.SmallBlind)
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in smallBlind %v", err)
@@ -65,7 +65,7 @@ func (r *Round) setBlinds() error {
 		}
 
 		bigBlind := r.SmallBlind.Multiply(2)
-		err := r.Bank.Bet(r.Players[i].ID, bigBlind)
+		err := r.Bank.PerformBlind(r.Players[i].ID, bigBlind)
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in bigBlind")
