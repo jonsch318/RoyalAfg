@@ -8,6 +8,11 @@ import (
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 )
 
+type Interface interface {
+	Leave(id string) error
+	Start(players []models.Player, publicPlayers []models.PublicPlayer, dealer int)
+}
+
 //Round is one game of a session. it results in everybody but one folding or a showdown
 //Probably this could be optimised into multiple structs.
 type Round struct {
@@ -25,8 +30,8 @@ type Round struct {
 	Ended           bool
 }
 
-//NewHand creates a new hand and sets the dealer to the next
-func NewHand(b bank.Interface, smallBlind int) *Round {
+//NewRound creates a new hand and sets the dealer to the next
+func NewRound(b bank.Interface, smallBlind int) *Round {
 
 	return &Round{
 		Bank:      b,
@@ -34,7 +39,7 @@ func NewHand(b bank.Interface, smallBlind int) *Round {
 	}
 }
 
-func (r *Round) WhileNotEnded(f func()) {
+func (r *Round) whileNotEnded(f func()) {
 	if !r.Ended {
 		f()
 	}

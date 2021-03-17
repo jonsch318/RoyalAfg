@@ -60,7 +60,7 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 		return err
 	}
 
-	db.l.Info("Succeded validation")
+	db.l.Info("Succeeded validation")
 
 	err = db.coll.Create(user)
 
@@ -71,6 +71,23 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 	}
 
 	db.l.Info("Inserted new User ", user.Username)
+	return nil
+}
+
+func (db *UserDatabase) UpdateUser(user *models.User) error {
+
+
+	db.l.Debugf("Succeeded validation")
+
+	err := db.coll.Update(user)
+
+	db.l.Infof("User Updated %v", err)
+
+	if err != nil {
+		db.l.Infof("Error during user update %v", err)
+		return err
+	}
+	db.l.Infof("Updated user %v", user.GetID())
 	return nil
 }
 

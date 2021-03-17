@@ -17,7 +17,7 @@ import (
 // Session verifies the session and extends the jwt token if valid.
 // swagger:route GET /api/auth/session session
 //
-// Session verifies the session and extends the jwt token if valid.
+// Session verifies the session and extends the jwt token if valid. This does not perform a user lookup. GET /api/user does this if the session is correct.
 //
 // After verification the extended jwt will be passed as a cookie and the user id and username will be returned
 //	Consumes:

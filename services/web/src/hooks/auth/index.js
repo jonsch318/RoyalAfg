@@ -21,6 +21,7 @@ export const getSession = async ({ req, ctx } = {}) => {
     }
     console.log("AUTH URL: ", _apiBaseUrl());
     try {
+        console.log("Getting");
         const res = await fetch(`${_apiBaseUrl()}/session`, {
             credentials: "include",
             headers: req?.headers.cookie,
@@ -38,9 +39,12 @@ export const getSession = async ({ req, ctx } = {}) => {
 const SessionContext = createContext();
 
 export const useSession = (session) => {
-    const value = useContext(SessionContext);
     //check cache (context)
-    return value === undefined ? _useSessionHook(session) : value;
+    const ctx = useContext(SessionContext);
+    if (ctx) {
+        return ctx;
+    }
+    return _useSessionHook(session);
 };
 
 // Internal hook for getting session from the api.
@@ -56,11 +60,11 @@ const _useSessionHook = (session) => {
                 const currentTime = Math.floor(new Date().getTime() / 1000);
                 const clientSession = __AUTH.session;
 
-                if (clientSession !== undefined && clientMaxAge > 0 && currentTime < clientLastSync + clientMaxAge) {
+                if (clientSession !== undefined && clientSession !== null && clientMaxAge > 0 && currentTime < clientLastSync + clientMaxAge) {
                     return;
                 }
 
-                if (clientSession !== undefined && clientMaxAge === 0) {
+                if (clientSession !== undefined && clientSession !== null && clientMaxAge === 0) {
                     return;
                 }
 
@@ -120,6 +124,11 @@ export const register = async (args = {}, csrfToken = "") => {
     const res = await _fetch(`${_apiBaseUrl()}/register`, options);
     await getSession();
     return res;
+};
+
+export const refreshSession = async () => {
+    console.log("Refreshing Session");
+    __AUTH._getSession();
 };
 
 export const signOut = async () => {

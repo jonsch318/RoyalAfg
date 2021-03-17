@@ -23,7 +23,7 @@ type Lobby struct {
 	PlayerQueue   *queue.PlayerQueue
 	RemovalQueue *queue.PlayerQueue
 	Bank          bank.Interface
-	round         *round.Round
+	round         round.Interface
 	sdk           *sdk.SDK
 	dealer        int
 	c             chan bool
@@ -47,7 +47,7 @@ func NewLobby(b bank.Interface, sdk *sdk.SDK) *Lobby {
 func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int, id string) {
 	l.Class = class
 	l.ClassIndex = classIndex
-	l.round = round.NewHand(l.Bank, class.Blind)
+	l.round = round.NewRound(l.Bank, class.Blind)
 	l.LobbyID = id
 }
 

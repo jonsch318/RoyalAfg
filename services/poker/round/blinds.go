@@ -31,7 +31,7 @@ func (r *Round) setBlinds() error {
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in smallBlind %v", err)
-			_ = r.Fold(r.Players[i].ID)
+			_ = r.fold(r.Players[i].ID)
 			s++
 			continue
 		}
@@ -69,7 +69,7 @@ func (r *Round) setBlinds() error {
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in bigBlind")
-			_ = r.Fold(r.Players[i].ID)
+			_ = r.fold(r.Players[i].ID)
 			s++
 			continue
 		}

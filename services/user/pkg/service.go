@@ -9,6 +9,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers"
+
 	"github.com/gorilla/mux"
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/urfave/negroni"
@@ -34,7 +36,7 @@ import (
 // Start starts the user service
 func Start(logger *zap.SugaredLogger) {
 
-	metrics := metrics.New()
+	metr := metrics.New()
 
 	// Mongodb configuration
 	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(serviceconfig.DatabaseTimeout)}
@@ -58,17 +60,11 @@ func Start(logger *zap.SugaredLogger) {
 	// grpc server config
 	gs := grpc.NewServer()
 
-	userServer := servers.NewUserServer(logger, userDatabase, metrics)
+	userServer := servers.NewUserServer(logger, userDatabase, metr)
 
 	protos.RegisterUserServiceServer(gs, userServer)
 
 	reflection.Register(gs)
-
-	// create a TCP socket for inbound server connections
-	// l, err := net.Listen("tcp4", fmt.Sprintf(":%d", viper.Get(serviceconfig.Port)))
-	// if err != nil {
-	// 	logger.Fatalw("Unable to create listener", "error", err)
-	// }
 
 	l, err := net.Listen("tcp4", fmt.Sprintf(":%d", viper.Get(serviceconfig.Port)))
 	if err != nil {
@@ -78,7 +74,11 @@ func Start(logger *zap.SugaredLogger) {
 	// Start the grpc server
 	utils.StartGrpcGracefully(logger, gs, l)
 
+	userHandler := handlers.NewUserHandler(logger, userDatabase)
+
 	r := mux.NewRouter()
+	r.Handle("/api/user", mw.RequireAuth(userHandler.GetUser)).Methods(http.MethodGet)
+	r.Handle("/api/user", mw.RequireAuth(userHandler.UpdateUser)).Methods(http.MethodPut)
 	r.Handle("/metrics", promhttp.Handler())
 
 	metricsMiddleware := metricsMW.New(metricsMW.Config{

@@ -64,11 +64,11 @@ func (r *Round) actions(preFlop bool) {
 
 	log.Logger.Debug("action round state set")
 
-	r.RecursiveAction(roundState)
+	r.recursiveAction(roundState)
 }
 
-//Fold removes the player with the given id from the active player list
-func (r *Round) Fold(id string) error {
+//fold removes the player with the given id from the active player list
+func (r *Round) fold(id string) error {
 	i, err := r.searchByActiveID(id)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (r *Round) Leave(id string) error {
 	}
 	r.Players[i].Left = true
 	if r.InCount - 1 <= 0 {
-		r.End()
+		r.end()
 	}
-	return r.Fold(id)
+	return r.fold(id)
 }
