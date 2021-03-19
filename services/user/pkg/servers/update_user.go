@@ -15,12 +15,13 @@ import (
 
 func (s *UserServer) UpdateUser(ctx context.Context, m *protos.User) (*protos.User, error) {
 
-	user, err := s.db.FindById(m.GetId())
+	user, err := s.db.FindByUsername(m.GetId())
 
 	if err != nil {
-		s.l.Errorw("User query", "error", err)
-		return nil, status.Error(codes.NotFound, "user with id could not be found")
+		s.l.Errorw("Could not find user", "error", err)
+		return nil, status.Error(codes.NotFound, "The user could not be found")
 	}
+
 
 	if err := validation.Validate(m.Email, validation.Required, is.Email); err == nil {
 		user.Email = m.Email
@@ -36,5 +37,7 @@ func (s *UserServer) UpdateUser(ctx context.Context, m *protos.User) (*protos.Us
 		s.l.Errorw("Error during user update", "error", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+
 	return toMessageUser(user), nil
 }

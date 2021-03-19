@@ -14,6 +14,41 @@ type HistoryQueryDto struct {
 	History []dtos.AccountHistoryEvent `json:"history"`
 }
 
+// HistoryQuery shows the latest transaction history.
+// swagger:response HistoryQueryResponse
+type historyQueryWrapper struct {
+	// The transaction history
+	// in: body
+	Body HistoryQueryDto
+}
+
+// QueryHistory returns the transaction history for the authenticated user.
+// swagger:route POST /api/bank/balance authentication loginUser
+//
+// Query the users history
+//
+// 	The transaction history of a user
+//
+//	Consumes:
+//
+// 	Produces:
+//	-	application/json
+//
+//	Security:
+//	-	api_key
+//
+//	Schemes: http, https
+//
+// 	Responses:
+//	default: ErrorResponse
+//	400: ErrorResponse
+//	422: ValidationErrorResponse
+//	404: ErrorResponse
+//	401: ErrorResponse
+//	403: ErrorResponse
+//	500: ErrorResponse
+//	200: HistoryQueryResponse
+//
 func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 	//vals := r.URL.Query()
 	//i, _ := strconv.Atoi(vals["i"][0])

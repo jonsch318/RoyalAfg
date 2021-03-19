@@ -1,7 +1,11 @@
 package database
 
 import (
+	"context"
 	"errors"
+	"time"
+
+	"github.com/go-redis/cache/v8"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 
@@ -14,10 +18,11 @@ import (
 
 type UserDatabase struct {
 	l    *zap.SugaredLogger
+	userCache *cache.Cache
 	coll *mgm.Collection
 }
 
-func NewUserDatabase(logger *zap.SugaredLogger) *UserDatabase {
+func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDatabase {
 	coll := mgm.Coll(&models.User{})
 
 	logger.Infof("Connected to Collection %v", coll.Name())
@@ -49,6 +54,7 @@ func NewUserDatabase(logger *zap.SugaredLogger) *UserDatabase {
 
 	return &UserDatabase{
 		l:    logger,
+		userCache: userCache,
 		coll: coll,
 	}
 }
@@ -71,12 +77,14 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 	}
 
 	db.l.Info("Inserted new User ", user.Username)
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
+	}
 	return nil
 }
 
 func (db *UserDatabase) UpdateUser(user *models.User) error {
-
-
 	db.l.Debugf("Succeeded validation")
 
 	err := db.coll.Update(user)
@@ -88,6 +96,11 @@ func (db *UserDatabase) UpdateUser(user *models.User) error {
 		return err
 	}
 	db.l.Infof("Updated user %v", user.GetID())
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
+	}
 	return nil
 }
 
@@ -96,9 +109,14 @@ func (db *UserDatabase) DeleteUser(user *models.User) error {
 }
 
 func (db *UserDatabase) FindById(id string) (*models.User, error) {
-	user := &models.User{}
 
-	err := db.coll.FindByID(id, user)
+	user, err := db.GetCache(id)
+	if err != nil {
+		db.l.Debugf("Could not get cache %v", err)
+	}
+
+	user = &models.User{}
+	err = db.coll.FindByID(id, user)
 
 	if err != nil {
 		return nil, err
@@ -143,4 +161,23 @@ func IsDup(err error) bool {
 		}
 	}
 	return false
+}
+
+
+func (db *UserDatabase) SetCache(user *models.User) error {
+	return db.userCache.Set(&cache.Item{
+		Ctx:            context.TODO(),
+		Key:            user.ID.Hex(),
+		Value:          user,
+		TTL:            time.Minute * 5,
+	})
+}
+
+func (db *UserDatabase) GetCache(id string) (*models.User, error) {
+	user := new(models.User)
+	err := db.userCache.Get(context.TODO(), id, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

@@ -23,6 +23,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/serviceconfig"
 
 	"github.com/Kamva/mgm"
+	"github.com/go-redis/cache/v8"
+	"github.com/go-redis/redis/v8"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -55,10 +57,24 @@ func Start(logger *zap.SugaredLogger) {
 	}
 	defer utils.DisconnectClient(logger, client)
 
-	userDatabase := database.NewUserDatabase(logger)
+	redis := redis.NewClient(&redis.Options{
+		Addr:               viper.GetString(config.RedisAddress),
+		Username:           viper.GetString(config.RedisUsername),
+		Password:           viper.GetString(config.RedisPassword),
+	})
+
+	userCache := cache.New(&cache.Options{
+		Redis:        redis,
+		LocalCache:   cache.NewTinyLFU(1000, time.Minute),
+	})
+
+	userDatabase := database.NewUserDatabase(logger, userCache)
 
 	// grpc server config
 	gs := grpc.NewServer()
+
+
+
 
 	userServer := servers.NewUserServer(logger, userDatabase, metr)
 

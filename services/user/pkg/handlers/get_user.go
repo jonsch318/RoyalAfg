@@ -14,6 +14,21 @@ type GetUserResponse struct {
 
 }
 
+// ErrorResponse is a generic error response
+// swagger:response ErrorResponse
+type errorResponseWrapper struct {
+	// The error
+	// in: body
+	Body responses.ErrorResponse
+}
+
+// getUserWrapper returns the current user information.
+// swagger:response UserResponse
+type userResponseWrapper struct {
+	// The user.
+	// in: body
+	Body GetUserResponse
+}
 
 // GetUser returns the authenticated user object
 // swagger:route GET /api/user account getUser

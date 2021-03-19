@@ -10,9 +10,51 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 )
 
-func (h *Account) VerifyAmount(rw http.ResponseWriter, r *http.Request)  {
+// VerifyAmount validates.
+// swagger:response VerifyAmountResponse
+type verifyAmountWrapper struct {
+	// The verification result
+	// in: body
+	Body dtos.VerifyAmount
+}
+
+// ErrorResponse is a generic error response
+// swagger:response ErrorResponse
+type errorResponseWrapper struct {
+	// The error
+	// in: body
+	Body responses.ErrorResponse
+}
+
+// VerifyAmount verifies that the amount can be transacted by the user.
+// swagger:route POST /api/bank/verifyAmount balance verifyAmount
+//
+// VerifyAmount verifies the amount against the given user.
+//
+// This will check the balance of the user and compare the given amount to it.
+//
+//	Consumes:
+//
+// 	Produces:
+//	-	application/json
+//
+//	Security:
+//	-	api_key
+//
+//	Schemes: http, https
+//
+// 	Responses:
+//	default: ErrorResponse
+//	400: ErrorResponse
+//	404: ErrorResponse
+//	401: ErrorResponse
+//	500: ErrorResponse
+//	200: VerifyAmountResponse
+//
+func (h *Account) VerifyAmount(rw http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 
 	userId := values.Get("userId")

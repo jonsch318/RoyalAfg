@@ -1,11 +1,12 @@
 package servers
 
 import (
+	"go.uber.org/zap"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/metrics"
-	"go.uber.org/zap"
 )
 
 type UserServer struct {
