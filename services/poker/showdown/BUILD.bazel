@@ -26,16 +26,3 @@ go_test(
         "@com_github_stretchr_testify//assert",
     ],
 )
-
-go_test(
-    name = "go_default_test",
-    srcs = [
-        "eval_test.go",
-        "rankHand_test.go",
-    ],
-    embed = [":go_default_library"],
-    deps = [
-        "//services/poker/models",
-        "@com_github_stretchr_testify//assert:go_default_library",
-    ],
-)

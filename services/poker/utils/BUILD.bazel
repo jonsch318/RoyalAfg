@@ -21,9 +21,3 @@ go_test(
     srcs = ["cards_test.go"],
     embed = [":utils"],
 )
-
-go_test(
-    name = "go_default_test",
-    srcs = ["cards_test.go"],
-    embed = [":go_default_library"],
-)

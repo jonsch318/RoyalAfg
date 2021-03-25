@@ -7,10 +7,12 @@ go_library(
         "bank.go",
         "currency.go",
         "poker.go",
+        "user.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/models",
         "//pkg/poker/models",
         "@com_github_rhymond_go_money//:go-money",
     ],

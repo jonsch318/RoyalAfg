@@ -6,9 +6,10 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/config",
         "//pkg/log",
         "//pkg/utils",
-        "//services/docs/pkg/docs/config",
+        "//services/docs/pkg/docs/serviceconfig",
         "@com_github_go_openapi_runtime//middleware",
         "@com_github_gorilla_mux//:mux",
         "@com_github_spf13_viper//:viper",

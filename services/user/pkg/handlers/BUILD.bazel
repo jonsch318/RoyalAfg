@@ -3,16 +3,22 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "handlers",
     srcs = [
+        "delete_user.go",
         "get_user.go",
         "handler.go",
+        "update_user.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/auth",
+        "//pkg/dtos",
         "//pkg/mw",
         "//pkg/responses",
         "//pkg/utils",
         "//services/user/pkg/database",
+        "@com_github_go_ozzo_ozzo_validation_v4//:ozzo-validation",
+        "@com_github_go_ozzo_ozzo_validation_v4//is",
         "@org_uber_go_zap//:zap",
     ],
 )
