@@ -92,4 +92,4 @@ spec:
             - name: POKER_INFO_HOST
               value: http://127.0.0.1:59683
             - name: USER_HOST
-              value: http://127.0.0.1:5001
+              value: http://royalafg-user.default.svc.cluster.local:8080

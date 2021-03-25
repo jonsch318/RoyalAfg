@@ -1,16 +1,20 @@
-import React, { createContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { createContext, FC, useEffect, useState } from "react";
 import Layout from "../../../components/layout";
-import Join from "../../../games/poker/join";
+import Join, { JoinOptions } from "../../../games/poker/join";
 import Lobbies from "../../../games/poker/lobbies";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { formatTitle } from "../../../utils/title";
 import { useSnackbar } from "notistack";
+import { IClass, ILobby, LobbyInit } from "../../../games/poker/models/class";
+import { GetServerSideProps } from "next";
 
-export const PokerInfoContext = createContext({});
+type PokerInfoContext = {
+    lobby: ILobby;
+    setLobby: React.Dispatch<React.SetStateAction<ILobby>>;
+};
+export const PokerInfoContext = createContext<PokerInfoContext | undefined>(undefined);
 
-// eslint-disable-next-line react/prop-types
 const PokerConnectError = ({ onRefresh, onBack }) => {
     return (
         <div className="bg-gray-200">
@@ -37,9 +41,17 @@ const PokerConnectError = ({ onRefresh, onBack }) => {
     );
 };
 
-const Poker = ({ info, error }) => {
+type PokerProps = {
+    error: string;
+    info: {
+        lobbies: ILobby[][];
+        classes: IClass[];
+    };
+};
+
+const Poker: FC<PokerProps> = ({ info, error }) => {
     const router = useRouter();
-    const [lobby, setLobby] = useState({ i: -1, classIndex: -1 });
+    const [lobby, setLobby] = useState<ILobby>(LobbyInit);
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
@@ -48,14 +60,14 @@ const Poker = ({ info, error }) => {
         }
     }, [error]);
 
-    const join = (params) => {
+    const join = (params: JoinOptions) => {
         router
             .push({
                 pathname: "/games/poker/play",
                 query: {
                     lobbyId: params.lobbyId,
-                    buyInClass: params.class,
-                    buyIn: params.buyIn
+                    buyIn: params.buyIn,
+                    buyInClass: params.class
                 }
             })
             .then();
@@ -81,7 +93,7 @@ const Poker = ({ info, error }) => {
     );
 };
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
     try {
         console.log("Calling: ", process.env.POKER_INFO_HOST ? `${process.env.POKER_INFO_HOST}/api/poker/pokerinfo` : "/api/pokerinfo");
         const res = await fetch(process.env.POKER_INFO_HOST ? `${process.env.POKER_INFO_HOST}/api/poker/pokerinfo` : "/api/pokerinfo", {
@@ -100,7 +112,6 @@ export async function getServerSideProps() {
         }
 
         const info = await res.json();
-        console.log("Info not expected: ", info);
 
         if (!info || !info?.classes || !info?.classes.length || !info?.lobbies || !info?.lobbies.length) {
             return {
@@ -123,29 +134,6 @@ export async function getServerSideProps() {
             }
         };
     }
-
-    /*  return {
-props: {
-info: {
-  classes: [
-      { min: 1000, max: 4999, blind: 100 },
-      { min: 5000, max: 14999, blind: 500 }
-  ],
-  lobbies: [
-      [{ id: "abc", class: { min: 1000, max: 4999, blind: 100 }, classIndex: 0 }],
-      [{ id: "def", class: { min: 5000, max: 14999, blind: 500 }, classIndex: 1 }]
-  ]
-}
-}
-};*/
-}
-
-Poker.propTypes = {
-    info: PropTypes.shape({
-        lobbies: PropTypes.array,
-        classes: PropTypes.array
-    }),
-    error: PropTypes.string
 };
 
 export default Poker;

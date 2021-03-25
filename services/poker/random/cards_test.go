@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 )
@@ -15,17 +16,21 @@ func TestSelectCards(t *testing.T) {
 		assert.Len(t, cards, 5)
 	})
 	t.Run("Should Generate Unique", func(t *testing.T) {
-		cards, err := SelectCards(10)
-		assert.Empty(t, err)
-		seen := make([]models.Card,0)
-		for _, card := range cards {
-			for _, m := range seen {
-				assert.NotEqualValues(t, m, card)
+		for i := 0; i < 10000; i++ {
+			cards, err := SelectCards(20)
+			assert.Empty(t, err)
+			seen := make([]models.Card,0)
+			for _, card := range cards {
+				for _, m := range seen {
+					require.NotEqualValues(t, m, card)
+				}
+				seen = append(seen, card)
 			}
-			seen = append(seen, card)
+			require.Len(t, cards, 20)
 		}
-		assert.Len(t, cards, 10)
+
 	})
+
 	t.Run("Should Generate Random", func(t *testing.T) {
 		cards, err := SelectCards(10)
 		assert.Empty(t, err)

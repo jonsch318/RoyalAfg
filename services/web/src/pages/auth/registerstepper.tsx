@@ -10,10 +10,9 @@ import Credentials from "../../widgets/auth/credentials";
 import Information from "../../widgets/auth/information";
 import { useSnackbar } from "notistack";
 import moment from "moment";
-import { useRouter } from "next/router";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
-import { router } from "next/client";
+import { useRouter } from "next/router";
 
 export type RegisterDto = {
     username: string;
@@ -56,7 +55,7 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
     const steps = getSteps();
     const { enqueueSnackbar } = useSnackbar();
     const [dto, setDto] = useState<RegisterDto>(defaultDto);
-    const Router = useRouter();
+    const router = useRouter();
 
     const isStepSkipped = (step: number) => {
         return skipped.has(step);

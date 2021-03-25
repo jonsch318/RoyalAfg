@@ -5,7 +5,6 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 )
 
@@ -21,6 +20,6 @@ func (r *Round) searchByActiveID(id string) (int, error) {
 func (r *Round) sendDealer() {
 	log.Logger.Infow("dealer send", "dealer", r.Dealer)
 	if !r.Ended {
-		utils.SendToAll(r.Players, models.NewEvent(events.DEALER_SET, r.Dealer))
+		utils.SendToAll(r.Players, events.NewDealerSetEvent(&r.PublicPlayers[r.Dealer], r.Dealer))
 	}
 }

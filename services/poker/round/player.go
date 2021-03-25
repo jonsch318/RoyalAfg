@@ -39,7 +39,7 @@ func (r *Round) waitForAction(i int, preFlop, check bool) (*events.Action, error
 
 	log.Logger.Infof("Possibilities:  %v", strconv.FormatInt(int64(possibilities), 2))
 
-	utils.SendToAll(r.Players, events.NewWaitForActionEvent(i, possibilities))
+	utils.SendToAll(r.Players, events.NewWaitForActionEvent(&r.PublicPlayers[i],i, possibilities))
 
 	e, err := utils.WaitUntilCloseOrEvent(&r.Players[i])
 	if err != nil {

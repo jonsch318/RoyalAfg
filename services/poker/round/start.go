@@ -47,7 +47,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		if r.Players[i].ID != r.PublicPlayers[i].ID {
 			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
 		}
-		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.GetPot())); err != nil {
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, &r.PublicPlayers[i], i, r.Bank.GetPot())); err != nil {
 			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
 			_ = r.Leave(r.Players[i].ID)
 		}
@@ -83,7 +83,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	}
 
 	// Set players hole cards
-	r.holeCards(cards[4:])
+	r.holeCards(cards[5:])
 	log.Logger.Infof("Hole cards set")
 
 	time.Sleep(sleepTime)
@@ -125,8 +125,13 @@ func (r *Round) evaluate() {
 	//Send winning results to clients. You could add the hole cards for clarity. But this can be added fairly easily.
 	winningPublic := make([]models.PublicPlayer, len(winners))
 	for i, w := range winners {
-		if r.PublicPlayers[w.Position].ID != w.Player.ID {
+		if r.PublicPlayers[w.Position].ID != w.Player.ID{
 			log.Logger.Errorf("Player and win info not synchronized")
+			continue
+		}
+		if !r.Players[w.Position].Active {
+			log.Logger.Errorf("Player not active")
+			continue
 		}
 		winningPublic[i] = r.PublicPlayers[w.Position]
 		log.Logger.Debugf("Winning public %v", winningPublic[i])

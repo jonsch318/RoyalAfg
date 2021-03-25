@@ -5,6 +5,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
@@ -46,6 +47,9 @@ func NewBank(eventBus *rabbit.RabbitMessageBroker) *Bank {
 	return &Bank{
 		PlayerWallet: make(map[string]*money.Money),
 		PlayerBets:   make(map[string]*money.Money),
+		Pot: currency.Zero(),
+		MaxBet: currency.Zero(),
+		LobbyId: "",
 		eventBus:     eventBus,
 	}
 }

@@ -42,7 +42,7 @@ func SelectCards(count int) ([]models.Card, error) {
 			success = true
 			picked[b[0]] = true
 			selected[i] = cards[b[0]]
-			log.Printf("Picked b[0]=%v for card %v", b[0], cards[b[0]])
+			//log.Printf("Picked b[0]=%v for card %v", b[0], cards[b[0]])
 		}
 	}
 	return selected, nil

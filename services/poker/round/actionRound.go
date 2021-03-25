@@ -54,8 +54,10 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 
 		log.Logger.Warnf("Player is not active or already all in. Continuing with next in list")
 		// remove from blocking list
-		options.BlockingList.RemoveBlocking(options.BlockingIndex)
-		options.BlockingIndex = options.BlockingIndex % options.BlockingList.Length()
+		if options.BlockingList != nil{
+			options.BlockingList.RemoveBlocking(options.BlockingIndex)
+			options.BlockingIndex = options.BlockingIndex % options.BlockingList.Length()
+		}
 		r.recursiveAction(options)
 		return
 	}
@@ -77,6 +79,7 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 		}
 		//Sending results to clients
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+			&r.PublicPlayers[options.Current],
 			options.SuccessfulAction.Action,
 			options.Current,
 			options.Payload.Display() ,
@@ -202,6 +205,7 @@ func (r *Round) action(options *ActionRoundOptions) {
 		err := r.Bank.PerformBet(options.PlayerId)
 		if err == nil {
 			options.Success = true
+			options.CanCheck = false
 			options.BlockingList.RemoveBlocking(options.BlockingIndex)
 			return
 		}

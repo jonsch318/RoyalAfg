@@ -2,17 +2,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 
-import Actions from "../../../games/poker/actions.js";
 import "../poker.module.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { GameState } from "../../../games/poker/game/state.js";
-import { Game } from "../../../games/poker/connection/socket.js";
+import { GameState } from "../../../games/poker-old/game/state.js";
+import { Game } from "../../../games/poker-old/connection/socket.js";
 import Loading from "../../../widgets/games/poker/loading";
 import { useSnackbar } from "notistack";
 import { getCSRF } from "../../../hooks/auth/csrf";
 
-const View = dynamic(import("../../../games/poker/view"), { ssr: false });
+const View = dynamic(import("../../../games/poker-old/view"), { ssr: false });
 
 const _getUrl = (id) => {
     let url = "";
@@ -124,7 +123,9 @@ const Play = ({ csrf }) => {
             </button>
             {joined && (
                 <div>
-                    <Actions game={game} actions={actions} />
+                    {
+                        //<Actions game={game} actions={actions} />
+                    }
                     <View game={game} gameStart={() => setLoaded(true)} />
                 </div>
             )}

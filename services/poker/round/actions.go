@@ -43,7 +43,7 @@ func (r *Round) actions(preFlop bool) {
 
 	log.Logger.Debugf("blocking list defined")
 
-	if len(blocking) < 0{
+	if len(blocking) <= 0{
 		//Everything is handled no further actions from players necessary
 		return
 	}
@@ -84,6 +84,7 @@ func (r *Round) fold(id string) error {
 
 	utils.SendToAll(r.Players,
 		events.NewActionProcessedEvent(
+			&r.PublicPlayers[i],
 			events.FOLD,
 			i,
 			moneyUtils.Zero().Display(),

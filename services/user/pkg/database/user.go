@@ -122,6 +122,11 @@ func (db *UserDatabase) FindById(id string) (*models.User, error) {
 		return nil, err
 	}
 
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
+	}
+
 	return user, nil
 }
 
@@ -131,6 +136,11 @@ func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 	err := db.coll.FindOne(mgm.Ctx(), bson.M{"email": email}).Decode(user)
 	if err != nil {
 		return nil, err
+	}
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
 	}
 
 	return user, nil
@@ -143,6 +153,11 @@ func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
 	}
 
 	return user, nil

@@ -37,6 +37,7 @@ func (r *Round) setBlinds() error {
 		}
 
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+				&r.PublicPlayers[i],
 				2,
 				i,
 				r.SmallBlind.Display(),
@@ -74,6 +75,7 @@ func (r *Round) setBlinds() error {
 			continue
 		}
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+			&r.PublicPlayers[i],
 			2,
 			i,
 			bigBlind.Display(),

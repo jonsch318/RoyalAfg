@@ -57,16 +57,18 @@ func Start(logger *zap.SugaredLogger) {
 	}
 	defer utils.DisconnectClient(logger, client)
 
-	redis := redis.NewClient(&redis.Options{
+	red := redis.NewClient(&redis.Options{
 		Addr:               viper.GetString(config.RedisAddress),
 		Username:           viper.GetString(config.RedisUsername),
 		Password:           viper.GetString(config.RedisPassword),
 	})
 
 	userCache := cache.New(&cache.Options{
-		Redis:        redis,
+		Redis:        red,
 		LocalCache:   cache.NewTinyLFU(1000, time.Minute),
 	})
+
+	logger.Debugf("Redis configured to %v", viper.GetString(config.RedisAddress))
 
 	userDatabase := database.NewUserDatabase(logger, userCache)
 
@@ -88,7 +90,7 @@ func Start(logger *zap.SugaredLogger) {
 	}
 
 	// Start the grpc server
-	utils.StartGrpcGracefully(logger, gs, l)
+	go utils.StartGrpcGracefully(logger, gs, l)
 
 	userHandler := handlers.NewUserHandler(logger, userDatabase)
 
@@ -111,5 +113,6 @@ func Start(logger *zap.SugaredLogger) {
 		IdleTimeout:  time.Second * 60,
 		Handler:      n,
 	}
+	logger.Warnf("HTTP Serve started on %v", viper.GetString(config.HTTPPort))
 	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
 }

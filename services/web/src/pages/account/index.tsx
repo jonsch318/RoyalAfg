@@ -4,28 +4,35 @@ import Front from "../../components/layout/front";
 import ActionMenu from "../../components/actionMenu";
 import ActionMenuLink from "../../components/actionMenu/link";
 import { useRouter } from "next/router";
-import { useSession, refreshSession } from "../../hooks/auth";
+import { refreshSession, useSession } from "../../hooks/auth";
 import { GetServerSideProps } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
-
+    console.log("Get User ", `${process.env.USER_HOST}/api/user`);
     try {
-        const res = await fetch(process.env.USER_HOST ? `${process.env.USER_HOST}/api/user` : "/api/user", {
+        const res = await fetch(`${process.env.USER_HOST}/api/user`, {
             method: "GET",
             headers: {
-                cookie: context.req.headers.cookie ?? ""
+                cookie: context.req.headers.cookie
             }
         });
+        console.log("Response json");
+
+        if (!res.ok) {
+            console.log("Response not ok: ", res);
+        }
         const user = await res.json();
+        console.log("User get success: ", user);
         return {
             props: {
                 csrf: csrf,
-                user: user
+                user: user.user
             }
         };
     } catch (e) {
+        console.log("Error user get: ", e);
         return {
             props: {
                 csrf: csrf,
@@ -33,7 +40,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             }
         };
     }
-)
 };
 
 type AccountProps = {
@@ -59,16 +65,15 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
     if (loading) return null;
 
     if (!loading && !session) {
-        router.push("/auth/login").then();
+        router.push("/auth/login").then(() => {});
         return <div>Not signed in... redirecting</div>;
     }
 
     const onSubmit = (e) => {
         e.preventDefault();
         fetch("/api/user", {
-            method: "POST",
+            method: "PUT",
             headers: {
-                "Content-Type": "application/json",
                 "X-CSRF-Token": csrf
             },
             body: JSON.stringify({
@@ -100,7 +105,6 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                         <ActionMenuLink href="/wallet">My Wallet</ActionMenuLink>
                     </ActionMenu>
                 </div>
-                {session && session.user ? session.user.name : <></>}
             </div>
             <div>
                 <form onSubmit={onSubmit}>
