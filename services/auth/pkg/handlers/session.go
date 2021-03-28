@@ -11,6 +11,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
@@ -64,7 +65,7 @@ func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(rw, cookie)
 	rw.WriteHeader(http.StatusOK)
-	err = ToJSON(dtos.SessionResponse{User: &dtos.SessionUser{Username: user.Username, Name: user.Name, Id: user.ID}}, rw)
+	err = utils.ToJSON(dtos.SessionResponse{User: &dtos.SessionUser{Username: user.Username, Name: user.Name, Id: user.ID}}, rw)
 
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)

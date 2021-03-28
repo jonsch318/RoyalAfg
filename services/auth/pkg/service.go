@@ -11,9 +11,9 @@ import (
 
 	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/negroni"
@@ -40,7 +40,7 @@ func Start(logger *zap.SugaredLogger) {
 	viper.BindEnv(gConfig.RabbitMQUsername)
 	viper.BindEnv(gConfig.RabbitMQPassword)
 
-	rabbitUrl := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(gConfig.RabbitMQUsername),viper.GetString(gConfig.RabbitMQPassword), viper.GetString(gConfig.RabbitMQUrl))
+	rabbitUrl := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(gConfig.RabbitMQUsername), viper.GetString(gConfig.RabbitMQPassword), viper.GetString(gConfig.RabbitMQUrl))
 	rabbitConn, err := rabbit.NewRabbitMessageBroker(logger, rabbitUrl)
 
 	if err != nil {
@@ -64,10 +64,9 @@ func Start(logger *zap.SugaredLogger) {
 
 	//Middleware config
 
-
 	//services
-	userRepo := user.NewUserService(userServiceClient)
-	authService := authentication.NewService(userRepo)
+	userRepo := user.NewUser(userServiceClient)
+	authService := authentication.NewAuthentication(userRepo)
 
 	// Handlers
 	authHandler := handlers.NewAuth(logger, authService, rabbitConn)

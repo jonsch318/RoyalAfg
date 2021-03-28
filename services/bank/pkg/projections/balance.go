@@ -1,4 +1,4 @@
-package dtos
+package projections
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )

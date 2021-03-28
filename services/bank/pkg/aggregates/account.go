@@ -13,11 +13,13 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
+//Accoun is the domain aggregat for a bank account
 type Account struct {
 	*ycq.AggregateBase
 	Balance *money.Money
 }
 
+//NewAccount returns a new account
 func NewAccount(id string) *Account {
 	return &Account{
 		AggregateBase: ycq.NewAggregateBase(id),
@@ -34,6 +36,7 @@ func (a *Account) Create() error {
 	return nil
 }
 
+//Deposit is the aggregate function to deposit money to the aggregate
 func (a *Account) Deposit(amount *money.Money, gameId, roundId string, time time.Time) error {
 	if !amount.IsPositive() {
 		return errors.New("the amount has to be greater than 0")
@@ -51,6 +54,7 @@ func (a *Account) Deposit(amount *money.Money, gameId, roundId string, time time
 	return nil
 }
 
+//Withdraw is the aggregate function to withdraw money to the aggregate
 func (a *Account) Withdraw(amount *money.Money, gameId, roundId string, time time.Time) error {
 	if !amount.IsPositive() {
 		return errors.New("the amount which is to withdraw has to be greater than 0")
@@ -76,6 +80,7 @@ func (a *Account) Withdraw(amount *money.Money, gameId, roundId string, time tim
 	return nil
 }
 
+//Apply applies the given event to the aggregate
 func (a *Account) Apply(message ycq.EventMessage, isNew bool) {
 	if isNew {
 		a.TrackChange(message)

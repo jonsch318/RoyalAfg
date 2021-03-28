@@ -18,7 +18,7 @@ go_library(
         "//pkg/mw",
         "//pkg/responses",
         "//services/bank/pkg/commands",
-        "//services/bank/pkg/dtos",
+        "//services/bank/pkg/projections",
         "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
         "@com_github_rhymond_go_money//:go-money",
     ],

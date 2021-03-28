@@ -1,10 +1,12 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 	"net/http"
 	"time"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
@@ -52,7 +54,7 @@ func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 	h.l.Debugw("logged out user", "id", user.ID)
 
 	rw.WriteHeader(http.StatusOK)
-	err = ToJSON(&noContentResponse{}, rw)
+	err = utils.ToJSON(&noContentResponse{}, rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)

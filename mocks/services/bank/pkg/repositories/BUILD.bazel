@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/bank/pkg/repositories",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/bank/pkg/domain/aggregates",
         "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_johnnys318_royalafgingo//services/bank/pkg/domain/aggregates:go_default_library",
         "@com_github_stretchr_testify//mock",
     ],
 )

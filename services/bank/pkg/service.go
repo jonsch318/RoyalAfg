@@ -22,9 +22,9 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/serviceconfig"
@@ -58,8 +58,8 @@ func Start(logger *zap.SugaredLogger) {
 	}
 
 	//Read Model declarations
-	accountBalanceQuery := dtos.NewAccountBalanceQuery(repo)
-	accountHistoryQuery := dtos.NewAccountHistoryQuery(repo, eventStore)
+	accountBalanceQuery := projections.NewAccountBalanceQuery(repo)
+	accountHistoryQuery := projections.NewAccountHistoryQuery(repo, eventStore)
 
 	eventBus.AddHandler(accountBalanceQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
 	eventBus.AddHandler(accountHistoryQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
@@ -73,15 +73,12 @@ func Start(logger *zap.SugaredLogger) {
 		logger.Fatalw("Could not register handlers", "error", err)
 	}
 
-	//TODO: bank message consume.
 	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
 	rabbitConnections, err := rabbit.RegisterRabbitMqConsumers(logger, eventBus, dispatcher, rabbitURL)
 
 	if err != nil {
 		logger.Fatalw("Could not establish rabbitmq connection", "error", err)
 	}
-
-	//TODO: grpc bank client.
 
 	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
 	r := mux.NewRouter()

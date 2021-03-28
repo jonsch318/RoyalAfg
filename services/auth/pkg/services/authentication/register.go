@@ -6,13 +6,13 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
-func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error) {
+func (auth *Authentication) Register(dto *dtos.RegisterDto) (*models.User, string, error) {
 	user := models.NewUser(dto.Username, dto.Email, dto.FullName, dto.Birthdate)
 	user.ID = primitive.NewObjectID()
 

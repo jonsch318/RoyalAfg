@@ -14,6 +14,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
 
+//Generate cookie is a helper to generate a new session cookie with the session name.
 func GenerateCookie(token string, persistent bool) *http.Cookie {
 	cookie := &http.Cookie{
 		Name:     viper.GetString(config.SessionCookieName),
@@ -30,6 +31,7 @@ func GenerateCookie(token string, persistent bool) *http.Cookie {
 	return cookie
 }
 
+//GetJwt creates and signs a new jwt token for a session authentication
 func GetJwt(user *models.User) (string, error) {
 	signingKey := []byte(viper.GetString(config.JWTSigningKey))
 
@@ -54,6 +56,7 @@ func GetJwt(user *models.User) (string, error) {
 	return token, nil
 }
 
+//GenerateBearerToken wraps the jwt token into a Bearer token
 func GenerateBearerToken(user *models.User) (string, error) {
 	token, err := GetJwt(user)
 
@@ -64,6 +67,7 @@ func GenerateBearerToken(user *models.User) (string, error) {
 	return fmt.Sprintf("Bearer %v", token), nil
 }
 
+//ExtendToken is a helper function to reset the expiring date of a session token
 func ExtendToken(val string) (*jwt.Token, string, error) {
 	token, err := jwt.Parse(val, mw.GetKeyGetter(viper.GetString(config.JWTSigningKey)))
 

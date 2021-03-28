@@ -5,14 +5,15 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
 // Validate validates the LoginDto dto to conform to the api's expectation
-func Validate(dto dto.LoginDto) error {
+func Validate(dto dtos.LoginDto) error {
 	return validation.ValidateStruct(&dto,
 		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
 		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
@@ -61,7 +62,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginDto := &dto.LoginDto{}
+	loginDto := &dtos.LoginDto{}
 
 	cType := r.Header.Get("Content-Type")
 
@@ -71,7 +72,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	case "application/x-www-form-urlencoded":
 		h.l.Debug("content type form urlencoded")
 
-		err := FromFormURLEncodedRequest(loginDto, r)
+		err := utils.FromFormURLEncodedRequest(loginDto, r)
 
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
@@ -81,7 +82,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 
 	case "application/json":
 		h.l.Debug("content type json")
-		err := FromJSON(loginDto, r.Body)
+		err := utils.FromJSON(loginDto, r.Body)
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
 			responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
@@ -117,7 +118,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 
 	// send user
-	err = ToJSON(dto.NewUserDTO(user), rw)
+	err = utils.ToJSON(dtos.NewUser(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
@@ -149,6 +150,8 @@ func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 
+	//TODO: decode cookie
+
 	authenticated, err := h.Auth.VerifyAuthentication()
 
 	if !authenticated || err != nil {
@@ -157,7 +160,7 @@ func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	err = ToJSON(&noContentResponse{}, rw)
+	err = utils.ToJSON(&noContentResponse{}, rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)

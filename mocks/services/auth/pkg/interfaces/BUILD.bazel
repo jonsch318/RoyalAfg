@@ -10,7 +10,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",
-        "//services/auth/pkg/dto",
+        "@com_github_johnnys318_royalafgingo//services/auth/pkg/dto:go_default_library",
         "@com_github_stretchr_testify//mock",
     ],
 )

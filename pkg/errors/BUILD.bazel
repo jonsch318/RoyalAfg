@@ -4,6 +4,7 @@ go_library(
     name = "errors",
     srcs = [
         "auth.go",
+        "bank.go",
         "poker.go",
         "pokerMatchmaker.go",
         "rabbit.go",

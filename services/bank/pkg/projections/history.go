@@ -1,4 +1,4 @@
-package dtos
+package projections
 
 import (
 	"fmt"
@@ -11,28 +11,21 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )
 
-type AccountHistoryEvent struct {
-	Amount *dtos.CurrencyDto `json:"amount"`
-	Type   string            `json:"type"`
-	Time   time.Time         `json:"time"`
-	Game string `json:"gameId"`
-	LobbyID string `json:"roundId"`
-}
-
+//AccountHistoryQuery is the projection for the history
 type AccountHistoryQuery struct {
-	accounts map[string][]AccountHistoryEvent
+	accounts map[string][]dtos.AccountHistoryEvent
 	repo     *repositories.Account
 	client   *goes.Client
 }
 
 func NewAccountHistoryQuery(repo *repositories.Account, client *goes.Client) *AccountHistoryQuery {
 	return &AccountHistoryQuery{
-		accounts: make(map[string][]AccountHistoryEvent),
+		accounts: make(map[string][]dtos.AccountHistoryEvent),
 		repo:     repo,
 		client:   client,
 	}
@@ -42,9 +35,9 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 
 	switch ev := message.Event().(type) {
 	case *events.AccountCreated:
-		q.accounts[message.AggregateID()] = make([]AccountHistoryEvent, 0)
+		q.accounts[message.AggregateID()] = make([]dtos.AccountHistoryEvent, 0)
 	case *events.Deposited:
-		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], AccountHistoryEvent{
+		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], dtos.AccountHistoryEvent{
 			Amount:  dtos.FromMoney(ev.Amount),
 			Type:    "Deposited",
 			Time:    time.Now(),
@@ -52,7 +45,7 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 			LobbyID: ev.RoundId,
 		})
 	case *events.Withdrawn:
-		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], AccountHistoryEvent{
+		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], dtos.AccountHistoryEvent{
 			Amount:  dtos.FromMoney(ev.Amount.Multiply(-1)),
 			Type:    "Withdrawn",
 			Time:    time.Now(),
@@ -63,7 +56,7 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 }
 
 //GetAccountHistory queries the read model for the l recorded history from the given index, where 0 is newest and last is oldest.
-func (q *AccountHistoryQuery) GetAccountHistory(id string, i int, l int) ([]AccountHistoryEvent, error) {
+func (q *AccountHistoryQuery) GetAccountHistory(id string, i int, l int) ([]dtos.AccountHistoryEvent, error) {
 	fullHistory, ok := q.accounts[id]
 	if !ok {
 		//Load

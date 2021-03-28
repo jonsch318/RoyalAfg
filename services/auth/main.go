@@ -8,12 +8,14 @@ import (
 )
 
 func main() {
-
+	//Register logger
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
+	//configuration
 	gConfig.ReadStandardConfig("auth", logger)
 	config.ConfigureDefaults()
 
+	//start
 	pkg.Start(logger)
 }

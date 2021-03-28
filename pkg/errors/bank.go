@@ -1,4 +1,4 @@
-package dtos
+package errors
 
 type UserDoesNotExistError struct {
 	id string
@@ -7,4 +7,3 @@ type UserDoesNotExistError struct {
 func (e *UserDoesNotExistError) Error() string {
 	return "a account with the given id does not exist"
 }
-

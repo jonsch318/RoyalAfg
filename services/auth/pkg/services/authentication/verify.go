@@ -1,5 +1,5 @@
 package authentication
 
-func (auth Service) VerifyAuthentication() (bool, error) {
+func (auth *Authentication) VerifyAuthentication() (bool, error) {
 	return true, nil
 }

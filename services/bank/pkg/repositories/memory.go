@@ -5,21 +5,21 @@ import (
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
 )
 
+//InMemoryAccount is a in memory repository for bank accounts used for testing
 type InMemoryAccount struct {
-	current map[string][]ycq.EventMessage
+	current   map[string][]ycq.EventMessage
 	publisher ycq.EventBus
 }
 
-func NewInMemoryAccount(eventbus ycq.EventBus) *InMemoryAccount{
+func NewInMemoryAccount(eventbus ycq.EventBus) *InMemoryAccount {
 	return &InMemoryAccount{
 		publisher: eventbus,
-		current: make(map[string][]ycq.EventMessage),
+		current:   make(map[string][]ycq.EventMessage),
 	}
 }
-
 
 // Load loads an aggregate of the specified type.
 func (r *InMemoryAccount) Load(aggregateType, id string) (*aggregates.Account, error) {

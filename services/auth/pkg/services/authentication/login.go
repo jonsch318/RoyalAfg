@@ -11,7 +11,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
-func (auth Service) Login(username, password string) (*models.User, string, error) {
+//Login authenticates the user and generates a jwt token to enable the session
+func (auth *Authentication) Login(username, password string) (*models.User, string, error) {
 
 	user, err := auth.UserService.GetUserByUsernameOrEmail(username)
 	if err != nil {

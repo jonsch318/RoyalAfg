@@ -24,7 +24,12 @@ func (s *UserServer) SaveUser(ctx context.Context, m *protos.User) (*protos.User
 		Hash:      m.Hash,
 	}
 
-	id, _ := primitive.ObjectIDFromHex(m.Id)
+	id, err := primitive.ObjectIDFromHex(m.Id)
+
+	if err != nil {
+		s.l.Errorw("Could not parse id", "error", err)
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 
 	user.ID = id
 
@@ -38,7 +43,7 @@ func (s *UserServer) SaveUser(ctx context.Context, m *protos.User) (*protos.User
 
 	// Validate unique Username and Email
 
-	err := s.db.CreateUser(user)
+	err = s.db.CreateUser(user)
 
 	if err != nil {
 

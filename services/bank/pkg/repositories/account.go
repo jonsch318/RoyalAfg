@@ -8,10 +8,11 @@ import (
 	ycq "github.com/jetbasrawi/go.cqrs"
 	goes "github.com/jetbasrawi/go.geteventstore"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 )
 
+//Account is the repository of bank accounts
 type Account struct {
 	repo               *ycq.GetEventStoreCommonDomainRepo
 	EventDelegate      *ycq.DelegateEventFactory
@@ -19,6 +20,7 @@ type Account struct {
 	AggregateDelegate  *ycq.DelegateAggregateFactory
 }
 
+//NewAccount returns a new account repository instance
 func NewAccount(eventStore *goes.Client, eventBus ycq.EventBus) (*Account, error) {
 	r, err := ycq.NewCommonDomainRepository(eventStore, eventBus)
 	if err != nil {
@@ -52,6 +54,7 @@ func NewAccount(eventStore *goes.Client, eventBus ycq.EventBus) (*Account, error
 	return ret, nil
 }
 
+//Load loads a aggregate with the given id
 func (r Account) Load(aggregateType, id string) (*aggregates.Account, error) {
 	aggregate, err := r.repo.Load(reflect.TypeOf(&aggregates.Account{}).Elem().Name(), id)
 
@@ -66,6 +69,7 @@ func (r Account) Load(aggregateType, id string) (*aggregates.Account, error) {
 	return a, nil
 }
 
+//Save saves a given aggregate to the event store
 func (r Account) Save(aggregate ycq.AggregateRoot, expectedVersion *int) error {
 	err := r.repo.Save(aggregate, expectedVersion)
 	if err != nil {
