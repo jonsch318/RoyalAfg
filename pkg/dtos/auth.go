@@ -28,3 +28,7 @@ type RegisterDto struct {
 	Birthdate  int64  `json:"birthdate"`
 	RememberMe bool   `json:"rememberme"`
 }
+
+type SessionInfo struct {
+	Authenticated bool `json:"authenticated"`
+}

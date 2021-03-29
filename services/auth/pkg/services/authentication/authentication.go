@@ -3,6 +3,7 @@ package authentication
 import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
 )
 
@@ -11,7 +12,7 @@ type IAuthentication interface {
 	//Login logs the user with the given name and password in after comparing credentials
 	Login(username, password string) (*models.User, string, error)
 	//VerifyAuthentication verifies whether the user has a active session
-	VerifyAuthentication() (bool, error)
+	VerifyAuthentication(user *mw.UserClaims) bool
 	//Register registers a new user with the given information
 	Register(dto *dtos.RegisterDto) (*models.User, string, error)
 	//Logout logs of the user

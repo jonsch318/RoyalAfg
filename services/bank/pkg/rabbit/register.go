@@ -1,16 +1,17 @@
 package rabbit
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	ycq "github.com/jetbasrawi/go.cqrs"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 )
 
 type Connections struct {
 	conn *amqp.Connection
-	ch *amqp.Channel
+	ch   *amqp.Channel
 }
 
 func RegisterRabbitMqConsumers(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher ycq.Dispatcher, url string) (*Connections, error) {
@@ -37,7 +38,7 @@ func RegisterRabbitMqConsumers(logger *zap.SugaredLogger, bus ycq.EventBus, disp
 	}
 
 	go func() {
-		if err := bankConsumer.Start(); err != nil {
+		if err = bankConsumer.Start(); err != nil {
 			logger.Fatalw("Error during bank consuming", "error", err)
 		}
 	}()
@@ -58,11 +59,11 @@ func RegisterRabbitMqConsumers(logger *zap.SugaredLogger, bus ycq.EventBus, disp
 
 	return &Connections{
 		conn: conn,
-		ch: ch,
-	} , nil
+		ch:   ch,
+	}, nil
 }
 
-func (c *Connections) Close()  {
-	c.conn.Close()
-	c.ch.Close()
+func (c *Connections) Close() {
+	_ = c.conn.Close()
+	_ = c.ch.Close()
 }

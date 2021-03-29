@@ -1,10 +1,6 @@
 package database
 
 import (
-	"context"
-	"errors"
-	"time"
-
 	"github.com/go-redis/cache/v8"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
@@ -16,11 +12,13 @@ import (
 	"go.uber.org/zap"
 )
 
+
 type UserDatabase struct {
 	l    *zap.SugaredLogger
 	userCache *cache.Cache
 	coll *mgm.Collection
 }
+
 
 func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDatabase {
 	coll := mgm.Coll(&models.User{})
@@ -160,39 +158,5 @@ func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 		db.l.Debugf("Could not set cache %v", err)
 	}
 
-	return user, nil
-}
-
-// IsDup returns whether err informs of a duplicate key error because
-// a primary key index or a secondary unique index already has an entry
-// with the given value.
-func IsDup(err error) bool {
-	var e mongo.WriteException
-	if errors.As(err, &e) {
-		for _, we := range e.WriteErrors {
-			if we.Code == 11000 {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-
-func (db *UserDatabase) SetCache(user *models.User) error {
-	return db.userCache.Set(&cache.Item{
-		Ctx:            context.TODO(),
-		Key:            user.ID.Hex(),
-		Value:          user,
-		TTL:            time.Minute * 5,
-	})
-}
-
-func (db *UserDatabase) GetCache(id string) (*models.User, error) {
-	user := new(models.User)
-	err := db.userCache.Get(context.TODO(), id, user)
-	if err != nil {
-		return nil, err
-	}
 	return user, nil
 }

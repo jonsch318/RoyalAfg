@@ -126,47 +126,6 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// VerifyLoggedIn verifies and validates the cookie and it's jwt token. returns 401 if you are not signed in and 200 if everything is valid-
-// swagger:route GET /account/verify authentication account verifyLoggedIn
-//
-// Verify that the user is logged in
-//
-// This will return either status code 401 Unauthorized if user is not signed in and 200 when the login token is valid
-//
-//	Consumes:
-//
-// 	Produces:
-//	-	application/json
-//
-//	Schemes: http, https
-//
-//	Security:
-//
-// 	Responses:
-//	default: ErrorResponse
-//	401: ErrorResponse
-//	200: NoContentResponse
-func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-	rw.Header().Set("X-Content-Type-Options", "nosniff")
-
-	//TODO: decode cookie
-
-	authenticated, err := h.Auth.VerifyAuthentication()
-
-	if !authenticated || err != nil {
-		h.l.Errorw("A error during login verification", "error", err)
-		rw.WriteHeader(http.StatusUnauthorized)
-	}
-
-	rw.WriteHeader(http.StatusOK)
-	err = utils.ToJSON(&noContentResponse{}, rw)
-	if err != nil {
-		h.l.Errorw("json serialization", "error", err)
-		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
-		return
-	}
-}
 
 // noContentResponse is a empty object.
 type noContentResponse struct {

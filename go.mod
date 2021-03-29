@@ -26,6 +26,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/websocket v1.4.2
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault // indirect
 	github.com/jetbasrawi/go.cqrs v0.0.0-20190206233932-e4d812d57f09
 	github.com/jetbasrawi/go.geteventstore v1.0.0

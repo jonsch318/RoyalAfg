@@ -1,4 +1,4 @@
-package config
+package serviceconfig
 
 import (
 	"github.com/spf13/viper"

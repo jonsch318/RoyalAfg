@@ -31,9 +31,10 @@ type validationErrorWrapper struct {
 	Body responses.ValidationError
 }
 
-// NoContentResponse is an empty object with no content
-// swagger:response NoContentResponse
-type noContentResponseWrapper struct {
+// SessionInfoResponse is the result of a session status query
+// swagger:response SessionInfoResponse
+type sessionInfoResponseWrapper struct {
+	Body *dtos.SessionInfo
 }
 
 // swagger:parameters registerUser

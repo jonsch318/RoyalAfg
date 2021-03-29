@@ -1,10 +1,10 @@
 package main
 
 import (
-	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
 )
 
 func main() {
@@ -13,8 +13,8 @@ func main() {
 	defer log.CleanLogger()
 
 	//configuration
-	gConfig.ReadStandardConfig("auth", logger)
-	config.ConfigureDefaults()
+	config.ReadStandardConfig("auth", logger)
+	serviceconfig.ConfigureDefaults()
 
 	//start
 	pkg.Start(logger)

@@ -8,11 +8,14 @@ import (
 )
 
 func main() {
+	//Register Logger
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
+	//Configure
 	config.ReadStandardConfig("bank", logger)
 	serviceconfig.ConfigureDefaults()
 
+	//Start
 	pkg.Start(logger)
 }
