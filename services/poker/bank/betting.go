@@ -15,56 +15,75 @@ func (b *Bank) bet(id string, amount *money.Money) error {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
-	playerValue, ok := b.PlayerWallet[id]
+	//Get player rest wallet. (The full wallet is wallet + bet)
+	rest, ok := b.PlayerWallet[id]
 	if !ok {
 		log.Logger.Errorw("Player not registered in bank", "id", id)
 		return errors.New("player not registered in bank")
 	}
 
-	ad, err := amount.Subtract(b.PlayerBets[id])
-
+	//Calculate difference of the amount and the bet.
+	newAmount, err := amount.Subtract(b.PlayerBets[id])
 	if err != nil {
 		return err
 	}
 
-	log.Logger.Debugf("Amound: %v, AD: %v, Val: %s", amount, ad, playerValue.Display())
 
-	if res, err := playerValue.LessThan(ad); res || err != nil {
-		log.Logger.Warnf("The player %v does not have the capacity to bet %v [%v]", id, playerValue.Display(), amount.Display())
+	log.Logger.Debugf("Amound: %v, AD: %v, Val: %s", amount, newAmount, rest.Display())
+
+
+	//We have to validate the amount correctly so that no invalid bet can occurs.
+	//First we check if the player can bet the specified amount
+	if res, err2 := rest.LessThan(newAmount); res || err2 != nil {
+		log.Logger.Warnf("The player %v does not have the capacity to bet %v [%v]", id, rest.Display(), amount.Display())
 		return fmt.Errorf("The player does not have the capacity to bet %v ", amount)
 	}
 
-	less, err  := playerValue.LessThan(ad)
+	//Check if bet is lower than the round bet and the player is not all in
+	lessThanRoundBet, err := amount.LessThan(b.MaxBet)
 	if err != nil {
-		log.Logger.Warnw("error asserting monetary value", "error", err)
+		log.Logger.Errorw("error during money comparison", "error", err)
 		return err
 	}
-	equals, err := playerValue.Equals(amount)
+
+	//We check if the player bet is allIn to check if the player is all in
+	allIn, err := rest.Equals(newAmount)
 	if err != nil {
-		log.Logger.Warnw("error asserting monetary value", "error", err)
+		log.Logger.Errorw("error during money comparison", "error", err)
 		return err
 	}
-	if less && !equals {
-		// Player bet is les than round bet and is not an all in => invalid
-		log.Logger.Warnf("the player has to bet more or equal the round bet or do an all in")
-		return errors.New("the player has to bet more or equal the round bet or do an all in")
+
+	if lessThanRoundBet &&  !allIn {
+		log.Logger.Errorf("Bet attemted that is not all in and lower than the current round bet %v < %v", amount.Display(), b.MaxBet.Display())
+		return fmt.Errorf("the player has to bet more or equal the round bet or go all in")
 	}
 
-	log.Logger.Debugf("All validation checks passed now transacting bet")
+	return b.betTransact(id, amount, rest, newAmount)
+}
 
+func (b *Bank) betTransact(id string, amount *money.Money, rest *money.Money, newAmount *money.Money) error {
 	//player can bet Amount
-	b.PlayerWallet[id], _ = playerValue.Subtract(ad)
+	newWallet, err := rest.Subtract(newAmount)
+	if err != nil {
+		log.Logger.Errorw("error during bet transaction", "error", err)
+		return err
+	}
+	b.PlayerWallet[id] = newWallet
+
 	b.PlayerBets[id] = amount
 
-	b.Pot, _ = b.Pot.Add(ad)
+	newPot, err := b.Pot.Add(newAmount)
+	if err != nil {
+		log.Logger.Errorw("error during bet transaction", "error", err)
+		return err
+	}
+	b.Pot = newPot
+
 	if res, _ := amount.GreaterThan(b.MaxBet); res {
 		b.MaxBet = amount
 	}
 
-	log.Logger.Debugf("transaction done publishing event")
+	log.Logger.Debugf("Bet transacted")
 
-	//Could use b.PlayerBet but this works as well
-	//b.AddBetEvent(id, ad)
-	//We use b.PlayerBet for simplicity. Command Queue could include more information.
 	return nil
 }
