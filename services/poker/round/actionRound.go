@@ -31,11 +31,13 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 
 	//_____Preceding checks_____
 
-	//Checks in Poker are difficult to keep track. We count all the checks and decide whether more checks are legal.
-	log.Logger.Debugf("Checkcount: %v; InCount: %v", options.CheckCount, r.InCount)
+
+	//Checks in Poker are special because it is not always legal to check. (Anchor)
 	if options.CanCheck && options.CheckCount >= r.InCount {
-		log.Logger.Debugf("number of checks exceed lmits")
-		options.CanCheck = false
+		//Everybody has checked and no one raised or called. (CanCheck is disabled after call or raise)
+		//This action round is complete. All checked
+		log.Logger.Debugf("All players have checked. No one called or raised. Concluding action round")
+		return
 	}
 
 	//Check if only one player is in the game or the blocking list is empty. (One player always wins) (Anchor)
@@ -67,6 +69,8 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 	err := r.actionTries(options)
 
 	//_____Subsequent checks_____
+
+	//Error handling.
 	_, ok := err.(errors.InvalidActionError)
 	if err == nil || ok {
 		if err != nil && ok {

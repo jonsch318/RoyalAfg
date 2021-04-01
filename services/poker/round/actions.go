@@ -55,7 +55,7 @@ func (r *Round) actions(preFlop bool) {
 		SuccessfulAction: nil,
 		PlayerId:         "",
 		PreFlop:          preFlop,
-		CanCheck:         true,
+		CanCheck:         !preFlop,
 		CheckCount:       0,
 		Current:          0,
 		BlockingIndex:    startIndexBlocking%len(blocking),
