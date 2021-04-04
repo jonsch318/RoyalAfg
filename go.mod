@@ -26,12 +26,11 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/hashicorp/hcl v1.0.1-vault // indirect
 	github.com/jetbasrawi/go.cqrs v0.0.0-20190206233932-e4d812d57f09
 	github.com/jetbasrawi/go.geteventstore v1.0.0
 	github.com/jetbasrawi/go.geteventstore.testfeed v0.0.0-20160808110805-4e3be493c211 // indirect
-	github.com/justinas/alice v1.2.0
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1

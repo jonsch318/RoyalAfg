@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	mocks "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/interfaces"
+	mocks "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/services/user"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	serviceconfig "github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
 )
 
 func TestLogin(t *testing.T) {
@@ -21,7 +21,7 @@ func TestLogin(t *testing.T) {
 	viper.SetDefault(config.JWTIssuer, "example.com")
 	viper.SetDefault(config.JWTSigningKey, "testkey")
 	viper.SetDefault(serviceconfig.Pepper, "")
-	mockUserService := &mocks.UserService{}
+	mockUserService := &mocks.IUser{}
 	auth := NewAuthentication(mockUserService)
 	hash, err := security.HashPassword("testPassword", "")
 	assert.Nil(t, err)

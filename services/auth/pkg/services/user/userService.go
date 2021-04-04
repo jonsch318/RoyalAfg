@@ -4,7 +4,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
@@ -28,8 +28,8 @@ type User struct {
 //NewUser creates a new user service
 func NewUser() (*User, error) {
 
-	log.Logger.Infof("Auth service url %v trying to connect", viper.GetString(config.UserServiceUrl))
-	conn, err := grpc.Dial(viper.GetString(config.UserServiceUrl), grpc.WithInsecure())
+	log.Logger.Infof("Auth service url %v trying to connect", viper.GetString(serviceconfig.UserServiceUrl))
+	conn, err := grpc.Dial(viper.GetString(serviceconfig.UserServiceUrl), grpc.WithInsecure())
 
 	if err != nil {
 		return nil, err
