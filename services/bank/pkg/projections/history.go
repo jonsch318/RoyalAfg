@@ -46,7 +46,7 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 		})
 	case *events.Withdrawn:
 		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], dtos.AccountHistoryEvent{
-			Amount:  dtos.FromMoney(ev.Amount.Multiply(-1)),
+			Amount:  dtos.FromMoney(ev.Amount),
 			Type:    "Withdrawn",
 			Time:    time.Now(),
 			Game:    ev.GameId,

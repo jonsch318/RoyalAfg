@@ -207,6 +207,9 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                         w += v.username + (i === e.data.winners.length - 1 ? ", " : "");
                     }
                 }
+                if (e.data.winners.length < 1) {
+                    w = "No one. All players folded!";
+                }
                 return {
                     ...p,
                     notification: "Game Ended. Winner is: " + w,

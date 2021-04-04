@@ -65,3 +65,31 @@ export const useResize = (ref: any) => {
 
     return { width, height };
 };
+
+//useResizeElement is a hook to get the dimensions of a element
+export const useResizeElement = (ref: any) => {
+    const [width, setWidth] = useState(0);
+    const [height, setHeight] = useState(0);
+
+    useEffect(() => {
+        if (ref.current) {
+            setWidth(ref.current.offsetWidth);
+            setHeight(ref.current.offsetHeight);
+        }
+    }, [ref.current]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWidth(ref.current.offsetWidth);
+            setHeight(ref.current.offsetHeight);
+        };
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [ref]);
+
+    return { width, height };
+};

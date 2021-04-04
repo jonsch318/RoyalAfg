@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
@@ -63,7 +65,6 @@ func main() {
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-
 	//Configure logging
 	lobbyConfigured := false
 	shutDownStop := make(chan interface{})
@@ -81,8 +82,8 @@ func main() {
 				}
 				//Lobby is configured through kubernetes labels and is assigned a unique id.
 				lobbyConfigured = true
-			} else if !strings.HasPrefix(err.Error(), "key needed") {
-				logger.Errorw("Error during configuration", "error", err)
+			} else if !strings.HasPrefix(err2.Error(), "key needed") {
+				logger.Errorw("Error during configuration", "error", err2)
 			}
 		}
 	})
@@ -109,18 +110,67 @@ func main() {
 	}
 	logger.Info("SDK Ready called")
 
-
 	//Configure HTTP server
 	port := viper.GetString(config.HTTPPort)
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%v", port),
+		Addr:    fmt.Sprintf(":%v", port),
 		Handler: n,
 	}
 
 	//Start HTTP server
 	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
 
+}
 
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer) error {
+	labels := gs.GetObjectMeta().GetLabels()
+	min, err := GetFromLabels("min-buy-in", labels)
+	if err != nil {
+		return err
+	}
+
+	max, err := GetFromLabels("max-buy-in", labels)
+	if err != nil {
+		return err
+	}
+
+	blind, err := GetFromLabels("blind", labels)
+	if err != nil {
+		return err
+	}
+
+	index, err := GetFromLabels("class-index", labels)
+	if err != nil {
+		return err
+	}
+
+	lobbyID, ok := labels["lobbyId"]
+	if !ok {
+		return fmt.Errorf("key needed [%v]", "lobbyId")
+	}
+	b.RegisterLobby(lobbyID)
+
+	lobbyInstance.RegisterLobbyValue(&pokerModels.Class{
+		Min:   min,
+		Max:   max,
+		Blind: blind,
+	}, index, lobbyID)
+	return nil
+}
+
+func GetFromLabels(key string, labels map[string]string) (int, error) {
+	valString, ok := labels[key]
+
+	if !ok {
+		return 0, fmt.Errorf("key needed [%v]", key)
+	}
+
+	val, err := strconv.Atoi(valString)
+	if err != nil {
+		return 0, err
+	}
+
+	return val, nil
 }
 
 //StartShutdownTimer sets the status shutdown after 10 minutes.

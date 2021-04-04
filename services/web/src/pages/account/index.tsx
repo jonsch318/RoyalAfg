@@ -65,7 +65,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
     if (loading) return null;
 
     if (!loading && !session) {
-        router.push("/auth/login").then(() => {});
+        router.push("/auth/login").then();
         return <div>Not signed in... redirecting</div>;
     }
 

@@ -23,7 +23,6 @@ func (l *Lobby) Join(player *models.Player) error {
 		}
 	}
 
-
 	//Send Lobby Info to player
 	err := utils.SendToPlayerTimeout(player, events.NewLobbyInfoEvent(
 		l.LobbyID,
@@ -105,8 +104,9 @@ func (l *Lobby) FillLobbyPosition() {
 	log.Logger.Debugf("send event")
 
 	log.Logger.Debugf("started watching player close and sending event")
+
 	//Start CloseWatching
-	go l.WatchPlayerConnClose(playerIndex)
+	go l.WatchPlayerConnClose(playerIndex, player.ID)
 
 	//Update player count label (matchmaker)
 	l.SetPlayerCountLabel()
@@ -115,7 +115,7 @@ func (l *Lobby) FillLobbyPosition() {
 }
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.
-func (l *Lobby) WatchPlayerConnClose(playerIndex int) {
+func (l *Lobby) WatchPlayerConnClose(playerIndex int, id string) {
 	defer func() {
 		//Player removal was and is the most crashed situation of the game.
 		if r := recover(); r != nil {
@@ -126,16 +126,24 @@ func (l *Lobby) WatchPlayerConnClose(playerIndex int) {
 	//wait for closing message
 	_, ok := <-l.Players[playerIndex].Close
 
+	//find player after close. (Player array could have changed so playerIndex is out of date)
+	i := l.FindPlayerByID(id)
+	if i < 0 {
+		//player not found. Should not happen
+		log.Logger.Errorw("Could not find player after close message")
+		return
+	}
+
 	if !ok {
 		log.Logger.Warnf("Close channel closed... Indicating player left")
-		log.Logger.Infof("Removing player %v", l.Players[playerIndex].ID)
+		log.Logger.Infof("Removing player %v", l.Players[i].ID)
 		//remove from lobby when closing
-		err := l.RemovePlayerByID(l.Players[playerIndex].ID)
+		err := l.RemovePlayerByID(l.Players[i].ID)
 
 		if err != nil {
-			log.Logger.Errorw("error during removal", "id", l.Players[playerIndex].ID, "error", err)
+			log.Logger.Errorw("error during removal", "id", l.Players[i].ID, "error", err)
 		}
-	}else {
+	} else {
 		log.Logger.Warnf("Something was send to close channel")
 	}
 }
@@ -149,7 +157,7 @@ func (l *Lobby) PlayerRemoval() {
 		return
 	}
 
-	if player.ID == ""{
+	if player.ID == "" {
 		log.Logger.Debugf("player id nil")
 	}
 	//Get index of player
@@ -171,7 +179,7 @@ func (l *Lobby) PlayerRemoval() {
 	}
 
 	//Send leave event
-	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i,len(l.Players), l.GameStarted))
+	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i, len(l.Players), l.GameStarted))
 
 	l.PlayerRemoval()
 }

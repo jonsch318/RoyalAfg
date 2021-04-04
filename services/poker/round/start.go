@@ -10,6 +10,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/random"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
@@ -53,13 +54,13 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		}
 	}
 
-	r.whileNotEnded(func(){
+	r.whileNotEnded(func() {
 		r.sendDealer()
 	})
 	// Publish chosen Dealer
 	time.Sleep(sleepTime)
 
-	r.whileNotEnded(func(){
+	r.whileNotEnded(func() {
 		//set predefined blinds
 		err := r.setBlinds()
 		if err != nil {
@@ -115,17 +116,22 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 func (r *Round) evaluate() {
 	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
 	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board, r.InCount)
-	log.Logger.Infow("Winners determined: %v", winners)
+	log.Logger.Infof("Winners determined: %v", winners)
 	r.logCards()
+
+	if len(winners) == 0 {
+		log.Logger.Debugf("All players left or folded. No one wins")
+		utils.SendToAll(r.Players, events.NewGameEndEvent([]models.PublicPlayer{}, money.Zero().Display()))
+		return
+	}
 
 	//Publish commands to bank service.
 	shares := r.Bank.ConcludeRound(winners, r.PublicPlayers)
 
-
 	//Send winning results to clients. You could add the hole cards for clarity. But this can be added fairly easily.
 	winningPublic := make([]models.PublicPlayer, len(winners))
 	for i, w := range winners {
-		if r.PublicPlayers[w.Position].ID != w.Player.ID{
+		if r.PublicPlayers[w.Position].ID != w.Player.ID {
 			log.Logger.Errorf("Player and win info not synchronized")
 			continue
 		}

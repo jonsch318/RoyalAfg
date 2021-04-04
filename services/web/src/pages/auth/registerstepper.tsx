@@ -93,7 +93,7 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                 username: dto.username,
                 password: dto.password,
                 email: dto.email,
-                birthdate: moment(dto.birthdate).format(),
+                birthdate: moment(dto.birthdate).toISOString(),
                 fullName: dto.fullName
             },
             csrf

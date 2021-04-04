@@ -32,12 +32,17 @@ func main() {
 	//Gorilla Router
 	r := mux.NewRouter()
 
+	//Bind to environment variables
+	viper.SetEnvPrefix("search")
+	_ = viper.BindEnv("elasticsearch_ca")
+
 	//elasticSearchClient, err := elasticsearch.NewDefaultClient()
 	elasticSearchClient, err := elasticsearch.NewClient(elasticsearch.Config{
 		Addresses:         []string{viper.GetString(serviceconfig.ElasticSearchAddress)},
 		Username:          viper.GetString(serviceconfig.ElasticSearchUsername),
 		Password:          viper.GetString(serviceconfig.ElasticSearchPassword),
 		EnableDebugLogger: !viper.GetBool(config.Prod),
+		CACert:            []byte(viper.GetString("elasticsearch_ca")),
 	})
 
 	if err != nil {
