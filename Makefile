@@ -39,3 +39,6 @@ docker_build_poker:
 
 docker_build_bank:
 	docker build -t johnnys318/royalafg_bank:latest --build-arg service=./services/bank/main.go .
+
+update_mocks:
+	mockery --all --keeptree
