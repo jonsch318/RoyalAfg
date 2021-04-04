@@ -23,7 +23,7 @@ func (l *Lobby) Join(player *models.Player) error {
 		}
 	}
 
-	//Send Lobby Info to player
+	//Send Lobby Info to player even before joining.
 	err := utils.SendToPlayerTimeout(player, events.NewLobbyInfoEvent(
 		l.LobbyID,
 		l.Count(),

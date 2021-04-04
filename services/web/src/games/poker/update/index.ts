@@ -50,12 +50,13 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
             });
             break;
         case JOIN_SUCCESS:
+            console.log("Self: BuyIn(", e.data.players[e.data.position].buyIn, ")");
             setPoker((p) => {
                 return { ...p, players: _addPlayers(e.data.players), index: e.data.position };
             });
             break;
         case PLAYER_JOIN:
-            console.log("Player [ " + e.data.player.username + " ] joined: " + e.data.player.buyIn);
+            //console.log("Player [ " + e.data.player.username + " ] joined: " + e.data.player.buyIn);
             setPoker((p) => {
                 return {
                     ...p,

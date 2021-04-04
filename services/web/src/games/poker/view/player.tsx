@@ -53,7 +53,8 @@ const Player: FC<PlayerProps> = ({ x, y, player, dealer, oneSelf }) => {
             />
             <Text
                 text={player.buyIn + " -> " + player.bet}
-                x={PlayerWidth - PlayerPaddingX - width}
+                anchor={{x: 1, y: 0}}
+                x={PlayerWidth - PlayerPaddingX}
                 ref={ref}
                 y={PlayerPaddingY}
                 style={{ fontSize: 17 }}
