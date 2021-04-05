@@ -21,7 +21,7 @@ type Lobby struct {
 	Players       []models.Player
 	PublicPlayers []models.PublicPlayer
 	PlayerQueue   *queue.PlayerQueue
-	RemovalQueue *queue.PlayerQueue
+	RemovalQueue  *queue.PlayerQueue
 	Bank          bank.Interface
 	round         round.Interface
 	sdk           *sdk.SDK
@@ -33,14 +33,14 @@ type Lobby struct {
 //NewLobby creates a new lobby object
 func NewLobby(b bank.Interface, sdk *sdk.SDK) *Lobby {
 	return &Lobby{
-		Players:     make([]models.Player, 0),
+		Players:       make([]models.Player, 0),
 		PublicPlayers: make([]models.PublicPlayer, 0),
-		PlayerQueue: queue.New(),
-		RemovalQueue: queue.New(),
-		Bank:        b,
-		dealer:      -1,
-		c:           make(chan bool, 1),
-		sdk:         sdk,
+		PlayerQueue:   queue.New(),
+		RemovalQueue:  queue.New(),
+		Bank:          b,
+		dealer:        -1,
+		c:             make(chan bool, 1),
+		sdk:           sdk,
 	}
 }
 
@@ -50,7 +50,6 @@ func (l *Lobby) RegisterLobbyValue(class *pokerModels.Class, classIndex int, id 
 	l.round = round.NewRound(l.Bank, class.Blind)
 	l.LobbyID = id
 }
-
 
 //GetGameStarted determines whether a game has already in this lobby started.
 func (l *Lobby) GetGameStarted() bool {
@@ -73,7 +72,6 @@ func (l *Lobby) HasToBeRemoved() bool {
 	return l.RemovalQueue.Length() > 0
 }
 
-
 //RemovePlayerByID removes the given player identified by his id
 func (l *Lobby) RemovePlayerByID(id string) error {
 
@@ -87,9 +85,9 @@ func (l *Lobby) RemovePlayerByID(id string) error {
 	l.RemovalQueue.Enqueue(&l.Players[i])
 	_ = l.round.Leave(id)
 	if !l.GetGameStarted() {
+		log.Logger.Debugf("Game not started start removal")
 		l.RemoveAfterRound()
 	}
 
 	return nil
 }
-

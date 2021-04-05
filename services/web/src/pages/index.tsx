@@ -37,7 +37,7 @@ const Index: FC = () => {
                         </div>
 
                         <div className="flex justify-center items-center mt-52 md:mb-64 mb-44">
-                            <Link href={session ? "/game" : "/auth/register"}>
+                            <Link href={session ? "/games" : "/auth/register"}>
                                 <motion.button
                                     whileHover={{ scale: 1.15, transition: { duration: 0.2, ease: "easeInOut" } }}
                                     initial={{ y: 50 }}

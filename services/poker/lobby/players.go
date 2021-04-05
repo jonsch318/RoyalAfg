@@ -70,9 +70,40 @@ func (l *Lobby) FillLobbyPosition() {
 	}
 	public := player.ToPublic()
 
+	registeredIndex := l.FindPlayerByID(player.ID)
+
+	if registeredIndex != -1 {
+		//Player with the same index
+		register := &l.Players[registeredIndex]
+		if register.Left {
+			//Player reconnected we switch to the new connection
+			register.Close = player.Close
+			register.Out = player.Out
+			register.In = player.In
+			register.Left = false
+
+			err := utils.SendToPlayerInListTimeout(l.Players, registeredIndex, events.NewJoinSuccessEvent(l.PublicPlayers, registeredIndex, public.BuyIn, l.GameStarted))
+			if err != nil {
+				log.Logger.Infof("Could not send to player")
+				if err := l.RemovePlayerByID(l.Players[registeredIndex].ID); err != nil {
+					log.Logger.Errorw("error during removal", "id", l.Players[registeredIndex].ID, "error", err)
+				}
+				l.FillLobbyPosition()
+				return
+			}
+
+			go l.WatchPlayerConnClose(registeredIndex, player.ID)
+
+			l.FillLobbyPosition()
+			return
+		} else if viper.GetBool(serviceconfig.GameRequiresUniquePlayers) {
+			log.Logger.Infof("player with id [%s] tried entering twice with the unique player requirement", player.ID)
+			return
+		}
+	}
+
 	//Check if player is unique when required
 	if viper.GetBool(serviceconfig.GameRequiresUniquePlayers) && l.FindPlayerByID(player.ID) != 1 {
-		log.Logger.Infof("player with id [%s] tried entering twice with the unique player requirement", player.ID)
 		//Moving on to next player in queue.
 		l.FillLobbyPosition()
 	}
@@ -163,7 +194,7 @@ func (l *Lobby) PlayerRemoval() {
 	//Get index of player
 	i := l.FindPlayerByID(player.ID)
 	if i < 0 {
-		log.Logger.Warnw("Id [%v] not in lobby", player.ID)
+		log.Logger.Warnf("Id [%v] not in lobby", player.ID)
 		return
 	}
 	public := l.PublicPlayers[i]
