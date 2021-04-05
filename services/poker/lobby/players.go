@@ -15,6 +15,7 @@ import (
 
 //Join adds the player to the waiting queue and starts the queue emptying if possible.
 func (l *Lobby) Join(player *models.Player) error {
+
 	//Check if lobby is empty, if it is set state to allocated.
 	if l.Count() <= 0 {
 		//Set Gameserver state to allocated.
@@ -45,11 +46,10 @@ func (l *Lobby) Join(player *models.Player) error {
 
 	l.FillLobbyPosition()
 
-	log.Logger.Debugf("Gamestart if [%d] > %d && %v", l.Count(), viper.GetInt(serviceconfig.PlayersRequiredForStart), !l.GetGameStarted())
 	//Start game if not already started.
-	if l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) && !l.GetGameStarted() {
+	if !l.GetGameStarted() && l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 		log.Logger.Debugf("Calling start")
-		l.Start()
+		go l.Start() //Call start in seperate routine, so that this routine can still add players.
 	}
 	return nil
 }
@@ -70,8 +70,11 @@ func (l *Lobby) FillLobbyPosition() {
 	}
 	public := player.ToPublic()
 
-	registeredIndex := l.FindPlayerByID(player.ID)
+	//Next element will be index last element + 1.
+	playerIndex := len(l.Players)
 
+	//Check if a player with the given id already exists.
+	registeredIndex := l.FindPlayerByID(player.ID)
 	if registeredIndex != -1 {
 		//Player with the same index
 		register := &l.Players[registeredIndex]
@@ -84,36 +87,55 @@ func (l *Lobby) FillLobbyPosition() {
 
 			err := utils.SendToPlayerInListTimeout(l.Players, registeredIndex, events.NewJoinSuccessEvent(l.PublicPlayers, registeredIndex, public.BuyIn, l.GameStarted))
 			if err != nil {
-				log.Logger.Infof("Could not send to player")
-				if err := l.RemovePlayerByID(l.Players[registeredIndex].ID); err != nil {
-					log.Logger.Errorw("error during removal", "id", l.Players[registeredIndex].ID, "error", err)
+				log.Logger.Infof("Could not send join success event to player. Trying to remove player now.")
+				if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
+					log.Logger.Errorw("Could not remove player after failing to send join success", "id", l.Players[playerIndex].ID, "error", err)
 				}
 				l.FillLobbyPosition()
 				return
 			}
 
-			go l.WatchPlayerConnClose(registeredIndex, player.ID)
+			go l.watchPlayerConnClose(registeredIndex, player.ID)
 
 			l.FillLobbyPosition()
 			return
-		} else if viper.GetBool(serviceconfig.GameRequiresUniquePlayers) {
-			log.Logger.Infof("player with id [%s] tried entering twice with the unique player requirement", player.ID)
+		} else {
+			log.Logger.Infof("player with id [%s] tried entering twice", player.ID)
+			l.FillLobbyPosition()
 			return
 		}
 	}
 
-	//Check if player is unique when required
-	if viper.GetBool(serviceconfig.GameRequiresUniquePlayers) && l.FindPlayerByID(player.ID) != 1 {
-		//Moving on to next player in queue.
+	err := l.addPlayer(player, public)
+	if err != nil {
+		log.Logger.Infof("Could not send join success event to player. Trying to remove player now.")
+		if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
+			log.Logger.Errorw("Could not remove player after failing to send join success", "id", l.Players[playerIndex].ID, "error", err)
+		}
 		l.FillLobbyPosition()
+		return
 	}
 
-	log.Logger.Info("Adding player to player list")
+	log.Logger.Debugf("Start watching player close and sending event")
+
+	//Start CloseWatching
+	go l.watchPlayerConnClose(playerIndex, player.ID)
+
+	//Update player count label (matchmaker)
+	l.SetPlayerCountLabel()
+
+	l.FillLobbyPosition()
+}
+
+//addPlayer is a helper function to add a player to the playerlist and bank
+func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) error {
+
+	log.Logger.Debugf("Adding a player to playerlist")
 	playerIndex := len(l.Players)
 	l.Players = append(l.Players, *player)
 	l.PublicPlayers = append(l.PublicPlayers, *public)
 	l.PlayerCount++
-	log.Logger.Debugf("Adding players internal bank entry")
+	log.Logger.Debugf("Adding player to poker bank")
 
 	l.Bank.AddPlayer(player)
 	l.Bank.UpdatePublicPlayerBuyIn(l.PublicPlayers)
@@ -123,30 +145,11 @@ func (l *Lobby) FillLobbyPosition() {
 	//Send to currently active players. The joining player is not included. He will get a different confirmation
 	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players), l.GameStarted))
 	//Send join confirmation to player
-	err := utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn, l.GameStarted))
-	if err != nil {
-		log.Logger.Infof("Could not send to player")
-		if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
-			log.Logger.Errorw("error during removal", "id", l.Players[playerIndex].ID, "error", err)
-		}
-		l.FillLobbyPosition()
-		return
-	}
-	log.Logger.Debugf("send event")
-
-	log.Logger.Debugf("started watching player close and sending event")
-
-	//Start CloseWatching
-	go l.WatchPlayerConnClose(playerIndex, player.ID)
-
-	//Update player count label (matchmaker)
-	l.SetPlayerCountLabel()
-
-	l.FillLobbyPosition()
+	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn, l.GameStarted))
 }
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.
-func (l *Lobby) WatchPlayerConnClose(playerIndex int, id string) {
+func (l *Lobby) watchPlayerConnClose(playerIndex int, id string) {
 	defer func() {
 		//Player removal was and is the most crashed situation of the game.
 		if r := recover(); r != nil {
@@ -155,62 +158,25 @@ func (l *Lobby) WatchPlayerConnClose(playerIndex int, id string) {
 	}()
 
 	//wait for closing message
-	_, ok := <-l.Players[playerIndex].Close
-
-	//find player after close. (Player array could have changed so playerIndex is out of date)
-	i := l.FindPlayerByID(id)
-	if i < 0 {
-		//player not found. Should not happen
-		log.Logger.Errorw("Could not find player after close message")
-		return
-	}
-
+	m, ok := <-l.Players[playerIndex].Close
 	if !ok {
-		log.Logger.Warnf("Close channel closed... Indicating player left")
-		log.Logger.Infof("Removing player %v", l.Players[i].ID)
-		//remove from lobby when closing
-		err := l.RemovePlayerByID(l.Players[i].ID)
 
+		//find player after close. (Player array could have changed so playerIndex is out of date)
+		i := l.FindPlayerByID(id)
+		if i < 0 {
+			//player not found. Should not happen
+			log.Logger.Errorf("Could not find player after close message. Indicating player close is called twice %v", id)
+			return
+		}
+
+		log.Logger.Debugf("Close channel closed... Indicating player left")
+		log.Logger.Warnf("REMOVING player %v", id)
+		//remove from lobby when closing
+		err := l.RemovePlayerByID(id)
 		if err != nil {
-			log.Logger.Errorw("error during removal", "id", l.Players[i].ID, "error", err)
+			log.Logger.Errorw("error during removal", "id", id, "error", err)
 		}
 	} else {
-		log.Logger.Warnf("Something was send to close channel")
+		log.Logger.Warnf("Something was send to close channel. Message: %v", m)
 	}
-}
-
-//PlayerRemoval removes all players in the removal queue.
-func (l *Lobby) PlayerRemoval() {
-
-	player := l.RemovalQueue.Dequeue()
-	if player == nil {
-		//No player in queue
-		return
-	}
-
-	if player.ID == "" {
-		log.Logger.Debugf("player id nil")
-	}
-	//Get index of player
-	i := l.FindPlayerByID(player.ID)
-	if i < 0 {
-		log.Logger.Warnf("Id [%v] not in lobby", player.ID)
-		return
-	}
-	public := l.PublicPlayers[i]
-
-	//Remove player from list, public list and bank
-	l.Players = append(l.Players[:i], l.Players[i+1:]...)
-	l.PublicPlayers = append(l.PublicPlayers[:i], l.PublicPlayers[i+1:]...)
-	l.PlayerCount--
-
-	err := l.Bank.RemovePlayer(player.ID)
-	if err != nil {
-		log.Logger.Errorw("error during removing player from bank", "error", err)
-	}
-
-	//Send leave event
-	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i, len(l.Players), l.GameStarted))
-
-	l.PlayerRemoval()
 }

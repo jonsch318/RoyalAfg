@@ -1,12 +1,10 @@
 package lobby
 
 import (
-	"errors"
 	"sync"
 
 	sdk "agones.dev/agones/sdks/go"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
@@ -70,24 +68,4 @@ func (l *Lobby) HasToBeRemoved() bool {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 	return l.RemovalQueue.Length() > 0
-}
-
-//RemovePlayerByID removes the given player identified by his id
-func (l *Lobby) RemovePlayerByID(id string) error {
-
-	i := l.FindPlayerByID(id)
-
-	if i < 0 {
-		log.Logger.Warnw("player could not be found", "id", id)
-		return errors.New("the player is not in the lobby")
-	}
-
-	l.RemovalQueue.Enqueue(&l.Players[i])
-	_ = l.round.Leave(id)
-	if !l.GetGameStarted() {
-		log.Logger.Debugf("Game not started start removal")
-		l.RemoveAfterRound()
-	}
-
-	return nil
 }

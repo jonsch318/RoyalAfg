@@ -17,7 +17,7 @@ const Raise: FC<RaiseProps> = ({ onRaise }) => {
         <div className="flex justify-center items-center rounded mx-4 h-full">
             <CurrencyInput
                 name="amount"
-                className="border-blue-600 flex justify-center items-center h-full px-3 outline-none py-1 flex w-80 font-sans placeholder-blue-300 text-black border-solid ml-4 mr-2 rounded"
+                className="border-blue-600 justify-center items-center h-full px-3 outline-none py-1 flex w-80 font-sans placeholder-blue-300 text-black border-solid ml-4 mr-2 rounded"
                 placeholder="Raise Amount"
                 intlConfig={{ locale: locale, currency: "USD" }}
                 autoComplete="off"

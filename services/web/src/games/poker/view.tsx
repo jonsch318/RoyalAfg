@@ -6,7 +6,6 @@ import { usePoker } from "./provider";
 import TextureProvider from "./view/textures";
 import Board from "./view/board";
 import Status from "./view/status";
-import { useDim } from "../../hooks/dimensions";
 
 export const URL = "/static/games/poker/textures/cards.json";
 
@@ -27,7 +26,7 @@ const View: FC = () => {
                 <Container x={width * 0.5} y={(height - 60) * 0.5}>
                     <Players poker={poker} />
                 </Container>
-                <Container x={width* 0.5} y={(height - 60) * 0.5} anchor={0.5}>
+                <Container x={width * 0.5} y={(height - 60) * 0.5} anchor={{ x: 0.5, y: 0.5 }}>
                     <Board cards={poker.board} forLength={5} />
                 </Container>
             </TextureProvider>
