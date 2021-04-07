@@ -22,17 +22,13 @@ const IdNav: FC = () => {
         return (
             <nav className="flex items-center h-full w-full">
                 <div className="flex items-center h-full w-full px-4">
-                    <Link href="/auth/register" passHref>
-                        <a
-                            href="/auth/register"
-                            className="id-nav-item md:bg-transparent px-4 py-1 rounded bg-gray-300 md:hover:bg-blue-700 md:mx-2 transition-colors duration-150 flex">
+                    <Link href="/auth/register">
+                        <a className="id-nav-item cursor-pointer md:bg-transparent px-4 py-1 rounded bg-gray-300 md:hover:bg-blue-700 md:mx-2 transition-colors duration-150 flex">
                             Register
                         </a>
                     </Link>
-                    <Link href="/auth/login" passHref>
-                        <a
-                            href="/auth/login"
-                            className="id-nav-item bg-blue-800 px-6 py-1 rounded hover:bg-blue-900 md:mx-2 text-white transition-colors duration-150 flex mr-0 ml-auto">
+                    <Link href="/auth/login">
+                        <a className="id-nav-item bg-blue-800 px-6 py-1 rounded hover:bg-blue-900 md:mx-2 text-white transition-colors duration-150 flex mr-0 ml-auto">
                             Login
                         </a>
                     </Link>

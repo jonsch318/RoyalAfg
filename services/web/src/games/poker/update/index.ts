@@ -30,10 +30,11 @@ export const RAISE = 3;
 //CHECK action pushes the action requirement to the next player
 export const CHECK = 4;
 
-const _addPlayers = (data: any): IPlayer[] => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _addPlayers = (data: any, setIn = false): IPlayer[] => {
     const players = [];
     for (let i = 0; i < data.length; i++) {
-        players.push(new Player(data[i].id, data[i].username, data[i].buyIn));
+        players.push(new Player(data[i].id, data[i].username, data[i].buyIn, setIn));
     }
     return players;
 };
@@ -52,7 +53,11 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
         case JOIN_SUCCESS:
             console.log("Self: BuyIn(", e.data.players[e.data.position].buyIn, ")");
             setPoker((p) => {
-                return { ...p, players: _addPlayers(e.data.players), index: e.data.position };
+                const players = _addPlayers(e.data.players);
+
+                players[e.data.position].buyIn = e.data.buyIn;
+
+                return { ...p, players: players, index: e.data.position };
             });
             break;
         case PLAYER_JOIN:
@@ -87,7 +92,6 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
             break;
         case GAME_START:
             setPoker((p) => {
-                console.log("Position: ", e.data.position);
                 return {
                     ...p,
                     dealer: -1,

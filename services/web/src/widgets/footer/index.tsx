@@ -41,7 +41,6 @@ const Footer: FC<FooterProps> = ({ absolute }) => {
                         <FooterCard title="legal">
                             <FooterCardItem href="/legal/terms">Terms & Conditions</FooterCardItem>
                             <FooterCardItem href="/legal/privacy">Privacy Statement</FooterCardItem>
-                            <FooterCardItem>Hello</FooterCardItem>
                         </FooterCard>
                     </div>
                 </div>

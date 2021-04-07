@@ -37,13 +37,13 @@ func (r *Round) setBlinds() error {
 		}
 
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
-				&r.PublicPlayers[i],
-				2,
-				i,
-				r.SmallBlind.Display(),
-				r.Bank.GetPlayerBet(r.Players[i].ID),
-				r.Bank.GetPlayerWallet(r.Players[i].ID),
-				r.Bank.GetPot(),
+			&r.PublicPlayers[i],
+			2,
+			i,
+			r.SmallBlind.Display(),
+			r.Bank.GetPlayerBet(r.Players[i].ID),
+			r.Bank.GetPlayerWallet(r.Players[i].ID),
+			r.Bank.GetPot(),
 		))
 		success = true
 		smallBlindIndex = i

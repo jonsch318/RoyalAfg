@@ -11,7 +11,7 @@ import (
 func (r *Round) holeCards(cards []models.Card) {
 	j := 0
 	for i := range r.Players {
-		if r.Players[i].Active && j + 1 < len(cards) {
+		if r.Players[i].Active && j+1 < len(cards) {
 			var c [2]models.Card
 			c[0] = cards[j]
 			c[1] = cards[j+1]
@@ -21,10 +21,6 @@ func (r *Round) holeCards(cards []models.Card) {
 			err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewHoleCardsEvent(c))
 			if err != nil {
 				log.Logger.Infof("Could not send to player flagging as removed and folding")
-				if err = r.Leave(r.Players[i].ID); err != nil {
-					log.Logger.Errorf("Could not fold player...")
-				}
-
 			}
 		}
 	}

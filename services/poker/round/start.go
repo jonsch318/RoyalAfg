@@ -48,9 +48,8 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		if r.Players[i].ID != r.PublicPlayers[i].ID {
 			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
 		}
-		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, &r.PublicPlayers[i], i, r.Bank.GetPot())); err != nil {
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.GetPot())); err != nil {
 			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
-			_ = r.Leave(r.Players[i].ID)
 		}
 	}
 
@@ -116,7 +115,7 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 func (r *Round) evaluate() {
 	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
 	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board, r.InCount)
-	log.Logger.Infof("Winners determined: %v", winners)
+	log.Logger.Infof("Showdown concluded")
 	r.logCards()
 
 	if len(winners) == 0 {
@@ -136,13 +135,12 @@ func (r *Round) evaluate() {
 			continue
 		}
 		if !r.Players[w.Position].Active {
-			log.Logger.Errorf("Player not active")
+			log.Logger.Errorf("Winner is not active. This should not happen!!")
 			continue
 		}
 		winningPublic[i] = r.PublicPlayers[w.Position]
-		log.Logger.Debugf("Winning public %v", winningPublic[i])
+		log.Logger.Debugf("Winner: %v", winningPublic[i])
 	}
-	log.Logger.Debugf("Winning Publics %v", winningPublic)
 	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 

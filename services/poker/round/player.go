@@ -10,7 +10,26 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
 )
 
+func (r *Round) Leave(id string) error {
 
+	i, err := r.searchByActiveID(id)
+	if err != nil {
+		log.Logger.Errorw("Leave called for player that does not exist.", "error", err)
+		return err
+	}
+
+	log.Logger.Warnf("Player [%v][%v] is leaving", id, r.Players[i].Username)
+	r.Players[i].Left = true
+	if !r.Players[i].Active {
+		//We dont have to fold an inactive player
+		return nil
+	}
+
+	if r.InCount-1 <= 0 {
+		r.end()
+	}
+	return r.fold(id)
+}
 
 func (r *Round) playerError(i int, message string) {
 	_ = utils.SendToPlayerInListTimeout(r.Players, i, models.NewEvent("INVALID_ACTION", message))
@@ -27,19 +46,17 @@ func (r *Round) waitForAction(i int, preFlop, check bool) (*events.Action, error
 	}
 
 	if mustAllIn {
-		log.Logger.Debug("Must All In")
 		//player cant bet or raise so we disable these flags
 		possibilities = possibilities & 0b11001
 	}
 	if preFlop || !check {
-		log.Logger.Debug("Player cant check")
 		//player cant check so we disable the flag
 		possibilities = possibilities & 0b10111
 	}
 
-	log.Logger.Infof("Possibilities:  %v", strconv.FormatInt(int64(possibilities), 2))
+	log.Logger.Debugf("Action possibilities:  %v", strconv.FormatInt(int64(possibilities), 2))
 
-	utils.SendToAll(r.Players, events.NewWaitForActionEvent(&r.PublicPlayers[i],i, possibilities))
+	utils.SendToAll(r.Players, events.NewWaitForActionEvent(&r.PublicPlayers[i], i, possibilities))
 
 	e, err := utils.WaitUntilCloseOrEvent(&r.Players[i])
 	if err != nil {
@@ -52,6 +69,6 @@ func (r *Round) waitForAction(i int, preFlop, check bool) (*events.Action, error
 		return nil, err
 	}
 
-	log.Logger.Debugw("Received action", "action", action.Action, "payload", action.Payload.Display() )
+	log.Logger.Debugw("Received action", "action", action.Action, "payload", action.Payload.Display())
 	return action, nil
 }

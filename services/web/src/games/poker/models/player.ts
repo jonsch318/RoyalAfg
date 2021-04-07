@@ -22,12 +22,12 @@ export class Player implements IPlayer {
     username: string;
     waiting: boolean;
 
-    constructor(id: string, username: string, buyIn: string) {
+    constructor(id: string, username: string, buyIn = "€0.0", active = false) {
         this.id = id;
         this.buyIn = buyIn;
         this.bet = "€0.0";
         this.cards = [];
-        this.in = true;
+        this.in = active;
         this.username = username;
         this.waiting = false;
     }

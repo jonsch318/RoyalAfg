@@ -11,11 +11,7 @@ const NavItems: FC = () => {
         <div className="md:flex md:h-full w-full">
             <nav className="block md:flex md:flex-auto md:items-center">
                 <HeaderNavItem href="/">Home</HeaderNavItem>
-                <HeaderNavItem
-                    href="/about
-              ">
-                    About
-                </HeaderNavItem>
+                <HeaderNavItem href="/about">About</HeaderNavItem>
                 <HeaderNavItem href="/games">Games</HeaderNavItem>
             </nav>
             <div className="search-container w-full flex-auto py-1">

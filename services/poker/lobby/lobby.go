@@ -19,7 +19,7 @@ type Lobby struct {
 	Players       []models.Player
 	PublicPlayers []models.PublicPlayer
 	PlayerQueue   *queue.PlayerQueue
-	RemovalQueue  *queue.PlayerQueue
+	RemovalQueue  queue.IQueue
 	Bank          bank.Interface
 	round         round.Interface
 	sdk           *sdk.SDK
@@ -33,7 +33,7 @@ func NewLobby(b bank.Interface, sdk *sdk.SDK) *Lobby {
 	return &Lobby{
 		Players:       make([]models.Player, 0),
 		PublicPlayers: make([]models.PublicPlayer, 0),
-		PlayerQueue:   queue.New(),
+		PlayerQueue:   queue.NewPlayer(),
 		RemovalQueue:  queue.New(),
 		Bank:          b,
 		dealer:        -1,

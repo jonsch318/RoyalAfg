@@ -26,7 +26,7 @@ const View: FC = () => {
                 <Container x={width * 0.5} y={(height - 60) * 0.5}>
                     <Players poker={poker} />
                 </Container>
-                <Container x={width * 0.5} y={(height - 60) * 0.5} anchor={{ x: 0.5, y: 0.5 }}>
+                <Container x={width * 0.5} y={(height - 60) * 0.5} anchor={{ x: 0, y: 0 }}>
                     <Board cards={poker.board} forLength={5} />
                 </Container>
             </TextureProvider>

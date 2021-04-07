@@ -51,8 +51,9 @@ const Index: FC = () => {
                     <article>
                         <h1 className="font-sans text-4xl font-semibold text-center">{f("WelcomeHeader")}</h1>
                         <div className="grid md:grid-cols-2 grid-cols-1 md:px-32 px-8 my-12">
-                            <Image src="/index/play.jpg" alt="Play" className="rounded-l-lg" width="500px" height="400px" />
+                            <Image src="/index/play.jpg" alt="Play" className="rounded-l-lg" width={500} height={500} />
                             <div className="p-12 bg-gray-200 rounded-r-lg">
+                                <h2 className="text-center text-lg">{f("WelcomeArticleHeader")}</h2>
                                 <p className="text-center">{f("WelcomeArticle")}</p>
                             </div>
                         </div>

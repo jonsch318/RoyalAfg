@@ -43,7 +43,7 @@ func (r *Round) actions(preFlop bool) {
 
 	log.Logger.Debugf("blocking list defined")
 
-	if len(blocking) <= 0{
+	if len(blocking) <= 0 {
 		//Everything is handled no further actions from players necessary
 		return
 	}
@@ -58,7 +58,7 @@ func (r *Round) actions(preFlop bool) {
 		CanCheck:         !preFlop,
 		CheckCount:       0,
 		Current:          0,
-		BlockingIndex:    startIndexBlocking%len(blocking),
+		BlockingIndex:    startIndexBlocking % len(blocking),
 		BlockingList:     NewBlockingList(blocking),
 	}
 
@@ -91,23 +91,7 @@ func (r *Round) fold(id string) error {
 			r.Bank.GetPlayerBet(r.Players[i].ID),
 			r.Bank.GetPlayerWallet(r.Players[i].ID),
 			r.Bank.GetPot(),
-			),
+		),
 	)
 	return nil
-}
-
-func (r *Round) Leave(id string) error {
-	i, err := r.searchByActiveID(id)
-	if err != nil {
-		return err
-	}
-
-	if i < 0 || i >= len(r.Players) {
-		return errors.New("something went wrong")
-	}
-	r.Players[i].Left = true
-	if r.InCount - 1 <= 0 {
-		r.end()
-	}
-	return r.fold(id)
 }

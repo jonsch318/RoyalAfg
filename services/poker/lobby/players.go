@@ -47,7 +47,7 @@ func (l *Lobby) Join(player *models.Player) error {
 	l.FillLobbyPosition()
 
 	//Start game if not already started.
-	if !l.GetGameStarted() && l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
+	if !l.GameStarted && l.Count() >= viper.GetInt(serviceconfig.PlayersRequiredForStart) {
 		log.Logger.Debugf("Calling start")
 		go l.Start() //Call start in seperate routine, so that this routine can still add players.
 	}
@@ -130,7 +130,7 @@ func (l *Lobby) FillLobbyPosition() {
 //addPlayer is a helper function to add a player to the playerlist and bank
 func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) error {
 
-	log.Logger.Debugf("Adding a player to playerlist")
+	log.Logger.Debugf("ADDING PLAYER [%v][%v]", public.ID, public.Username)
 	playerIndex := len(l.Players)
 	l.Players = append(l.Players, *player)
 	l.PublicPlayers = append(l.PublicPlayers, *public)
@@ -140,12 +140,10 @@ func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) er
 	l.Bank.AddPlayer(player)
 	l.Bank.UpdatePublicPlayerBuyIn(l.PublicPlayers)
 
-	public.SetBuyIn(l.Bank.GetPlayerWallet(public.ID))
-
 	//Send to currently active players. The joining player is not included. He will get a different confirmation
-	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, len(l.Players)-1, len(l.Players), l.GameStarted))
+	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, playerIndex, l.Count(), l.GameStarted))
 	//Send join confirmation to player
-	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, public.BuyIn, l.GameStarted))
+	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, l.PublicPlayers[playerIndex].BuyIn, l.GameStarted))
 }
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.
@@ -161,6 +159,7 @@ func (l *Lobby) watchPlayerConnClose(playerIndex int, id string) {
 	m, ok := <-l.Players[playerIndex].Close
 	if !ok {
 
+		l.lock.RLock()
 		//find player after close. (Player array could have changed so playerIndex is out of date)
 		i := l.FindPlayerByID(id)
 		if i < 0 {
@@ -171,8 +170,10 @@ func (l *Lobby) watchPlayerConnClose(playerIndex int, id string) {
 
 		log.Logger.Debugf("Close channel closed... Indicating player left")
 		log.Logger.Warnf("REMOVING player %v", id)
+
+		l.lock.RUnlock()
 		//remove from lobby when closing
-		err := l.RemovePlayerByID(id)
+		err := l.RemovePlayer(i)
 		if err != nil {
 			log.Logger.Errorw("error during removal", "id", id, "error", err)
 		}
