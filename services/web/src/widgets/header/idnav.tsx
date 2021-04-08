@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC } from "react";
 import Avatar from "../../components/header/id/avatar";
 import Link from "next/link";
@@ -23,7 +24,7 @@ const IdNav: FC = () => {
             <nav className="flex items-center h-full w-full">
                 <div className="flex items-center h-full w-full px-4">
                     <Link href="/auth/register">
-                        <a className="id-nav-item cursor-pointer md:bg-transparent px-4 py-1 rounded bg-gray-300 md:hover:bg-blue-700 md:mx-2 transition-colors duration-150 flex">
+                        <a className="id-nav-item md:bg-transparent px-4 py-1 rounded bg-gray-300 md:hover:bg-blue-700 md:mx-2 transition-colors duration-150 flex">
                             Register
                         </a>
                     </Link>

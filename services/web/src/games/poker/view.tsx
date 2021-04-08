@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import { Container, Stage } from "@inlet/react-pixi";
 import Players from "./view/players";
 import useWindowDimensions from "../../hooks/windowSize";
@@ -6,6 +6,7 @@ import { usePoker } from "./provider";
 import TextureProvider from "./view/textures";
 import Board from "./view/board";
 import Status from "./view/status";
+import { useResize } from "../../hooks/dimensions";
 
 export const URL = "/static/games/poker/textures/cards.json";
 
@@ -13,6 +14,9 @@ const View: FC = () => {
     const { width, height } = useWindowDimensions();
 
     const poker = usePoker();
+
+    const ref = useRef();
+    const dim = useResize(ref);
 
     return (
         <Stage
@@ -26,7 +30,7 @@ const View: FC = () => {
                 <Container x={width * 0.5} y={(height - 60) * 0.5}>
                     <Players poker={poker} />
                 </Container>
-                <Container x={width * 0.5} y={(height - 60) * 0.5} anchor={{ x: 0, y: 0 }}>
+                <Container x={(width - dim.width) * 0.5} y={(height - 60 - dim.height) * 0.5} ref={ref}>
                     <Board cards={poker.board} forLength={5} />
                 </Container>
             </TextureProvider>

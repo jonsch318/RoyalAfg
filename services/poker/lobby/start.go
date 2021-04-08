@@ -54,9 +54,9 @@ func (l *Lobby) Start() {
 			_, _, _ = reader.ReadLine()
 		}
 
-		if len(l.Players) < viper.GetInt(serviceconfig.PlayersRequiredForStart) {
+		if len(l.Players) < viper.GetInt(serviceconfig.PlayersRequiredForStart) || len(l.Players) == 0 {
 			// Not enough players to start
-			log.Logger.Errorf("Not enough players to continue")
+			log.Logger.Warnf("Not enough players to continue")
 			return
 		}
 

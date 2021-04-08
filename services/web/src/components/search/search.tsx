@@ -33,21 +33,24 @@ const SearchInput: FC = () => {
     const [inputWidth, setInputWidth] = useState(0);
     const [focused, setFocused] = useState(false);
 
-    const debouncedQuery = useDebounce(query, 100);
+    const debouncedQuery = useDebounce(query, 150);
 
     useEffect(() => {
         const f = async () => {
             if (debouncedQuery) {
-                setLoading(true);
                 const res = await Search(query);
                 setResults(res);
-                setLoading(false);
             } else {
                 setResults([]);
             }
+            setLoading(false);
         };
         f();
     }, [debouncedQuery]);
+
+    useEffect(() => {
+        setLoading(true);
+    }, [query]);
 
     const inputRef = useRef(null);
     useEffect(() => {

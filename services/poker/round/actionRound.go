@@ -14,23 +14,22 @@ import (
 )
 
 type ActionRoundOptions struct {
-	Success            bool
-	Payload            *money.Money
+	Success          bool
+	Payload          *money.Money
 	SuccessfulAction *events.Action
-	PlayerId string
-	PreFlop bool
-	CanCheck bool
-	CheckCount byte
-	Current int
-	BlockingIndex int
-	BlockingList *BlockingList
+	PlayerId         string
+	PreFlop          bool
+	CanCheck         bool
+	CheckCount       byte
+	Current          int
+	BlockingIndex    int
+	BlockingList     *BlockingList
 }
 
 //recursiveAction acquires actions from every player so that everybody folds, bets the same amount, or go all in
-func (r *Round) recursiveAction(options *ActionRoundOptions){
+func (r *Round) recursiveAction(options *ActionRoundOptions) {
 
 	//_____Preceding checks_____
-
 
 	//Checks in Poker are special because it is not always legal to check. (Anchor)
 	if options.CanCheck && options.CheckCount >= r.InCount {
@@ -56,8 +55,14 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 
 		log.Logger.Warnf("Player is not active or already all in. Continuing with next in list")
 		// remove from blocking list
-		if options.BlockingList != nil{
+		if options.BlockingList != nil {
 			options.BlockingList.RemoveBlocking(options.BlockingIndex)
+
+			if options.BlockingList.CheckIfEmpty() {
+				//Action tries concluded because list is empty
+				return
+			}
+
 			options.BlockingIndex = options.BlockingIndex % options.BlockingList.Length()
 		}
 		r.recursiveAction(options)
@@ -86,21 +91,20 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 			&r.PublicPlayers[options.Current],
 			options.SuccessfulAction.Action,
 			options.Current,
-			options.Payload.Display() ,
+			options.Payload.Display(),
 			r.Bank.GetPlayerBet(options.PlayerId),
 			r.Bank.GetPlayerWallet(options.PlayerId),
 			r.Bank.GetPot(),
 		))
 		log.Logger.Debugf("Send results to clients")
 		time.Sleep(1 * time.Second)
-	}else {
+	} else {
 		log.Logger.Infof("Player folded during call")
 		options.SuccessfulAction = &events.Action{
 			Action:  events.FOLD,
 			Payload: moneyUtils.Zero(),
 		}
 	}
-
 
 	if !options.BlockingList.CheckIfEmpty() {
 		//Get next in blocking list
@@ -117,10 +121,8 @@ func (r *Round) recursiveAction(options *ActionRoundOptions){
 	return
 }
 
-
-
 func (r *Round) actionTries(options *ActionRoundOptions) error {
-	for i := 3; i > 0 ; i-- {
+	for i := 3; i > 0; i-- {
 		if !r.Players[options.Current].Active {
 			return errors.PlayerFoldedError{}
 		}
@@ -213,6 +215,6 @@ func (r *Round) action(options *ActionRoundOptions) {
 			options.BlockingList.RemoveBlocking(options.BlockingIndex)
 			return
 		}
-		r.playerError(options.BlockingIndex, fmt.Sprintf("Bet must be equal to the current highest bet." ))
+		r.playerError(options.BlockingIndex, fmt.Sprintf("Bet must be equal to the current highest bet."))
 	}
 }

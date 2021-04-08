@@ -5,13 +5,13 @@ import PreLobby from "./preLobby";
 import NextGameStart from "./nextGame";
 
 const GameLoading: FC = () => {
-    const poker = usePoker();
+    const { connected, lobbyInfo, loaded } = usePoker();
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center">
-            {!poker.connected && <Connecting />}
-            {poker.connected && poker.lobbyInfo.playerCount < poker.lobbyInfo.minPlayersToStart && <PreLobby />}
-            {poker.connected && poker.lobbyInfo.playerCount >= poker.lobbyInfo.minPlayersToStart && <NextGameStart />}
+        <div className="w-screen h-screen flex justify-center items-center" hidden={!loaded}>
+            {!connected && <Connecting />}
+            {connected && lobbyInfo.playerCount < lobbyInfo.minPlayersToStart && <PreLobby />}
+            {connected && lobbyInfo.playerCount >= lobbyInfo.minPlayersToStart && <NextGameStart />}
         </div>
     );
 };

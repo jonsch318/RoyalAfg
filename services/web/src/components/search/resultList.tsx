@@ -29,9 +29,9 @@ const SearchResultList: FC<SearchResultListProps> = ({ results, loading }) => {
                             <Result result={result} />
                         </motion.li>
                     ))}
-                {!loading && results.length < 1 && (
+                {results.length < 1 && (
                     <motion.li variants={items} animate="animate" initial="initial" className="px-5 text-black">
-                        Sorry nothing was found.
+                        {loading ? "Searching..." : "Sorry nothing was found."}
                     </motion.li>
                 )}
             </motion.ul>

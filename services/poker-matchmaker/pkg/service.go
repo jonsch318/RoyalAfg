@@ -1,12 +1,10 @@
 package pkg
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	"agones.dev/agones/pkg/client/clientset/versioned"
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/slok/go-http-metrics/metrics/prometheus"
@@ -26,7 +24,7 @@ import (
 )
 
 //Start the poker matchmaker service
-func Start(logger *zap.SugaredLogger)  {
+func Start(logger *zap.SugaredLogger) {
 
 	//################## Setup ####################
 	//Configure Poker Classes
@@ -62,7 +60,6 @@ func Start(logger *zap.SugaredLogger)  {
 	r.HandleFunc("/api/poker/classinfo", ticketHandler.ClassInfo).Methods(http.MethodGet)
 	r.Handle("/metrics", promhttp.Handler())
 
-
 	//Register Middleware
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
@@ -74,22 +71,13 @@ func Start(logger *zap.SugaredLogger)  {
 
 	//Configure HTTP server
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%v", viper.GetInt(config.HTTPPort)),
-		Handler: n,
-		WriteTimeout: viper.GetDuration(config.WriteTimeout),
+		Addr:              fmt.Sprintf(":%v", viper.GetInt(config.HTTPPort)),
+		Handler:           n,
+		WriteTimeout:      viper.GetDuration(config.WriteTimeout),
 		ReadHeaderTimeout: viper.GetDuration(config.ReadTimeout),
-		IdleTimeout: viper.GetDuration(config.IdleTimeout),
+		IdleTimeout:       viper.GetDuration(config.IdleTimeout),
 	}
 
 	//Start HTTP server
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))
-}
-func ping(client *redis.Client) error {
-	pong, err := client.Ping(context.Background()).Result()
-	if err != nil {
-		return err
-	}
-	fmt.Println(pong)
-
-	return nil
 }

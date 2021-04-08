@@ -55,6 +55,7 @@ const Lobbies: FC<LobbiesProps> = ({ info }) => {
                             })
                         );
                     })}
+                {info?.lobbies?.length == 0 && <p>No lobbies found.</p>}
             </div>
         </div>
     );

@@ -28,12 +28,13 @@ func (l *Lobby) RemovePlayerByID(id string) error {
 }
 
 func (l *Lobby) RemovePlayer(index int) error {
-	l.RemovalQueue.Enqueue(RemovalRequest{
-		Pos: index,
-		ID:  l.Players[index].ID,
-	})
+	l.Players[index].Left = true
+	err := l.round.Leave(l.Players[index].ID)
 
-	_ = l.round.Leave(l.Players[index].ID)
+	if err != nil {
+		return err
+	}
+
 	if !l.GetGameStarted() {
 		log.Logger.Debugf("Game not started start removal")
 		l.RemoveAfterRound()
@@ -44,17 +45,16 @@ func (l *Lobby) RemovePlayer(index int) error {
 
 //RemoveAfterRound starts the recursive removal of hanging players
 func (l *Lobby) RemoveAfterRound() {
-	//Lock for multithreading writes
-	//we lock here so we dont need a recursive mutex lock in the next function.
-	l.lock.Lock()
-	defer l.lock.Unlock()
 
 	log.Logger.Debugf("Starting Removal of players after round.")
 
 	//Remove players that left during the round.
-	for _, player := range l.Players {
-		if player.Left {
-			l.RemovalQueue.Enqueue(&player)
+	for i := range l.Players {
+		if l.Players[i].Left {
+			l.RemovalQueue.Enqueue(RemovalRequest{
+				Pos: i,
+				ID:  l.Players[i].ID,
+			})
 		}
 	}
 

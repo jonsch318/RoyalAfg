@@ -53,6 +53,7 @@ type JoinSuccess struct {
 	BuyIn       string                `json:"buyin"`
 	Position    int                   `json:"position"`
 	GameStarted bool                  `json:"gameStarted"`
+	Reconnect   bool                  `json:"reconnect"`
 }
 
 func NewJoinSuccessEvent(players []models.PublicPlayer, position int, buyIn string, gameStarted bool) *models.Event {

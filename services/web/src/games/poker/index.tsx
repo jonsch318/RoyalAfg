@@ -7,7 +7,7 @@ import GameLoading from "./loading";
 import { useRouter } from "next/router";
 
 const PokerVisual: FC = () => {
-    const poker = usePoker();
+    const { loaded, possibleActions } = usePoker();
     const { close, send } = usePokerConn();
     const router = useRouter();
 
@@ -22,14 +22,14 @@ const PokerVisual: FC = () => {
                 className="absolute cursor-pointer font-sans font-semibold text-sm ml-6 mt-4 py-1 px-3 bg-gray-300  rounded-full hover:bg-gray-800 hover:text-white transition-colors duration-200 ease-out">
                 Leave
             </button>
-            {poker.gameRunning && (
+            {loaded && (
                 <div>
-                    <Actions possibleActions={poker.possibleActions} conn={send} />
+                    <Actions possibleActions={possibleActions} conn={send} />
                     <View />
                 </div>
             )}
             <Notification />
-            {!poker.gameRunning && <GameLoading />}
+            {!loaded && <GameLoading />}
         </>
     );
 };

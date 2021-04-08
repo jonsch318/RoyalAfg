@@ -61,13 +61,13 @@ func (l *Lobby) FillLobbyPosition() {
 		return
 	}
 
-	log.Logger.Debugf("Dequeueing player")
 	player := l.PlayerQueue.Dequeue()
 	if player == nil {
 		//No player in queue exiting
 		log.Logger.Debug("dequeued player is nil => Queue empty")
 		return
 	}
+	log.Logger.Debugf("Dequeued Player")
 	public := player.ToPublic()
 
 	//Next element will be index last element + 1.
@@ -79,6 +79,8 @@ func (l *Lobby) FillLobbyPosition() {
 		//Player with the same index
 		register := &l.Players[registeredIndex]
 		if register.Left {
+
+			log.Logger.Infof("Player [%v][%v] reconnected.", player.ID, player.Username)
 			//Player reconnected we switch to the new connection
 			register.Close = player.Close
 			register.Out = player.Out

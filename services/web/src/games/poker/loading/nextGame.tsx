@@ -46,7 +46,7 @@ const NextGameStartTimed: FC<NextGameStartTimedProps> = ({ time, timeout }) => {
 };
 
 const NextGameStart: FC = () => {
-    const { lobbyInfo } = usePoker();
+    const { lobbyInfo, gameRunning } = usePoker();
     const [tick, setTick] = useState(lobbyInfo.gameStartTimeout);
     useEffect(() => {
         const inter = setInterval(() => {
@@ -61,8 +61,8 @@ const NextGameStart: FC = () => {
 
     return (
         <>
-            {tick < 0 && <NextGameStartAfterTime />}
-            {tick >= 0 && <NextGameStartTimed time={tick} timeout={lobbyInfo.gameStartTimeout} />}
+            {(tick < 0 || gameRunning) && <NextGameStartAfterTime />}
+            {tick >= 0 && !gameRunning && <NextGameStartTimed time={tick} timeout={lobbyInfo.gameStartTimeout} />}
         </>
     );
 };

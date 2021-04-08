@@ -82,7 +82,7 @@ spec:
               rabbitmq_username: {{.Data.username}}
               rabbitmq_password: {{.Data.password}}
               {{- end}}
-            "vault.hashicorp.com/role": poker-role
+            "vault.hashicorp.com/role": "poker-role"
         spec:
           serviceAccountName: royalafg-poker
           containers:

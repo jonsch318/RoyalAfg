@@ -15,6 +15,7 @@ export interface IPoker {
     possibleActions: number;
     notification: string;
     connected: boolean;
+    loaded: boolean;
 }
 
 export const PokerInitState: IPoker = {
@@ -36,5 +37,6 @@ export const PokerInitState: IPoker = {
     gameRunning: false,
     possibleActions: 0,
     notification: "",
-    connected: false
+    connected: false,
+    loaded: false
 };

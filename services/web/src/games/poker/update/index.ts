@@ -47,7 +47,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
     switch (e.event) {
         case LOBBY_INFO:
             setPoker((p) => {
-                return { ...p, lobbyInfo: e.data };
+                return { ...p, lobbyInfo: e.data, gameRunning: e.data.gameStarted };
             });
             break;
         case JOIN_SUCCESS:
@@ -57,7 +57,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
 
                 players[e.data.position].buyIn = e.data.buyIn;
 
-                return { ...p, players: players, index: e.data.position };
+                return { ...p, players: players, index: e.data.position, gameRunning: e.data.gameStarted };
             });
             break;
         case PLAYER_JOIN:
@@ -91,16 +91,18 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
             });
             break;
         case GAME_START:
+            console.log("GAME START");
             setPoker((p) => {
                 return {
                     ...p,
                     dealer: -1,
                     board: [],
                     notification: "Game Started",
-                    gameRunning: true,
-                    players: _addPlayers(e.data.players),
+                    players: _addPlayers(e.data.players, true),
                     pot: e.data.pot,
-                    index: e.data.position
+                    index: e.data.position,
+                    loaded: true,
+                    gameRunning: true
                 };
             });
             break;
@@ -116,15 +118,12 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
             setPoker((p) => {
                 const players = [...p.players];
                 for (let i = 0; i < players.length; i++) {
-                    if (i === e.data.player) {
-                        players[i].cards = e.data.cards;
-                    } else {
-                        players[i].cards = [
-                            { value: -1, color: -1 },
-                            { value: -1, color: -1 }
-                        ];
-                    }
+                    players[i].cards = [
+                        { value: -1, color: -1 },
+                        { value: -1, color: -1 }
+                    ];
                 }
+                players[p.index].cards = e.data.cards;
                 return {
                     ...p,
                     players: players
@@ -223,6 +222,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                     possibleActions: PokerInitState.possibleActions,
                     board: [],
                     gameRunning: false,
+                    loaded: false,
                     lobbyInfo: { ...p.lobbyInfo }
                 };
             });

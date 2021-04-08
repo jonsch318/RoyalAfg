@@ -12,6 +12,8 @@ import (
 func (b *Bank) AddPlayer(player *models.Player) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
+
+	log.Logger.Debugf("BANK: Adding player[%v] with BuyIn: %v", player.ID, player.BuyIn.Display())
 	b.PlayerWallet[player.ID] = player.BuyIn
 	b.PlayerBets[player.ID] = moneyUtils.Zero()
 }
@@ -33,13 +35,13 @@ func (b *Bank) RemovePlayer(id string) error {
 func (b *Bank) UpdatePublicPlayerBuyIn(p []models.PublicPlayer) {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
-	for _, player := range p {
-		t, ok := b.PlayerWallet[player.ID]
+	for i := range p {
+		t, ok := b.PlayerWallet[p[i].ID]
 		if !ok {
-			log.Logger.Warnf("Player [%v] has no wallet", player.ID)
+			log.Logger.Warnf("Player [%v] has no wallet", p[i].ID)
 			continue
 		}
-		player.SetBuyIn(t.Display())
-		log.Logger.Debugf("Player [%v] wallet is %v ", player.Username, player.BuyIn)
+		p[i].SetBuyIn(t.Display())
+		log.Logger.Debugf("Player [%v] wallet is %v ", p[i].Username, p[i].BuyIn)
 	}
 }

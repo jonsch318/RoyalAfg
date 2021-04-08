@@ -67,5 +67,5 @@ func (l *Lobby) HasToBeAdded() bool {
 func (l *Lobby) HasToBeRemoved() bool {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
-	return l.RemovalQueue.Length() > 0
+	return l.RemovalQueue.Length() != 0
 }
