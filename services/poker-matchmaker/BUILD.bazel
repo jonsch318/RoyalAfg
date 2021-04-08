@@ -15,7 +15,7 @@ go_library(
         "//pkg/utils",
         "//services/poker-matchmaker/pkg/handlers",
         "//services/poker-matchmaker/pkg/lobby",
-        "//services/poker-matchmaker/serviceconfig",
+        "//services/poker-matchmaker/pkg/serviceconfig",
         "@com_github_go_redis_redis_v8//:redis",
         "@com_github_gorilla_mux//:mux",
         "@com_github_prometheus_client_golang//prometheus/promhttp",

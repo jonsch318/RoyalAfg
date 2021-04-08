@@ -60,7 +60,7 @@ require (
 	golang.org/x/tools v0.0.0-20210115202250-e0d201561e39 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 // indirect
-	google.golang.org/grpc v1.29.1
+	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
