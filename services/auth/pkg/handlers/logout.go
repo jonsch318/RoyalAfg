@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 )
@@ -37,7 +37,7 @@ func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
 	user := mw.FromUserTokenContext(r.Context().Value("user"))
-	cookie := services.GenerateCookie("", false)
+	cookie := auth.GenerateCookie("", false)
 
 	err := h.Auth.Logout(user.ID)
 

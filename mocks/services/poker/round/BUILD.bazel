@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "round",
+    srcs = ["Interface.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/poker/round",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker/models",
+        "@com_github_stretchr_testify//mock",
+    ],
+)

@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "protos",
+    srcs = [
+        "user.go",
+        "user.pb.go",
+        "user_grpc.pb.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//runtime/protoimpl",
+        "@org_mongodb_go_mongo_driver//bson/primitive",
+    ],
+)

@@ -31,6 +31,7 @@ func NewAccountHistoryQuery(repo *repositories.Account, client *goes.Client) *Ac
 	}
 }
 
+//Handle projects the new events to the read model
 func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 
 	switch ev := message.Event().(type) {
@@ -85,6 +86,7 @@ func (q *AccountHistoryQuery) GetAccountHistory(id string, i int, l int) ([]dtos
 	return fullHistory[i : i+l], nil
 }
 
+//Load Aggregate loads the aggregate from the event store. This would be unnecessary because you would save the commands to a separate database
 func (q *AccountHistoryQuery) LoadAggregate(id string) error {
 	aggregateType := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
 	streamName, _ := q.repo.StreamNameDelegate.GetStreamName(aggregateType, id)

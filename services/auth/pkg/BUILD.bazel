@@ -7,12 +7,12 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",
+        "//pkg/log",
         "//pkg/mw",
-        "//pkg/protos",
         "//pkg/utils",
-        "//services/auth/config",
         "//services/auth/pkg/handlers",
         "//services/auth/pkg/rabbit",
+        "//services/auth/pkg/serviceconfig",
         "//services/auth/pkg/services/authentication",
         "//services/auth/pkg/services/user",
         "@com_github_gorilla_mux//:mux",
@@ -23,7 +23,6 @@ go_library(
         "@com_github_slok_go_http_metrics//middleware/negroni",
         "@com_github_spf13_viper//:viper",
         "@com_github_urfave_negroni//:negroni",
-        "@org_golang_google_grpc//:go_default_library",
         "@org_uber_go_zap//:zap",
     ],
 )

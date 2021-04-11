@@ -35,10 +35,12 @@ func JSONError(w http.ResponseWriter, err interface{}, code int) {
 	json.NewEncoder(w).Encode(err)
 }
 
-func Error(rw http.ResponseWriter, err string, code int){
+//Error is a simplified JSONError wrapper that accepts a string error
+func Error(rw http.ResponseWriter, err string, code int) {
 	JSONError(rw, &ErrorResponse{Error: err}, code)
 }
 
-func Unauthorized(rw http.ResponseWriter){
+//Unauthorized writes a unauthorized JSONError to the response writer
+func Unauthorized(rw http.ResponseWriter) {
 	JSONError(rw, &ErrorResponse{Error: "unauthorized"}, http.StatusUnauthorized)
 }

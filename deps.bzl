@@ -232,8 +232,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_cncf_udpa_go",
         importpath = "github.com/cncf/udpa/go",
-        sum = "h1:WBZRG4aNOuI15bLRrCgN8fCq8E5Xuty6jGbmSNEvSsU=",
-        version = "v0.0.0-20191209042840-269d4d468f6f",
+        sum = "h1:cqQfy1jclcSy/FwLjemeg3SR1yaINm74aQyupQ0Bl8M=",
+        version = "v0.0.0-20201120205902-5459f2c99403",
     )
     go_repository(
         name = "com_github_cockroachdb_datadriven",
@@ -412,8 +412,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_envoyproxy_go_control_plane",
         importpath = "github.com/envoyproxy/go-control-plane",
-        sum = "h1:rEvIZUSZ3fx39WIi3JkQqQBitGwpELBIYWeBVh6wn+E=",
-        version = "v0.9.4",
+        sum = "h1:QyzYnTnPE15SQyUeqU6qLbWxMkwyAyu+vGksa0b7j00=",
+        version = "v0.9.9-0.20210217033140-668b12f5399d",
     )
     go_repository(
         name = "com_github_envoyproxy_protoc_gen_validate",
@@ -871,8 +871,8 @@ def go_dependencies():
         name = "com_github_grpc_ecosystem_go_grpc_middleware",
         build_file_proto_mode = "disable_global",
         importpath = "github.com/grpc-ecosystem/go-grpc-middleware",
-        sum = "h1:z53tR0945TRRQO/fLEVPI6SMv7ZflF0TEaTAoU7tOzg=",
-        version = "v1.0.1-0.20190118093823-f849b5445de4",
+        sum = "h1:FlFbCRLd5Jr4iYXZufAvgWN6Ao0JrI5chLINnUXDDr0=",
+        version = "v1.2.2",
     )
     go_repository(
         name = "com_github_grpc_ecosystem_go_grpc_prometheus",
@@ -2261,8 +2261,8 @@ def go_dependencies():
     go_repository(
         name = "org_golang_google_grpc",
         importpath = "google.golang.org/grpc",
-        sum = "h1:EC2SB8S04d2r73uptxphDSUG+kTKVgjRPF+N3xpxRB4=",
-        version = "v1.29.1",
+        sum = "h1:uSZWeQJX5j11bIQ4AJoj+McDBo29cY1MCoC1wO3ts+c=",
+        version = "v1.37.0",
     )
     go_repository(
         name = "org_golang_google_protobuf",

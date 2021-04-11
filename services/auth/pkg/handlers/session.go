@@ -6,13 +6,13 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
 // Session verifies the session and extends the jwt token if valid.
@@ -40,12 +40,12 @@ func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parsed, token, err := services.ExtendToken(cookie.Value)
+	parsed, token, err := auth.ExtendToken(cookie.Value)
 
 	if err != nil {
 		switch e := err.(type) {
 		case *errors.InvalidTokenError:
-			cookie = services.GenerateCookie("", false)
+			cookie = auth.GenerateCookie("", false)
 			cookie.Expires = time.Unix(0, 0)
 			http.SetCookie(rw, cookie)
 			h.l.Errorw("Error token invalid", "error", err, "wrapped", e.Err)
@@ -61,7 +61,7 @@ func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 
 	user := mw.FromUserTokenContext(parsed)
 
-	cookie = services.GenerateCookie(token, false)
+	cookie = auth.GenerateCookie(token, false)
 
 	http.SetCookie(rw, cookie)
 	rw.WriteHeader(http.StatusOK)

@@ -8,6 +8,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 )
 
+//Command is a default Bank Command used to communicate with the bank
 type Command struct {
 	UserId      string    `json:"userId"`
 	CommandType string    `json:"type"`
@@ -17,6 +18,7 @@ type Command struct {
 	Lobby       string    `json:"lobby"`
 }
 
+//NewCommand creates a new bank command
 func NewCommand(commandType, userId string, amount *money.Money, game, lobby string) *Command {
 	return &Command{
 		UserId:      userId,

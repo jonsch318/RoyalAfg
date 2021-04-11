@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/pokerConfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticketToken"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/validation"
 )
@@ -65,7 +65,7 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 
 	//Generate token
 	h.logger.Infow("Generate Ticket", "username", claims.Username, "id", claims.ID, "lobbyId", res.LobbyId, "buyIn", buyIn)
-	token, err := ticketToken.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(pokerConfig.MatchMakerJWTKey))
+	token, err := ticket.GenerateTicketToken(claims.Username, claims.ID, res.LobbyId, buyIn, viper.GetString(config.MatchMakerJWTKey))
 
 	//Send response
 	_ = utils.ToJSON(&TicketResponse{

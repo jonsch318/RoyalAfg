@@ -10,6 +10,7 @@ import (
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
@@ -85,7 +86,7 @@ func (h *Game) Join(rw http.ResponseWriter, r *http.Request) {
 	var tokenDec *pokerModels.Token
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && err == nil {
 		log.Logger.Debugf("Token values: %s, %s, %s", claims["username"], claims["id"], claims["buyIn"])
-		tokenDec = pokerModels.FromToken(claims)
+		tokenDec = ticket.FromToken(claims)
 	} else {
 		log.Logger.Warnw("joinEvent was invalid", "error", err)
 		_ = utils.SendToChanTimeout(playerConn.Out, models.NewEvent("VALIDATION_FAILED", "The joining event was not as the server expected"))

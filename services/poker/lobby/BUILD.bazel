@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "lobby.go",
         "players.go",
+        "remove.go",
         "round.go",
         "start.go",
         "utils.go",

@@ -5,11 +5,11 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
 // Validate validates the LoginDto dto to conform to the api's expectation
@@ -109,7 +109,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate Cookie with jwt
-	cookie := services.GenerateCookie(token, loginDto.RememberMe)
+	cookie := auth.GenerateCookie(token, loginDto.RememberMe)
 
 	// send id cookie with jwt
 	http.SetCookie(rw, cookie)
@@ -125,7 +125,6 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
 
 // noContentResponse is a empty object.
 type noContentResponse struct {

@@ -5,7 +5,6 @@ go_library(
     srcs = [
         "auth.go",
         "csrf.go",
-        "logging.go",
         "zap.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/mw",
@@ -13,7 +12,6 @@ go_library(
     deps = [
         "//pkg/config",
         "//pkg/responses",
-        "//pkg/utils",
         "@com_github_auth0_go_jwt_middleware//:go-jwt-middleware",
         "@com_github_form3tech_oss_jwt_go//:jwt-go",
         "@com_github_spf13_viper//:viper",

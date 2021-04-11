@@ -6,6 +6,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections"
 )
 
+//Account is the http handler for a bank account h
 type Account struct {
 	dispatcher       ycq.Dispatcher
 	eventBus         ycq.EventBus

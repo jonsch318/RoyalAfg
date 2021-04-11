@@ -11,7 +11,6 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/servers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/models",
         "//pkg/protos",
         "//services/user/pkg/database",
         "//services/user/pkg/metrics",

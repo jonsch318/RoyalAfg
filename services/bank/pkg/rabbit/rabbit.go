@@ -56,15 +56,16 @@ func NewEventConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher yc
 	}, nil
 }
 
+//Start the rabbitmq consumer
 func (c *EventConsumer) Start() error {
-	msgs, err := c.ch.Consume(c.q.Name, "", true, false, false, false, nil)
+	messages, err := c.ch.Consume(c.q.Name, "", true, false, false, false, nil)
 	if err != nil {
 		c.logger.Fatalw("Could not consume declared RabbitMQ Queue", "error", err)
 	}
 
 	c.logger.Infof("Message received on queue: %v", c.q.Name)
 	log.Printf(" [*] Starting consuming rabbit messages.")
-	for d := range msgs {
+	for d := range messages {
 		log.Printf("Received a message [%s]: %s", c.q.Name, d.Body)
 		c.commandHandler.Handle(&d)
 	}

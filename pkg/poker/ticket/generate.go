@@ -1,4 +1,4 @@
-package ticketToken
+package ticket
 
 import (
 	"time"
@@ -6,6 +6,7 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 )
 
+//GenerateTicketToken generates a ticket as a jwt
 func GenerateTicketToken(username, id, lobbyId string, buyIn int, key string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,

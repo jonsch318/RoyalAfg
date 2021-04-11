@@ -10,7 +10,6 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -94,7 +93,7 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	cookie := services.GenerateCookie(token, registerDto.RememberMe)
+	cookie := auth.GenerateCookie(token, registerDto.RememberMe)
 	http.SetCookie(rw, cookie)
 
 	command := &auth.AccountCommand{

@@ -13,6 +13,7 @@ go_library(
     deps = [
         "//pkg/log",
         "//pkg/poker/models",
+        "//pkg/poker/ticket",
         "//services/poker-matchmaker/pkg/lobby",
         "//services/poker/events",
         "//services/poker/lobby",
