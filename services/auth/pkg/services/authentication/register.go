@@ -6,13 +6,13 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	pAuth "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
 )
 
-func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error) {
+func (auth *Authentication) Register(dto *dtos.RegisterDto) (*models.User, string, error) {
 	user := models.NewUser(dto.Username, dto.Email, dto.FullName, dto.Birthdate)
 	user.ID = primitive.NewObjectID()
 
@@ -22,7 +22,7 @@ func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error)
 	}
 
 	if hash == "" {
-		return nil, "", fmt.Errorf("Hash from password %v could not be created", dto.Password)
+		return nil, "", fmt.Errorf("hash from password %v could not be created", dto.Password)
 	}
 
 	user.Hash = hash
@@ -38,7 +38,7 @@ func (auth Service) Register(dto *dto.RegisterDto) (*models.User, string, error)
 		return nil, "", err
 	}
 
-	token, err := services.GetJwt(user)
+	token, err := pAuth.GetJwt(user)
 
 	return user, token, err
 }

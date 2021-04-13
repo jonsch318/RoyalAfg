@@ -68,7 +68,7 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/connect-service-upstreams": "royalafg-poker-matchmaker:59683, royalafg-auth:5000"
+        "consul.hashicorp.com/connect-service-upstreams": "royalafg-poker-matchmaker:59683, royalafg-auth:5000, royalafg-user:5001"
       labels:
         app: royalafg-web
         service: web
@@ -91,3 +91,5 @@ spec:
               value: http://127.0.0.1:59683
             - name: POKER_INFO_HOST
               value: http://127.0.0.1:59683
+            - name: USER_HOST
+              value: http://royalafg-user.default.svc.cluster.local:8080

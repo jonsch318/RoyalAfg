@@ -19,6 +19,13 @@ const SessionCookieExpiration = "session_cookie_expiration"
 
 const CorsEnabled = "cors_enabled"
 
+const RedisAddress = "redis_address"
+const RedisUsername = "redis_username"
+const RedisPassword = "redis_password"
+
+const MatchMakerJWTKey =  "matchmaker_signing_key"
+
+
 func RegisterDefaults() {
 
 	viper.SetDefault(Prod, false)
@@ -32,6 +39,9 @@ func RegisterDefaults() {
 	viper.SetDefault(SessionCookieExpiration, time.Hour*24*7)
 
 	viper.SetDefault(CorsEnabled, false)
+
+	viper.SetDefault(RedisUsername, "")
+	viper.SetDefault(RedisPassword, "")
 
 	RegisterRabbitDefaults()
 }

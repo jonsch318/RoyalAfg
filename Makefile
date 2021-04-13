@@ -5,13 +5,10 @@ swagger: check_swagger_install
 	swagger generate spec -o ./services/docs/swagger.yaml --scan-models
 
 update_go_deps: 
-	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
+	bazelisk run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
 
 update:
-	bazel run //:gazelle update
-
-proto:
-	protoc --go_out=plugins=. --go_opt=paths=source_relative ./pkg/user/pkg/user/protos/user.proto   
+	bazelisk run //:gazelle update
 
 protos:
 	cd ./pkg/protos && make protos
@@ -39,3 +36,6 @@ docker_build_poker:
 
 docker_build_bank:
 	docker build -t johnnys318/royalafg_bank:latest --build-arg service=./services/bank/main.go .
+
+update_mocks:
+	mockery --all --keeptree

@@ -15,5 +15,6 @@ go_test(
     deps = [
         "//services/poker/models",
         "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )

@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ticket",
+    srcs = [
+        "deserialize.go",
+        "generate.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/poker/models",
+        "@com_github_form3tech_oss_jwt_go//:jwt-go",
+    ],
+)

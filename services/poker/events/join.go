@@ -50,16 +50,17 @@ func NewLobbyInfoEvent(lobbyId string, players, minToStart, maxBuyIn, minBuyIn, 
 
 type JoinSuccess struct {
 	Players     []models.PublicPlayer `json:"players"`
-	Wallet      string                `json:"wallet"`
+	BuyIn       string                `json:"buyin"`
 	Position    int                   `json:"position"`
 	GameStarted bool                  `json:"gameStarted"`
+	Reconnect   bool                  `json:"reconnect"`
 }
 
-func NewJoinSuccessEvent(players []models.PublicPlayer, position int, wallet string, gameStarted bool) *models.Event {
+func NewJoinSuccessEvent(players []models.PublicPlayer, position int, buyIn string, gameStarted bool) *models.Event {
 	return models.NewEvent(JOIN_SUCCESS, &JoinSuccess{
 		Players:     players,
 		Position:    position,
-		Wallet:      wallet,
+		BuyIn:       buyIn,
 		GameStarted: gameStarted,
 	})
 }
@@ -68,7 +69,7 @@ func NewJoinSuccessEvent(players []models.PublicPlayer, position int, wallet str
 type PlayerLeavesEvent struct {
 	Player      *models.PublicPlayer `json:"player"`
 	Index       int                  `json:"index"`
-	PlayerCount int `json:"playerCount"`
+	PlayerCount int                  `json:"playerCount"`
 	GameStarted bool                 `json:"gameStarted"`
 }
 

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"errors"
+	"github.com/go-redis/cache/v8"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 
@@ -12,12 +12,15 @@ import (
 	"go.uber.org/zap"
 )
 
+
 type UserDatabase struct {
 	l    *zap.SugaredLogger
+	userCache *cache.Cache
 	coll *mgm.Collection
 }
 
-func NewUserDatabase(logger *zap.SugaredLogger) *UserDatabase {
+
+func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDatabase {
 	coll := mgm.Coll(&models.User{})
 
 	logger.Infof("Connected to Collection %v", coll.Name())
@@ -49,6 +52,7 @@ func NewUserDatabase(logger *zap.SugaredLogger) *UserDatabase {
 
 	return &UserDatabase{
 		l:    logger,
+		userCache: userCache,
 		coll: coll,
 	}
 }
@@ -60,7 +64,7 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 		return err
 	}
 
-	db.l.Info("Succeded validation")
+	db.l.Info("Succeeded validation")
 
 	err = db.coll.Create(user)
 
@@ -71,6 +75,30 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 	}
 
 	db.l.Info("Inserted new User ", user.Username)
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
+	}
+	return nil
+}
+
+func (db *UserDatabase) UpdateUser(user *models.User) error {
+	db.l.Debugf("Succeeded validation")
+
+	err := db.coll.Update(user)
+
+	db.l.Infof("User Updated %v", err)
+
+	if err != nil {
+		db.l.Infof("Error during user update %v", err)
+		return err
+	}
+	db.l.Infof("Updated user %v", user.GetID())
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
+	}
 	return nil
 }
 
@@ -79,12 +107,22 @@ func (db *UserDatabase) DeleteUser(user *models.User) error {
 }
 
 func (db *UserDatabase) FindById(id string) (*models.User, error) {
-	user := &models.User{}
 
-	err := db.coll.FindByID(id, user)
+	user, err := db.GetCache(id)
+	if err != nil {
+		db.l.Debugf("Could not get cache %v", err)
+	}
+
+	user = &models.User{}
+	err = db.coll.FindByID(id, user)
 
 	if err != nil {
 		return nil, err
+	}
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
 	}
 
 	return user, nil
@@ -96,6 +134,11 @@ func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 	err := db.coll.FindOne(mgm.Ctx(), bson.M{"email": email}).Decode(user)
 	if err != nil {
 		return nil, err
+	}
+
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
 	}
 
 	return user, nil
@@ -110,20 +153,10 @@ func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 		return nil, err
 	}
 
-	return user, nil
-}
-
-// IsDup returns whether err informs of a duplicate key error because
-// a primary key index or a secondary unique index already has an entry
-// with the given value.
-func IsDup(err error) bool {
-	var e mongo.WriteException
-	if errors.As(err, &e) {
-		for _, we := range e.WriteErrors {
-			if we.Code == 11000 {
-				return true
-			}
-		}
+	err = db.SetCache(user)
+	if err != nil {
+		db.l.Debugf("Could not set cache %v", err)
 	}
-	return false
+
+	return user, nil
 }

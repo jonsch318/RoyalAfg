@@ -6,9 +6,8 @@ import (
 	"github.com/Rhymond/go-money"
 )
 
-
-//AllIn gives the all in Amount the player has to bet
-func (b *Bank) AllIn(id string) *money.Money {
+//allIn gives the all in Amount the player has to bet
+func (b *Bank) allIn(id string) *money.Money {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
 	p, ok := b.PlayerWallet[id]

@@ -94,7 +94,7 @@ spec:
       serviceAccountName: royalafg-auth
       containers:
         - name: royalafg-auth
-          image: docker.io/johnnys318/royalafg_auth:latest
+          image: docker.io/johnnys318/royalafg_auth:dev
           env:
             - name: GRPC_GO_LOG_VERBOSITY_LEVEL
               value: "99"

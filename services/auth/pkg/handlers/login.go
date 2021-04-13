@@ -5,14 +5,15 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 )
 
 // Validate validates the LoginDto dto to conform to the api's expectation
-func Validate(dto dto.LoginDto) error {
+func Validate(dto dtos.LoginDto) error {
 	return validation.ValidateStruct(&dto,
 		validation.Field(&dto.Username, validation.Required, validation.Length(4, 100)),
 		validation.Field(&dto.Password, validation.Required, validation.Length(4, 100)),
@@ -61,7 +62,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginDto := &dto.LoginDto{}
+	loginDto := &dtos.LoginDto{}
 
 	cType := r.Header.Get("Content-Type")
 
@@ -71,7 +72,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	case "application/x-www-form-urlencoded":
 		h.l.Debug("content type form urlencoded")
 
-		err := FromFormURLEncodedRequest(loginDto, r)
+		err := utils.FromFormURLEncodedRequest(loginDto, r)
 
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
@@ -81,7 +82,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 
 	case "application/json":
 		h.l.Debug("content type json")
-		err := FromJSON(loginDto, r.Body)
+		err := utils.FromJSON(loginDto, r.Body)
 		if err != nil {
 			h.l.Errorw("could not decode login dto", "error", err)
 			responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusBadRequest)
@@ -108,7 +109,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate Cookie with jwt
-	cookie := services.GenerateCookie(token, loginDto.RememberMe)
+	cookie := auth.GenerateCookie(token, loginDto.RememberMe)
 
 	// send id cookie with jwt
 	http.SetCookie(rw, cookie)
@@ -117,47 +118,7 @@ func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 
 	// send user
-	err = ToJSON(dto.NewUserDTO(user), rw)
-	if err != nil {
-		h.l.Errorw("json serialization", "error", err)
-		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)
-		return
-	}
-}
-
-// VerifyLoggedIn verifies and validates the cookie and it's jwt token. returns 401 if you are not signed in and 200 if everything is valid-
-// swagger:route GET /account/verify authentication account verifyLoggedIn
-//
-// Verify that the user is logged in
-//
-// This will return either status code 401 Unauthorized if user is not signed in and 200 when the login token is valid
-//
-//	Consumes:
-//
-// 	Produces:
-//	-	application/json
-//
-//	Schemes: http, https
-//
-//	Security:
-//
-// 	Responses:
-//	default: ErrorResponse
-//	401: ErrorResponse
-//	200: NoContentResponse
-func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-	rw.Header().Set("X-Content-Type-Options", "nosniff")
-
-	authenticated, err := h.Auth.VerifyAuthentication()
-
-	if !authenticated || err != nil {
-		h.l.Errorw("A error during login verification", "error", err)
-		rw.WriteHeader(http.StatusUnauthorized)
-	}
-
-	rw.WriteHeader(http.StatusOK)
-	err = ToJSON(&noContentResponse{}, rw)
+	err = utils.ToJSON(dtos.NewUser(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)

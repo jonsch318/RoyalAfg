@@ -3,6 +3,113 @@ consumes:
 - application/json
 - application/x-www-form-urlencoded
 definitions:
+  AccountHistoryEvent:
+    properties:
+      amount:
+        $ref: '#/definitions/CurrencyDto'
+      gameId:
+        type: string
+        x-go-name: Game
+      roundId:
+        type: string
+        x-go-name: LobbyID
+      time:
+        format: date-time
+        type: string
+        x-go-name: Time
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos
+  CurrencyDto:
+    description: CurrencyDto is the data transfer object for a monetary value
+    properties:
+      currency:
+        type: string
+        x-go-name: Currency
+      value:
+        format: int64
+        type: integer
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+  ErrorResponse:
+    description: ErrorResponse is a generic response containing an error
+    properties:
+      error:
+        description: The error
+        type: string
+        x-go-name: Error
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/responses
+  GetUserResponse:
+    properties:
+      user:
+        $ref: '#/definitions/User'
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers
+  HistoryQueryDto:
+    properties:
+      history:
+        items:
+          $ref: '#/definitions/AccountHistoryEvent'
+        type: array
+        x-go-name: History
+      userId:
+        type: string
+        x-go-name: UserID
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers
+  User:
+    description: User is the data transfer object of the internal user object
+    properties:
+      birthdate:
+        description: The unix birthdate of the user
+        format: int64
+        type: integer
+        x-go-name: Birthdate
+      created_at:
+        description: The registration time of the user
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      email:
+        description: The email of the user
+        format: email
+        maxLength: 100
+        minLength: 4
+        type: string
+        x-go-name: Email
+      fullName:
+        description: The full name of the user
+        maxLength: 100
+        minLength: 1
+        type: string
+        x-go-name: FullName
+      id:
+        description: The user id
+        type: string
+        x-go-name: ID
+      updated_at:
+        description: The time when the user was updated last
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      username:
+        description: The username of the user
+        maxLength: 100
+        minLength: 4
+        type: string
+        x-go-name: Username
+    required:
+    - id
+    - username
+    - email
+    - fullName
+    - birthdate
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
   UserDTO:
     description: UserDTO is the data transfer object of the internal user object
     properties:
@@ -52,7 +159,25 @@ definitions:
     - birthdate
     type: object
     x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto
-host: github.com/JohnnyS318/RoyalAfgInGo.games
+  ValidationError:
+    description: Each form property that has missing requirements is listet under
+      Errors (validationErrors)
+    properties:
+      validationErrors:
+        description: The missing requirements
+        type: object
+        x-go-name: Errors
+    title: ValidationError shows the failed validation requirements.
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/responses
+  VerifyAmount:
+    properties:
+      result:
+        type: boolean
+        x-go-name: VerificationResult
+    type: object
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+host: royalafg.games
 info:
   contact:
     email: jonas.max.schneider@gmail.com
@@ -63,30 +188,6 @@ info:
   title: github.com/JohnnyS318/RoyalAfgInGo API
   version: 0.0.1
 paths:
-  /account:
-    get:
-      description: return the authenticated user based on the api key
-      operationId: getUser
-      produces:
-      - application/json
-      responses:
-        "200":
-          $ref: '#/responses/UserResponse'
-        "401":
-          $ref: '#/responses/ErrorResponse'
-        "404":
-          $ref: '#/responses/ErrorResponse'
-        "500":
-          $ref: '#/responses/ErrorResponse'
-        default:
-          $ref: '#/responses/ErrorResponse'
-      schemes:
-      - http
-      - https
-      security:
-      - api_key: []
-      tags:
-      - account
   /account/logout:
     post:
       description: This will remove the identity cookie
@@ -120,6 +221,8 @@ paths:
         "200":
           $ref: '#/responses/UserResponse'
         "400":
+          $ref: '#/responses/ErrorResponse'
+        "403":
           $ref: '#/responses/ErrorResponse'
         "422":
           $ref: '#/responses/ValidationErrorResponse'
@@ -171,6 +274,8 @@ paths:
           $ref: '#/responses/ErrorResponse'
         "401":
           $ref: '#/responses/ErrorResponse'
+        "403":
+          $ref: '#/responses/ErrorResponse'
         "404":
           $ref: '#/responses/ErrorResponse'
         "422":
@@ -202,9 +307,147 @@ paths:
       schemes:
       - http
       - https
-      summary: Session verifies the session and extends the jwt token if valid.
+      summary: Session verifies the session and extends the jwt token if valid. This
+        does not perform a user lookup. GET /api/user does this if the session is
+        correct.
+  /api/bank/balance:
+    post:
+      description: The transaction history of a user
+      operationId: loginUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/HistoryQueryResponse'
+        "400":
+          $ref: '#/responses/ErrorResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        "403":
+          $ref: '#/responses/ErrorResponse'
+        "404":
+          $ref: '#/responses/ErrorResponse'
+        "422":
+          $ref: '#/responses/ValidationErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      summary: Query the users history
+      tags:
+      - authentication
+  /api/bank/deposit:
+    post:
+      consumes:
+      - application/json
+      operationId: bankTransaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/NoContentResponse'
+        "400":
+          $ref: '#/responses/ErrorResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        "403":
+          $ref: '#/responses/ErrorResponse'
+        "404":
+          $ref: '#/responses/ErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      summary: deposits the specified amount to the user.
+      tags:
+      - transaction
+  /api/bank/verifyAmount:
+    post:
+      description: This will check the balance of the user and compare the given amount
+        to it.
+      operationId: verifyAmount
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/VerifyAmountResponse'
+        "400":
+          $ref: '#/responses/ErrorResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        "404":
+          $ref: '#/responses/ErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      summary: VerifyAmount verifies the amount against the given user.
+      tags:
+      - balance
+  /api/user:
+    get:
+      description: return the authenticated user based on the api key
+      operationId: getUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/UserResponse'
+        "401":
+          $ref: '#/responses/ErrorResponse'
+        "404":
+          $ref: '#/responses/ErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+        default:
+          $ref: '#/responses/ErrorResponse'
+      schemes:
+      - http
+      - https
+      security:
+      - api_key: []
+      tags:
+      - account
 produces:
 - application/json
+responses:
+  BalanceQueryResponse:
+    description: BalanceQueryResponse shows the latest current account balance.
+    schema:
+      $ref: '#/definitions/HistoryQueryDto'
+  ErrorResponse:
+    description: ErrorResponse is a generic error response
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+  HistoryQueryResponse:
+    description: HistoryQuery shows the latest transaction history.
+    schema:
+      $ref: '#/definitions/HistoryQueryDto'
+  NoContentResponse:
+    description: NoContentResponse is an empty object with no content
+  UserResponse:
+    description: getUserWrapper returns the current user information.
+    schema:
+      $ref: '#/definitions/GetUserResponse'
+  ValidationErrorResponse:
+    description: |-
+      ValidationError shows the failed validation requirements.
+      Each form field that has missing requirements is listet under validationErrors
+    schema:
+      $ref: '#/definitions/ValidationError'
+  VerifyAmountResponse:
+    description: VerifyAmount validates.
+    schema:
+      $ref: '#/definitions/VerifyAmount'
 schemes:
 - http
 - https

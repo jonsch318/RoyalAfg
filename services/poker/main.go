@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/urfave/negroni"
-	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
@@ -30,13 +29,15 @@ import (
 
 //main method is the entry point of the game server
 func main() {
+	//Register Logger
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
+	//Configure
 	config.ReadStandardConfig("poker", logger)
-
 	serviceconfig.SetDefaults()
 
+	//Bind environment variables
 	viper.SetEnvPrefix("poker")
 	_ = viper.BindEnv(config.RabbitMQUsername)
 	_ = viper.BindEnv(config.RabbitMQPassword)
@@ -59,29 +60,30 @@ func main() {
 		logger.Fatalf("Error during sdk connection, %v", err)
 	}
 
-	//Health ping to agones.
+	//StartHealth ping to agones.
 	logger.Info("Health Ping to agones server management")
 	stop := make(chan struct{})
 	go gameServer.DoHealthPing(s, stop)
 
-
-
+	//Configure logging
 	lobbyConfigured := false
 	shutDownStop := make(chan interface{})
 	b := bank.NewBank(rabbitConn)
 	lobbyInstance := lobby.NewLobby(b, s)
+
+	//Watch Pod Labels for lobby information
 	err = s.WatchGameServer(func(gs *coresdk.GameServer) {
 		if !lobbyConfigured {
-			err := SetLobby(b, lobbyInstance, gs, logger)
-			if err == nil {
+			err2 := SetLobby(b, lobbyInstance, gs)
+			if err2 == nil {
 				logger.Warnw("Lobby configured", "id", lobbyInstance.LobbyID)
 				if lobbyInstance.Count() <= 0 {
 					go StartShutdownTimer(shutDownStop, s)
 				}
 				//Lobby is configured through kubernetes labels and is assigned a unique id.
 				lobbyConfigured = true
-			} else if !strings.HasPrefix(err.Error(), "key needed") {
-				logger.Errorw("Error during configuration", "error", err)
+			} else if !strings.HasPrefix(err2.Error(), "key needed") {
+				logger.Errorw("Error during configuration", "error", err2)
 			}
 		}
 	})
@@ -89,34 +91,38 @@ func main() {
 		logger.Fatalf("Error during sdk annotation subscription: %s", err)
 	}
 
-	//game
+	//Register HTTP handlers
 	gameHandler := handlers.NewGame(lobbyInstance, s, shutDownStop)
 
-	//gorilla router instance
+	//Setup Routes
 	r := mux.NewRouter()
 	r.HandleFunc("/api/poker/health", gameHandler.Health).Methods(http.MethodGet)
 	r.HandleFunc("/api/poker/join", gameHandler.Join) //Websocket join
 
+	//RegisterMiddleware
 	n := negroni.New(negroni.NewRecovery(), mw.NewLogger(logger.Desugar()))
 	n.UseHandler(r)
 
+	//Call Ready
 	err = s.Ready()
 	if err != nil {
 		logger.Errorw("Error during sdk ready call", "error", err)
 	}
-
 	logger.Info("SDK Ready called")
 
+	//Configure HTTP server
 	port := viper.GetString(config.HTTPPort)
-	utils.StartGracefully(logger, &http.Server{
+	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%v", port),
 		Handler: n,
-	}, viper.GetDuration(config.GracefulShutdownTimeout))
+	}
 
+	//Start HTTP server
+	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
 
 }
 
-func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer, logger *zap.SugaredLogger) error {
+func SetLobby(b *bank.Bank, lobbyInstance *lobby.Lobby, gs *coresdk.GameServer) error {
 	labels := gs.GetObjectMeta().GetLabels()
 	min, err := GetFromLabels("min-buy-in", labels)
 	if err != nil {
@@ -167,6 +173,7 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	return val, nil
 }
 
+//StartShutdownTimer sets the status shutdown after 10 minutes.
 func StartShutdownTimer(stop chan interface{}, s *sdk.SDK) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(10*time.Minute))
 	select {

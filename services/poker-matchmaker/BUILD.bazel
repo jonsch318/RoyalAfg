@@ -1,4 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 go_library(
     name = "poker-matchmaker_lib",
@@ -8,23 +10,8 @@ go_library(
     deps = [
         "//pkg/config",
         "//pkg/log",
-        "//pkg/mw",
-        "//pkg/poker/models",
-        "//pkg/utils",
-        "//services/poker-matchmaker/pkg/handlers",
-        "//services/poker-matchmaker/pkg/lobby",
-        "//services/poker-matchmaker/serviceconfig",
-        "@com_github_go_redis_redis_v8//:redis",
-        "@com_github_gorilla_mux//:mux",
-        "@com_github_prometheus_client_golang//prometheus/promhttp",
-        "@com_github_rs_cors//:cors",
-        "@com_github_slok_go_http_metrics//metrics/prometheus",
-        "@com_github_slok_go_http_metrics//middleware",
-        "@com_github_slok_go_http_metrics//middleware/negroni",
-        "@com_github_spf13_viper//:viper",
-        "@com_github_urfave_negroni//:negroni",
-        "@dev_agones_agones//pkg/client/clientset/versioned",
-        "@io_k8s_client_go//rest",
+        "//services/poker-matchmaker/pkg",
+        "//services/poker-matchmaker/pkg/serviceconfig",
     ],
 )
 
@@ -32,4 +19,19 @@ go_binary(
     name = "poker-matchmaker",
     embed = [":poker-matchmaker_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "royalafg_poker_matchmaker",
+    embed = [":poker-matchmaker_lib"],
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_royalafg_poker_matchmaker",
+    format = "Docker",
+    image = ":royalafg_poker_matchmaker",
+    registry = "index.docker.io",
+    repository = "johnnys318/royalafg_poker_match",
+    tag = "latest",
 )

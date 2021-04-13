@@ -7,11 +7,12 @@ import (
 )
 
 const DatabaseUrl = "mongodb_url"
-const DatabaseTimeout = "mongodb_timetout"
+const DatabaseTimeout = "mongodb_timeout"
 const DatabaseName = "mongodb_db_name"
 
 const Port = "grpc_port"
 
+//ConfigureDefaults configures the default values for service specific configurations
 func ConfigureDefaults() {
 	// HttpServer configuration
 	viper.SetDefault(Port, 5001)

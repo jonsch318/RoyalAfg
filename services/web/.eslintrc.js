@@ -27,7 +27,8 @@ module.exports = {
     ],
     rules: {
         "prettier/prettier": ["error", {}, { usePrettierrc: true }], // Use our .prettierrc file as source,
-        quotes: [2, "double"]
+        quotes: [2, "double"],
+        "jsx-a11y/anchor-is-valid": 0
     },
     overrides: [
         {

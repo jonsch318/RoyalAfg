@@ -1,10 +1,10 @@
 const { process } = require("postcss-preset-env");
-const withPWA = require("next-pwa");
 
-module.exports = withPWA({
-    pwa: {
-        dest: "public"
-    },
+module.exports = {
+    //pwa: {
+    //    dest: "public",
+    //    disable: true
+    //},
     i18n: {
         locales: ["en-US", "de-DE"],
         defaultLocale: "en-US",
@@ -13,4 +13,4 @@ module.exports = withPWA({
     publicRuntimeConfig: {
         processEnv: process.env
     }
-});
+};

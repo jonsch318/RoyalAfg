@@ -2,9 +2,11 @@ package utils
 
 import (
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"time"
 )
 
 //SendToAll is a utility for sending an event (message) to an entire array (lobby) of players.
@@ -12,22 +14,21 @@ func SendToAll(players []models.Player, event *models.Event) {
 	for i := range players {
 		err := SendToPlayerInListTimeout(players, i, event)
 		if err != nil {
-			log.Logger.Debugf("player [%v] already left", i)
+			log.Logger.Warnf("Player [%v] already left. Err: %v", players[i].ID, err)
 		}
 	}
 }
-
 
 //SendToPlayerInList is a utility for sending an event (message) to a specific player in a slice
 func SendToPlayerInListTimeout(players []models.Player, i int, event *models.Event) error {
 	if !players[i].Left {
 		return SendToChanTimeout(players[i].Out, event)
 	}
-	return errors.New("player already left")
+	return fmt.Errorf("player [%v] already left", players[i].ID)
 }
 
 //SendToPlayer is a utility for sending an event (message) to a given player
-func SendToPlayerTimeout(player *models.Player, event *models.Event) error{
+func SendToPlayerTimeout(player *models.Player, event *models.Event) error {
 	if !player.Left {
 		return SendToChanTimeout(player.Out, event)
 	}
@@ -48,7 +49,6 @@ func SendToChanTimeoutD(out chan []byte, event *models.Event, d time.Duration) e
 	}
 }
 
-
 //WaitUntilEvent waits for a player event before a timeout succeeds.
 func WaitUntilCloseOrEvent(player *models.Player) (*models.Event, error) {
 	if !player.Left {
@@ -59,7 +59,7 @@ func WaitUntilCloseOrEvent(player *models.Player) (*models.Event, error) {
 
 //WaitUntilEventD waits for a player event before a given timeout duration succeeds.
 func WaitUntilCloseOrEventD(in chan *models.Event, close chan bool, d time.Duration) (*models.Event, error) {
-	if in == nil  {
+	if in == nil {
 		return nil, errors.New("no events can be transmitted")
 	}
 	timer := time.NewTimer(d)
@@ -67,7 +67,7 @@ func WaitUntilCloseOrEventD(in chan *models.Event, close chan bool, d time.Durat
 	case e := <-in:
 		timer.Stop()
 		return e, nil
-	case x, ok := <- close:
+	case x, ok := <-close:
 		log.Logger.Infof("Player left... %v, %v", x, ok)
 		timer.Stop()
 		return nil, errors.New("player closed connection")
@@ -76,7 +76,6 @@ func WaitUntilCloseOrEventD(in chan *models.Event, close chan bool, d time.Durat
 		return nil, errors.New("action timeout")
 	}
 }
-
 
 //WaitUntilEventD waits for a player event before a given timeout duration succeeds.
 func WaitUntilEventD(in chan *models.Event, d time.Duration) (*models.Event, error) {

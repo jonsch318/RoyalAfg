@@ -5,7 +5,7 @@
 //	Schemes:http, https
 //	BasePath: /
 //	Version: 0.0.1
-// 	Host: github.com/JohnnyS318/RoyalAfgInGo.games
+// 	Host: royalafg.games
 //	Contact: jonas.max.schneider@gmail.com
 //	License: MIT http://opensource.org/license/MIT
 //

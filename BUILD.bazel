@@ -1,4 +1,5 @@
 # gazelle:prefix github.com/JohnnyS318/RoyalAfgInGo
+# gazelle:proto disable_global
 
 load("@bazel_gazelle//:def.bzl", "gazelle")
 

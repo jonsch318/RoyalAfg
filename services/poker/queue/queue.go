@@ -8,11 +8,11 @@ import (
 
 //A Player queue works like a queue structure in an thread safe way.
 type PlayerQueue struct {
-	lock sync.Mutex
+	lock  sync.Mutex
 	queue []*models.Player
 }
 
-func New() *PlayerQueue {
+func NewPlayer() *PlayerQueue {
 	return &PlayerQueue{
 		queue: make([]*models.Player, 0),
 	}

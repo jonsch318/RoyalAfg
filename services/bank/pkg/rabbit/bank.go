@@ -29,26 +29,29 @@ func NewBankCommandHandler(logger *zap.SugaredLogger, bus ycq.EventBus, dispatch
 func (h *BankCommandHandler) Handle(d *amqp.Delivery) {
 	h.logger.Infof("Received bank")
 	cmd, err := readBankCommand(d.Body)
-	if err == nil {
-		h.logger.Infof("Deserialized: %v", cmd)
-		switch cmd.CommandType {
-		case bank.Withdraw:
-			_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Withdraw{
-				Amount:  dtos.FromDTO(cmd.Amount),
-				GameId:  cmd.Game,
-				RoundId: cmd.Lobby,
-				Time:    cmd.Time,
-			}))
-		case bank.Deposit:
-			_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Deposit{
-				Amount:  dtos.FromDTO(cmd.Amount),
-				GameId:  cmd.Game,
-				RoundId: cmd.Lobby,
-				Time:    cmd.Time,
-			}))
-		}
-	}else {
+	if err != nil {
 		h.logger.Errorw("Message deserialization error", "error", err)
+		return
+	}
+
+	h.logger.Infof("Deserialized: %v", cmd)
+	switch cmd.CommandType {
+	case bank.Withdraw:
+		//Dispatch to the internal command bus
+		_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Withdraw{
+			Amount:  dtos.FromDTO(cmd.Amount),
+			GameId:  cmd.Game,
+			RoundId: cmd.Lobby,
+			Time:    cmd.Time,
+		}))
+	case bank.Deposit:
+		//Dispatch to the internal command bus
+		_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Deposit{
+			Amount:  dtos.FromDTO(cmd.Amount),
+			GameId:  cmd.Game,
+			RoundId: cmd.Lobby,
+			Time:    cmd.Time,
+		}))
 	}
 }
 

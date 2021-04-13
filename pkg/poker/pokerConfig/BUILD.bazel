@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "pokerConfig",
-    srcs = ["defaults.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/pokerConfig",
-    visibility = ["//visibility:public"],
-)

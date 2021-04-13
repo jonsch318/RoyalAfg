@@ -8,16 +8,19 @@ import (
 	"go.uber.org/zap"
 )
 
+//Logger is a Middleware for logging using the zap logger
 type Logger struct {
 	zap *zap.Logger
 }
 
+//NewLogger creates a new zap logging middleware
 func NewLogger(zap *zap.Logger) *Logger {
 	return &Logger{
 		zap: zap,
 	}
 }
 
+//ServeHTTP is the middleware handler for the logging middleware.
 func (l *Logger) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc){
 	start := time.Now()
 

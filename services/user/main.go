@@ -1,7 +1,7 @@
 package main
 
 import (
-	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg"
@@ -9,11 +9,14 @@ import (
 )
 
 func main() {
+	//Register logger
 	logger := log.RegisterService()
 	defer log.CleanLogger()
 
-	gConfig.ReadStandardConfig("user", logger)
+	//Configure
+	config.ReadStandardConfig("user", logger)
 	serviceconfig.ConfigureDefaults()
 
+	//Start
 	pkg.Start(logger)
 }

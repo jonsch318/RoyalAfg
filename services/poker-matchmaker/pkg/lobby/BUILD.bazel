@@ -16,7 +16,6 @@ go_library(
     deps = [
         "//pkg/log",
         "//pkg/poker/models",
-        "@com_github_go_redis_redis_v8//:redis",
         "@dev_agones_agones//pkg/apis/allocation/v1:allocation",
         "@dev_agones_agones//pkg/client/clientset/versioned",
         "@io_k8s_apimachinery//pkg/apis/meta/v1:meta",

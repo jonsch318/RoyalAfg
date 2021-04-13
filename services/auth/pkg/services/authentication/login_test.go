@@ -9,20 +9,20 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	mocks "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/interfaces"
+	mocks "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/services/user"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	serviceconfig "github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
 )
 
 func TestLogin(t *testing.T) {
-	viper.SetDefault(config.JWTExpiresAt, time.Minute * 60)
+	viper.SetDefault(config.JWTExpiresAt, time.Minute*60)
 	viper.SetDefault(config.JWTIssuer, "example.com")
 	viper.SetDefault(config.JWTSigningKey, "testkey")
 	viper.SetDefault(serviceconfig.Pepper, "")
-	mockUserService := &mocks.UserService{}
-	auth := NewService(mockUserService)
+	mockUserService := &mocks.IUser{}
+	auth := NewAuthentication(mockUserService)
 	hash, err := security.HashPassword("testPassword", "")
 	assert.Nil(t, err)
 
@@ -41,10 +41,10 @@ func TestLogin(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, user, user)
 
-		//Could test the 
+		//Could test the
 		assert.NotNil(t, token)
 	})
-	
+
 	t.Run("UserNotFound", func(t *testing.T) {
 		mockUserService.On("GetUserByUsernameOrEmail", "testUser2").Return(nil, errors.New("user not found"))
 		user, token, err := auth.Login("testUser2", "testPassword")
@@ -54,5 +54,4 @@ func TestLogin(t *testing.T) {
 		assert.Nil(t, user)
 	})
 
-	//test Password case
 }

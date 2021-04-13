@@ -19,11 +19,41 @@ type TransactionDto struct {
 	Amount int `json:"amount"`
 }
 
+// NoContentResponse is an empty object with no content
+// swagger:response NoContentResponse
+type noContentResponseWrapper struct {
+}
+
+// Deposit deposits the specified amount to the user.
+// swagger:route POST /api/bank/deposit transaction bankTransaction
+//
+// deposits the specified amount to the user.
+//
+//	Consumes:
+//	-	application/json
+//
+// 	Produces:
+//	-	application/json
+//
+//	Security:
+//	-	api_key
+//
+//	Schemes: http, https
+//
+// 	Responses:
+//	default: ErrorResponse
+//	400: ErrorResponse
+//	404: ErrorResponse
+//	401: ErrorResponse
+//	403: ErrorResponse
+//	500: ErrorResponse
+//	200: NoContentResponse
+//
 func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 
 	if err := mw.ValidateCSRF(r); err != nil {
 		log.Logger.Errorw("could not validate csrf token", "error", err)
-		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
+		responses.Error(rw, "wrong format decoding failed", http.StatusForbidden)
 		return
 	}
 
@@ -31,7 +61,8 @@ func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 	var dto TransactionDto
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
+		log.Logger.Errorw("Dto deserialization error", "error", err)
+		responses.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -58,7 +89,6 @@ func (h Account) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "wrong format decoding failed"}, http.StatusForbidden)
 		return
 	}
-
 
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

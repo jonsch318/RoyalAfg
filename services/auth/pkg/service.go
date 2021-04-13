@@ -3,29 +3,27 @@ package pkg
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	metricsMW "github.com/slok/go-http-metrics/middleware"
 	"go.uber.org/zap"
 
-	gConfig "github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/negroni"
 
-	"google.golang.org/grpc"
-
 	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/config"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -35,41 +33,29 @@ import (
 
 // Start starts the account service
 func Start(logger *zap.SugaredLogger) {
-
+	//Bind to environment variables
 	viper.SetEnvPrefix("auth")
-	viper.BindEnv(gConfig.RabbitMQUsername)
-	viper.BindEnv(gConfig.RabbitMQPassword)
+	_ = viper.BindEnv(config.RabbitMQUsername)
+	_ = viper.BindEnv(config.RabbitMQPassword)
 
-	rabbitUrl := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(gConfig.RabbitMQUsername),viper.GetString(gConfig.RabbitMQPassword), viper.GetString(gConfig.RabbitMQUrl))
+	//Connect to rabbitmq
+	rabbitUrl := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
 	rabbitConn, err := rabbit.NewRabbitMessageBroker(logger, rabbitUrl)
-
 	if err != nil {
 		logger.Fatalw("Error during rabbit connection", "error", err)
 	}
+	defer rabbitConn.Close()
 
-	// Grpc Setup set (use grpc.WithInsecure() explicitly or
-
-	logger.Infof("Auth service url %v trying to connect", viper.GetString(config.UserServiceUrl))
-	conn, err := grpc.Dial(viper.GetString(config.UserServiceUrl), grpc.WithInsecure())
-
+	//Connect to the user service
+	userRepo, err := user.NewUser()
 	if err != nil {
-		logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString(config.UserServiceUrl))
+		log.Logger.Fatalw("Connection could not be established", "error", err, "target", viper.GetString(serviceconfig.UserServiceUrl))
 	}
-	state := conn.GetState()
-	logger.Infow("Calling state", "state", state.String())
+	defer userRepo.Close()
 
-	defer conn.Close()
+	authService := authentication.NewAuthentication(userRepo)
 
-	userServiceClient := protos.NewUserServiceClient(conn)
-
-	//Middleware config
-
-
-	//services
-	userRepo := user.NewUserService(userServiceClient)
-	authService := authentication.NewService(userRepo)
-
-	// Handlers
+	// Create handlers
 	authHandler := handlers.NewAuth(logger, authService, rabbitConn)
 
 	r := mux.NewRouter()
@@ -85,38 +71,37 @@ func Start(logger *zap.SugaredLogger) {
 	//Exposes metrics to prometheus
 	r.Handle("/metrics", promhttp.Handler())
 
+	//Register Middleware
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service:  "authHTTP",
 	})
 	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 
-	if viper.GetBool(gConfig.CorsEnabled) {
-		cors := cors.New(cors.Options{
+	//enable cors if wanted
+	if viper.GetBool(config.CorsEnabled) {
+		c := cors.New(cors.Options{
 			AllowedOrigins:   []string{"http://localhost:3000"},
 			AllowCredentials: true,
 			Debug:            true,
 		})
-		n.Use(cors)
+		n.Use(c)
 	}
 	n.UseHandler(r)
 
-	logger.Debug("Setup Routes")
+	logger.Debug("Routes setup successfully")
 
-	// SERVER SETUP
-	port := viper.GetString(gConfig.HTTPPort)
-
+	//HTTP server setup
+	port := viper.GetString(config.HTTPPort)
 	logger.Warnf("HTTP Port set to %v", port)
-
 	srv := &http.Server{
 		Addr:         ":" + port,
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
+		WriteTimeout: viper.GetDuration(config.WriteTimeout),
+		ReadHeaderTimeout:  viper.GetDuration(config.ReadTimeout),
+		IdleTimeout:  viper.GetDuration(config.IdleTimeout),
 		Handler:      n,
 	}
 
-	utils.StartGracefully(logger, srv, viper.GetDuration(gConfig.GracefulShutdownTimeout))
-
-	rabbitConn.Close()
+	//Start HTTP server
+	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
 }

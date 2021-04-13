@@ -1,24 +1,25 @@
 package round
 
 import (
+	"sort"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"sort"
 )
 
 type BlockingList struct {
 	list []int
 }
 
-func NewBlockingList(list []int) *BlockingList{
+func NewBlockingList(list []int) *BlockingList {
 	return &BlockingList{
 		list: list,
 	}
 }
 
 func (l *BlockingList) CheckIfEmpty() bool {
-	return len(l.list) <= 0
+	return len(l.list) == 0
 }
 
 func (l *BlockingList) RemoveBlocking(i int) {
@@ -42,7 +43,7 @@ func (l *BlockingList) AddBlocking(k int) error {
 	return nil
 }
 
-func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, bank *bank.Bank) []int {
+func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, bank bank.Interface) []int {
 	l.list = nil
 	for j := 1; j <= len(players); j++ {
 		i := (j + k) % len(players)
@@ -57,8 +58,8 @@ func (l *BlockingList) AddAllButThisBlocking(players []models.Player, k int, ban
 func (l *BlockingList) GetNext(removed bool, i int) int {
 	if removed {
 		return i % len(l.list)
-	}else {
-		return (i+1) % len(l.list)
+	} else {
+		return (i + 1) % len(l.list)
 	}
 }
 

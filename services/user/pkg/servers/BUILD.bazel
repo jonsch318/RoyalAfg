@@ -11,10 +11,11 @@ go_library(
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/servers",
     visibility = ["//visibility:public"],
     deps = [
-        "//pkg/models",
         "//pkg/protos",
         "//services/user/pkg/database",
         "//services/user/pkg/metrics",
+        "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
+        "@com_github_go_ozzo_ozzo_validation//is",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
         "@org_mongodb_go_mongo_driver//bson/primitive",

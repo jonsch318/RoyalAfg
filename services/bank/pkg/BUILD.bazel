@@ -8,10 +8,11 @@ go_library(
     deps = [
         "//pkg/config",
         "//pkg/mw",
+        "//pkg/utils",
         "//services/bank/pkg/commands",
-        "//services/bank/pkg/dtos",
         "//services/bank/pkg/events",
         "//services/bank/pkg/handlers",
+        "//services/bank/pkg/projections",
         "//services/bank/pkg/rabbit",
         "//services/bank/pkg/repositories",
         "//services/bank/pkg/serviceconfig",

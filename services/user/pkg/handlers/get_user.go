@@ -3,13 +3,35 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 )
 
+type GetUserResponse struct {
+	User *dtos.User `json:"user"`
+
+}
+
+// ErrorResponse is a generic error response
+// swagger:response ErrorResponse
+type errorResponseWrapper struct {
+	// The error
+	// in: body
+	Body responses.ErrorResponse
+}
+
+// getUserWrapper returns the current user information.
+// swagger:response UserResponse
+type userResponseWrapper struct {
+	// The user.
+	// in: body
+	Body GetUserResponse
+}
+
 // GetUser returns the authenticated user object
-// swagger:route GET /account account getUser
+// swagger:route GET /api/user account getUser
 //	return the authenticated user based on the api key
 //	Consumes:
 //
@@ -29,29 +51,17 @@ import (
 //
 //
 func (h *UserHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
-	id, ok := r.Context().Value(mw.KeyUserId{}).(string)
+	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 
-	if ok && id != "" {
-		h.l.Errorw("User Id after authmv empty", "error", "User Id after authmv empty")
-		responses.JSONError(rw, &responses.ErrorResponse{Error: "User could not be recognized or is not authenticated"}, http.StatusUnauthorized)
-		return
-	}
-
-	user, err := h.db.FindById(id)
+	user, err := h.db.FindById(claims.ID)
 
 	if err != nil {
-		h.l.Errorw("User not found", "error", err, "id", id)
+		h.l.Errorw("User not found", "error", err, "id", claims.ID)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "User not found"}, http.StatusNotFound)
 		return
 	}
 
 	rw.WriteHeader(200)
-	err = utils.ToJSON(user, rw)
-
-	if err != nil {
-		h.l.Errorw("User could get decoded", "error", err)
-		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong while decoding the user"}, http.StatusInternalServerError)
-		return
-	}
-
+	_ = utils.ToJSON(&GetUserResponse{User: dtos.NewUser(user)}, rw)
+	return
 }

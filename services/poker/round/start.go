@@ -10,6 +10,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/random"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
@@ -30,7 +31,6 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	log.Logger.Debugf("Start called reseting bank and initializing")
 
 	//Initializing start
-	r.Bank.Reset()
 	r.Dealer = dealer
 	r.Players = players
 	r.InCount = byte(len(players))
@@ -48,19 +48,18 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 		if r.Players[i].ID != r.PublicPlayers[i].ID {
 			log.Logger.Errorf("Public-Private Player Information unsynchronized %v", r.Players[i].Username)
 		}
-		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.Pot.Display())); err != nil {
+		if err := utils.SendToPlayerInListTimeout(r.Players, i, events.NewGameStartEvent(r.PublicPlayers, i, r.Bank.GetPot())); err != nil {
 			log.Logger.Debugf("Error during game start event transmittion %v", err.Error())
-			_ = r.Leave(r.Players[i].ID)
 		}
 	}
 
-	r.WhileNotEnded(func(){
+	r.whileNotEnded(func() {
 		r.sendDealer()
 	})
 	// Publish chosen Dealer
 	time.Sleep(sleepTime)
 
-	r.WhileNotEnded(func(){
+	r.whileNotEnded(func() {
 		//set predefined blinds
 		err := r.setBlinds()
 		if err != nil {
@@ -84,21 +83,21 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	}
 
 	// Set players hole cards
-	r.holeCards(cards[4:])
+	r.holeCards(cards[5:])
 	log.Logger.Infof("Hole cards set")
 
 	time.Sleep(sleepTime)
 
-	r.WhileNotEnded(func() {
+	r.whileNotEnded(func() {
 		r.actions(true)
 	})
 	log.Logger.Debugf("Generate cards")
 
 	for i := 3; i < 6; i++ {
-		r.WhileNotEnded(func() {
+		r.whileNotEnded(func() {
 			log.Logger.Debugf("Started action round [%v]", i-2)
 			//Send the board cards first 3 then the 4th and then the 5th
-			r.SendBoardEvent(i)
+			r.sendBoardEvent(i)
 
 			//Acquire the actions of the players
 			r.actions(false)
@@ -108,35 +107,44 @@ func (r *Round) Start(players []models.Player, publicPlayers []models.PublicPlay
 	//Done
 
 	//Evaluation
-	r.Evaluate()
+	r.evaluate()
 	time.Sleep(sleepTime)
 }
 
-//Evaluate concludes this round and publishes all results to the bank service for performing the real transactions.
-func (r *Round) Evaluate() {
+//evaluate concludes this round and publishes all results to the bank service for performing the real transactions.
+func (r *Round) evaluate() {
 	//Determine winner(s) of this round. Most of the time one but can be more if exactly equal cards.
 	winners := showdown.Evaluate(r.Players, r.HoleCards, r.Board, r.InCount)
-	log.Logger.Infow("Winners determined: %v", winners)
-	r.LogCards()
+	log.Logger.Infof("Showdown concluded")
+	r.logCards()
+
+	if len(winners) == 0 {
+		log.Logger.Debugf("All players left or folded. No one wins")
+		utils.SendToAll(r.Players, events.NewGameEndEvent([]models.PublicPlayer{}, money.Zero().Display()))
+		return
+	}
 
 	//Publish commands to bank service.
 	shares := r.Bank.ConcludeRound(winners, r.PublicPlayers)
-
 
 	//Send winning results to clients. You could add the hole cards for clarity. But this can be added fairly easily.
 	winningPublic := make([]models.PublicPlayer, len(winners))
 	for i, w := range winners {
 		if r.PublicPlayers[w.Position].ID != w.Player.ID {
 			log.Logger.Errorf("Player and win info not synchronized")
+			continue
+		}
+		if !r.Players[w.Position].Active {
+			log.Logger.Errorf("Winner is not active. This should not happen!!")
+			continue
 		}
 		winningPublic[i] = r.PublicPlayers[w.Position]
-		log.Logger.Debugf("Winning public %v", winningPublic[i])
+		log.Logger.Debugf("Winner: %v", winningPublic[i])
 	}
-	log.Logger.Debugf("Winning Publics %v", winningPublic)
 	utils.SendToAll(r.Players, events.NewGameEndEvent(winningPublic, shares[0]))
 }
 
-func (r *Round) LogCards() {
+func (r *Round) logCards() {
 	for _, player := range r.Players {
 		str := fmt.Sprintf("%s Cards: [ ", player.Username)
 		for _, card := range r.Board {
@@ -152,8 +160,8 @@ func (r *Round) LogCards() {
 	}
 }
 
-//SendBoardEvent is a little utility for sorting the right board event name for a given number of cards
-func (r *Round) SendBoardEvent(cardCount int) {
+//sendBoardEvent is a little utility for sorting the right board event name for a given number of cards
+func (r *Round) sendBoardEvent(cardCount int) {
 	switch cardCount {
 	case 3:
 		utils.SendToAll(r.Players, events.NewFlopEvent(r.Board))
@@ -164,11 +172,11 @@ func (r *Round) SendBoardEvent(cardCount int) {
 		utils.SendToAll(r.Players, events.NewRiverEvent(r.Board))
 
 	default:
-		log.Logger.Errorf("SendBoardEvent with cardCount not between 3-5: %v", cardCount)
+		log.Logger.Errorf("sendBoardEvent with cardCount not between 3-5: %v", cardCount)
 	}
 }
 
-func (r *Round) End() {
+func (r *Round) end() {
 	log.Logger.Error("ending round due to error")
 	r.Ended = true
 }

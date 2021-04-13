@@ -7,10 +7,10 @@ import (
 
 type UserHandler struct {
 	l  *zap.SugaredLogger
-	db *database.UserDatabase
+	db database.IUserDB
 }
 
-func NewUserHandler(logger *zap.SugaredLogger, database *database.UserDatabase) *UserHandler {
+func NewUserHandler(logger *zap.SugaredLogger, database database.IUserDB) *UserHandler {
 	return &UserHandler{
 		l:  logger,
 		db: database,

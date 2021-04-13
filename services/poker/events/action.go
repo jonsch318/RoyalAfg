@@ -63,33 +63,34 @@ func ToAction(raw *models.Event) (*Action, error) {
 
 //WaitForActionEvent encodes all possible actions the user can perform.
 type WaitForActionEvent struct {
+	Player *models.PublicPlayer `json:"player"`
 	Position        int  `json:"position" mapstructure:"position"`
 	PossibleActions byte `json:"possibleActions" mapstructure:"possibleActions"`
 }
 
 // NewWaitForAction is an event that the server is waiting for an action from a given player. The possible actions range from 0001 = Fold | 0010=Bet | 0100=Raise | 1000=Check to 1111=All
-func NewWaitForActionEvent(position int, possibleActions byte) *models.Event {
-	return models.NewEvent(WAIT_FOR_PLAYER_ACTION, &WaitForActionEvent{Position: position, PossibleActions: possibleActions})
+func NewWaitForActionEvent(player *models.PublicPlayer, position int, possibleActions byte) *models.Event {
+	return models.NewEvent(WAIT_FOR_PLAYER_ACTION, &WaitForActionEvent{Player: player, Position: position, PossibleActions: possibleActions})
 }
 
 type ActionProcessedEvent struct {
+	Player   *models.PublicPlayer `json:"player" mapstructure:"player"`
 	Pot string `json:"pot" mapstructure:"pot"`
 	Wallet       string `json:"wallet" mapstructure:"wallet"`
 	TotalAmount string `json:"totalAmount" mapstructure:"totalAmount"`
 	Amount      string `json:"amount" mapstructure:"amount"`
 	Action int `json:"action" mapstructure:"action"`
 	Position    int     `json:"position" mapstructure:"position"`
-	//Player   *models.PublicPlayer `json:"player" mapstructure:"player"`
 }
 
-func NewActionProcessedEvent(action, position int, amount, totalAmount, wallet, pot string) *models.Event {
+func NewActionProcessedEvent(player *models.PublicPlayer, action, position int, amount, totalAmount, wallet, pot string) *models.Event {
 	return models.NewEvent(ACTION_PROCESSED, &ActionProcessedEvent{
+		Player: player,
 		Action:      action,
 		Position:    position,
 		Amount:      amount,
 		TotalAmount: totalAmount,
 		Wallet:       wallet,
 		Pot: pot,
-		//Player:   player.ToPublic(),
 	})
 }

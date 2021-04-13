@@ -7,7 +7,7 @@ import (
 )
 
 //Checks if the specified amount qualifies as a raise action. It has to be greater than the original maximum bet
-func (b *Bank) IsRaise(amount *money.Money) bool {
+func (b *Bank) isRaise(amount *money.Money) bool {
 	//Error can neglected because it will return false if an error occurs.
 	res, _ := amount.GreaterThan(b.MaxBet)
 	return res

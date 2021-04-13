@@ -1,6 +1,71 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: redis
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+    role: master
+    tier: backend
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: client
+---
+apiVersion: apps/v1  # API version
+kind: Deployment
+metadata:
+  name: redis-master # Unique name for the deployment
+  labels:
+    app: redis       # Labels to be applied to this deployment
+spec:
+  selector:
+    matchLabels:     # This deployment applies to the Pods matching these labels
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1        # Run a single pod in the deployment
+  template:          # Template for the pods that will be created by this deployment
+    metadata:
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service": "redis"
+      labels:        # Labels to be applied to the Pods in this deployment
+        app: redis
+        role: master
+        tier: backend
+    spec:            # Spec for the container which will be run inside the Pod.
+      containers:
+      - name: master
+        image: redis
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+        ports:
+        - containerPort: 6379
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: royalafg-user
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/api/user`)
+      kind: Rule
+      services:
+        - name: royalafg-user
+          port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: royalafg-user
 spec:
   selector:
@@ -9,6 +74,9 @@ spec:
     - name: grpc
       port: 5001
       targetPort: 5001
+    - name: http
+      port: 8080
+      targetPort: 8080
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -20,6 +88,7 @@ data:
     http_port: 8080
     mongodb_url: mongodb://admin:admin@localhost:27017
     jwt_signing_key: testsecret
+    redis_address: localhost:6379
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -39,6 +108,7 @@ spec:
     metadata:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-service-upstreams": "redis:6379"
         "vault.hashicorp.com/agent-inject": "true"
         "vault.hashicorp.com/agent-inject-secret-mongodb.yaml": "kv-v2/royalafg-user-mongo"
         "vault.hashicorp.com/agent-inject-template-mongodb.yaml": |

@@ -6,9 +6,15 @@ import (
 	"net/http"
 	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers"
+
 	"github.com/gorilla/mux"
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/urfave/negroni"
@@ -21,6 +27,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/serviceconfig"
 
 	"github.com/Kamva/mgm"
+	"github.com/go-redis/cache/v8"
+	"github.com/go-redis/redis/v8"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,53 +42,68 @@ import (
 // Start starts the user service
 func Start(logger *zap.SugaredLogger) {
 
-	metrics := metrics.New()
+	//###################### Configuration ######################
+	//Connect to Redis and setup cache
+	red := redis.NewClient(&redis.Options{
+		Addr:     viper.GetString(config.RedisAddress),
+		Username: viper.GetString(config.RedisUsername),
+		Password: viper.GetString(config.RedisPassword),
+	})
+	userCache := cache.New(&cache.Options{
+		Redis:      red,
+		LocalCache: cache.NewTinyLFU(1000, time.Minute),
+	})
+	logger.Debugf("Redis configured to %v", viper.GetString(config.RedisAddress))
 
 	// Mongodb configuration
 	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(serviceconfig.DatabaseTimeout)}
 	err := mgm.SetDefaultConfig(cfg, viper.GetString(serviceconfig.DatabaseName), options.Client().ApplyURI(viper.GetString(serviceconfig.DatabaseUrl)))
 	if err != nil {
-		logger.Errorf("Connection error to url %v see!", viper.GetString(serviceconfig.DatabaseUrl))
-		logger.Fatalw("Connection to mongo failed", "error", err)
+		logger.Fatalw("Could not set the mongodb config", "error", err)
 	}
-	logger.Debugf("Database connection established to [%v] with database name [%v]", viper.GetString(serviceconfig.DatabaseUrl), viper.GetString(serviceconfig.DatabaseName))
 
-	logger.Debugf("with database name [%v]", viper.GetString(serviceconfig.DatabaseName))
-
+	//Connect to mongo
 	_, client, _, err := mgm.DefaultConfigs()
 	if err != nil {
-		logger.Fatalw("Could not get the mongo client", "error", err)
+		logger.Fatalw("Connection to mongo failed", "error", err)
 	}
 	defer utils.DisconnectClient(logger, client)
+	logger.Debugf("Database connection established to [%v] with database name [%v]", viper.GetString(serviceconfig.DatabaseUrl), viper.GetString(serviceconfig.DatabaseName))
 
-	userDatabase := database.NewUserDatabase(logger)
+	userDatabase := database.NewUserDatabase(logger, userCache)
 
-	// grpc server config
-	gs := grpc.NewServer()
-
-	userServer := servers.NewUserServer(logger, userDatabase, metrics)
-
+	//###################### GRPC ######################
+	//Configure GRPC server
+	userServer := servers.NewUserServer(logger, userDatabase, metrics.New())
+	gs := grpc.NewServer(
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				grpc_zap.UnaryServerInterceptor(logger.Desugar()),
+				grpc_recovery.UnaryServerInterceptor(),
+			),
+		),
+	)
 	protos.RegisterUserServiceServer(gs, userServer)
-
 	reflection.Register(gs)
-
-	// create a TCP socket for inbound server connections
-	// l, err := net.Listen("tcp4", fmt.Sprintf(":%d", viper.Get(serviceconfig.Port)))
-	// if err != nil {
-	// 	logger.Fatalw("Unable to create listener", "error", err)
-	// }
-
 	l, err := net.Listen("tcp4", fmt.Sprintf(":%d", viper.Get(serviceconfig.Port)))
 	if err != nil {
 		logger.Fatalw("Unable to create listener", "error", err)
 	}
 
-	// Start the grpc server
-	utils.StartGrpcGracefully(logger, gs, l)
+	//Start the GRPC server
+	go utils.StartGrpcGracefully(logger, gs, l)
 
+	//###################### HTTP ######################
+	//HTTP Handlers
+	userHandler := handlers.NewUserHandler(logger, userDatabase)
+
+	//Setup Routes
 	r := mux.NewRouter()
+	r.Handle("/api/user", mw.RequireAuth(userHandler.GetUser)).Methods(http.MethodGet)
+	r.Handle("/api/user", mw.RequireAuth(userHandler.UpdateUser)).Methods(http.MethodPut)
 	r.Handle("/metrics", promhttp.Handler())
 
+	//RegisterMiddleware
 	metricsMiddleware := metricsMW.New(metricsMW.Config{
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service:  "authHTTP",
@@ -88,6 +111,7 @@ func Start(logger *zap.SugaredLogger) {
 	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
 	n.UseHandler(r)
 
+	//Configure HTTP server
 	srv := &http.Server{
 		Addr:         ":" + viper.GetString(config.HTTPPort),
 		WriteTimeout: time.Second * 15,
@@ -95,5 +119,7 @@ func Start(logger *zap.SugaredLogger) {
 		IdleTimeout:  time.Second * 60,
 		Handler:      n,
 	}
+
+	//Start HTTP server
 	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
 }

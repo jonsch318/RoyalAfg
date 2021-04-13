@@ -5,8 +5,31 @@ import (
 
 	"github.com/Rhymond/go-money"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 )
+
+
+type Interface interface {
+	RegisterLobby(string)
+	GetMaxBet() string
+	GetPlayerBet(id string) string
+	GetPlayerWallet(id string) string
+	GetPot() string
+	HasZeroWallet(id string) bool
+	PerformBet(id string) error
+	PerformRaise(id string, amount *money.Money) error
+	PerformAllIn(id string) (bool, error)
+	PerformBlind(id string, amount *money.Money) error
+	MustAllIn(id string) (bool, error)
+	IsAllIn(id string) bool
+	AddPlayer(player *models.Player)
+	RemovePlayer(id string) error
+	UpdatePublicPlayerBuyIn(p []models.PublicPlayer)
+	ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []string
+}
 
 //Bank  handles the bets and wallets of players.
 type Bank struct {
@@ -24,6 +47,9 @@ func NewBank(eventBus *rabbit.RabbitMessageBroker) *Bank {
 	return &Bank{
 		PlayerWallet: make(map[string]*money.Money),
 		PlayerBets:   make(map[string]*money.Money),
+		Pot: currency.Zero(),
+		MaxBet: currency.Zero(),
+		LobbyId: "",
 		eventBus:     eventBus,
 	}
 }

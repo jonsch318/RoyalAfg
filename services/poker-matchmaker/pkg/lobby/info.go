@@ -63,15 +63,16 @@ func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
 
 	lobbies := make([][]models.LobbyBase, len(m.classes))
 	for _, gs := range list.Items {
-		players, err := strconv.Atoi(gs.Labels["players"])
-		if err != nil {
-			m.logger.Errorw("error decoding players lobby %v", "error", err)
-		}
 
 		class, err := strconv.Atoi(gs.Labels["class-index"])
 		if err != nil {
-			m.logger.Errorw("error decoding class lobby %v", "error", err)
+			m.logger.Errorw("error decoding class lobby", "error", err, "string", gs.Labels["class-index"])
 			continue
+		}
+
+		players, err := strconv.Atoi(gs.Labels["players"])
+		if err != nil {
+			m.logger.Errorw("error decoding players lobby", "error", err, gs.Labels["players"])
 		}
 
 		if lobbies[class] == nil {
@@ -86,7 +87,7 @@ func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
 		}
 
 		lobbies[class] = append(lobbies[class], lby)
-		m.logger.Errorw("lobby [%v] %v => ", "error", lby.LobbyID, lby.Class, lby.PlayerCount)
+		m.logger.Errorw("lobby [%v] %v => %v", lby.LobbyID, lby.Class, lby.PlayerCount)
 
 	}
 

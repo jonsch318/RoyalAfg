@@ -1,26 +1,30 @@
 package commands
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/domain/aggregates"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
-	ycq "github.com/jetbasrawi/go.cqrs"
 	"log"
 	"reflect"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
+	ycq "github.com/jetbasrawi/go.cqrs"
 )
 
+//AccountCommandHandlers is the handler for incomming commands
 type AccountCommandHandlers struct {
 	repo repositories.AccountRepository
 }
 
+//NewAccountCommandHandlers creates a new account command handler
 func NewAccountCommandHandlers(repo repositories.AccountRepository) *AccountCommandHandlers {
 	return &AccountCommandHandlers{
 		repo: repo,
 	}
 }
 
-func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
+//Handle handles incoming commands
+func (h *AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 	accountName := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
-	switch cmd:= message.Command().(type) {
+	switch cmd := message.Command().(type) {
 	case *CreateBankAccount:
 		item := aggregates.NewAccount(message.AggregateID())
 		if err := item.Create(); err != nil {
@@ -35,7 +39,7 @@ func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 				AggregateType: accountName,
 			}
 		}
-		if err:= item.Deposit(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
+		if err := item.Deposit(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
 			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
 		}
 
@@ -48,7 +52,7 @@ func (h AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 				AggregateType: accountName,
 			}
 		}
-		if err:= item.Withdraw(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
+		if err := item.Withdraw(cmd.Amount, cmd.GameId, cmd.RoundId, cmd.Time); err != nil {
 			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
 		}
 

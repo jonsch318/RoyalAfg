@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+
 	elasticsearch "github.com/elastic/go-elasticsearch/v8"
 	"go.uber.org/zap"
 
@@ -18,19 +19,17 @@ type GameSearch struct {
 	es *elasticsearch.Client
 }
 
-
-
 func NewGameSearch(logger *zap.SugaredLogger, es *elasticsearch.Client) *GameSearch {
 	return &GameSearch{
-		logger:       logger,
+		logger: logger,
 		//IndexedGames: LoadExampleDbIndexes(),
 		//Games: LoadExampleDb(),
 		es: es,
 	}
 }
 
-func (s *GameSearch) SearchGames(query string) []dto.GameResult  {
-/*	for _, i := range s.IndexedGames {
+func (s *GameSearch) SearchGames(query string) []dto.GameResult {
+	/*	for _, i := range s.IndexedGames {
 		if strings.HasPrefix(i, query){
 			results = append(results, s.Games[i])
 		}
@@ -50,13 +49,11 @@ func (s *GameSearch) SearchGames(query string) []dto.GameResult  {
 		s.es.Search.WithTrackTotalHits(true),
 		s.es.Search.WithPretty())
 
-	defer res.Body.Close()
-
 	if err != nil {
 		s.logger.Errorw("Error during search initialization", "error", err)
 		return nil
 	}
-
+	defer res.Body.Close()
 
 	if res.IsError() {
 		var e map[string]interface{}
@@ -95,7 +92,7 @@ func (s *GameSearch) SearchGames(query string) []dto.GameResult  {
 	return results
 }
 
-func (s *GameSearch) buildQuery(prefix string) (*bytes.Buffer, error){
+func (s *GameSearch) buildQuery(prefix string) (*bytes.Buffer, error) {
 	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"suggest": map[string]interface{}{

@@ -1,5 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 go_library(
     name = "poker_lib",
@@ -24,7 +25,6 @@ go_library(
         "@dev_agones_agones//pkg/sdk",
         "@dev_agones_agones//sdks/go",
         "@org_golang_x_net//context",
-        "@org_uber_go_zap//:zap",
     ],
 )
 
@@ -38,4 +38,13 @@ go_image(
     name = "poker_image",
     embed = [":poker_lib"],
     visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "push_poker_image",
+    format = "Docker",
+    image = ":poker_image",
+    registry = "index.docker.io",
+    repository = "johnnys318/royalafg_poker",
+    tag = "latest",
 )

@@ -1,17 +1,18 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"bytes"
 	"encoding/json"
 	"net/http"
+
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	validation "github.com/go-ozzo/ozzo-validation"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Register registers a new user
@@ -48,8 +49,8 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	registerDto := &dto.RegisterDto{}
-	err := FromJSON(registerDto, r.Body)
+	registerDto := &dtos.RegisterDto{}
+	err := utils.FromJSON(registerDto, r.Body)
 	if err != nil {
 		h.l.Error("Decoding JSON", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "user could not be decoded"}, http.StatusBadRequest)
@@ -92,7 +93,7 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	cookie := services.GenerateCookie(token, registerDto.RememberMe)
+	cookie := auth.GenerateCookie(token, registerDto.RememberMe)
 	http.SetCookie(rw, cookie)
 
 	command := &auth.AccountCommand{
@@ -117,7 +118,7 @@ func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ToJSON(dto.NewUserDTO(user), rw)
+	err = utils.ToJSON(dtos.NewUser(user), rw)
 	if err != nil {
 		h.l.Errorw("json serialization", "error", err)
 		responses.JSONError(rw, &responses.ErrorResponse{Error: "Something went wrong"}, http.StatusInternalServerError)

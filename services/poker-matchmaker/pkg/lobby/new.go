@@ -1,7 +1,6 @@
 package lobby
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -70,12 +69,6 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	ip := allocationResponse.Status.Address
 	port := allocationResponse.Status.Ports[0].Port
 	addr := fmt.Sprintf("%s:%v", ip, port)
-
-	err = m.rdg.Set(context.Background(), id, addr, 0).Err()
-
-	if err != nil {
-		return nil, err
-	}
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
 		LobbyID:     id,

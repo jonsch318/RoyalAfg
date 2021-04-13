@@ -11,20 +11,9 @@ go_library(
 go_test(
     name = "security_test",
     srcs = ["hash_test.go"],
+    embed = [":security"],
     deps = [
-        ":security",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
-    ],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = ["hash_test.go"],
-    embed = [":go_default_library"],
-    deps = [
-        ":security",
-        "@com_github_stretchr_testify//assert:go_default_library",
-        "@com_github_stretchr_testify//require:go_default_library",
     ],
 )

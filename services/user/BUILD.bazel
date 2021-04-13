@@ -33,5 +33,5 @@ container_push(
     image = ":royalafg_user",
     registry = "index.docker.io",
     repository = "johnnys318/royalafg_user",
-    tag = "bazel",
+    tag = "latest",
 )

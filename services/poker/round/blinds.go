@@ -27,22 +27,23 @@ func (r *Round) setBlinds() error {
 			}
 		}
 
-		err := r.Bank.Bet(r.Players[i].ID, r.SmallBlind)
+		err := r.Bank.PerformBlind(r.Players[i].ID, r.SmallBlind)
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in smallBlind %v", err)
-			_ = r.Fold(r.Players[i].ID)
+			_ = r.fold(r.Players[i].ID)
 			s++
 			continue
 		}
 
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
-				2,
-				i,
-				r.SmallBlind.Display(),
-				r.Bank.GetPlayerBet(r.Players[i].ID),
-				r.Bank.GetPlayerWallet(r.Players[i].ID),
-				r.Bank.GetPot(),
+			&r.PublicPlayers[i],
+			2,
+			i,
+			r.SmallBlind.Display(),
+			r.Bank.GetPlayerBet(r.Players[i].ID),
+			r.Bank.GetPlayerWallet(r.Players[i].ID),
+			r.Bank.GetPot(),
 		))
 		success = true
 		smallBlindIndex = i
@@ -65,15 +66,16 @@ func (r *Round) setBlinds() error {
 		}
 
 		bigBlind := r.SmallBlind.Multiply(2)
-		err := r.Bank.Bet(r.Players[i].ID, bigBlind)
+		err := r.Bank.PerformBlind(r.Players[i].ID, bigBlind)
 
 		if err != nil {
 			log.Printf("Folding player due to invalid buyin in bigBlind")
-			_ = r.Fold(r.Players[i].ID)
+			_ = r.fold(r.Players[i].ID)
 			s++
 			continue
 		}
 		utils.SendToAll(r.Players, events.NewActionProcessedEvent(
+			&r.PublicPlayers[i],
 			2,
 			i,
 			bigBlind.Display(),

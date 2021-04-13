@@ -101,4 +101,30 @@ Following services are integrated into the system:
  - [Docs](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/docs)
  - [Web](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/web)
 
-//TODO system overview.
+## Auth
+The authentication service is responsible to generate authentication tokens (jwt) and verify and extend these tokens.
+
+## User
+The user service is the governing body on the users data. It uses mongodb to persist this data and has grpc and http endpoint to enable communication.
+
+## Bank
+The bank service creates a bank account for every user. It tracks every transaction and uses a event sourced system to ensure the safety and reliability of the system.
+
+## Search
+The search service uses elasticsearch to provide search functionality for the front end.
+
+## Web
+The front end of the casino.
+
+## Poker-Matchmaker
+The Matchmaker for the poker game.
+It is responsible to verify the buy in and to generate tickets to individual gameservers.
+
+## Poker
+The Poker Gameserver provides a websocket connection to the poker game functionality.
+
+## Docs
+A swagger generate documentation page.
+
+# License
+This code is licensed under an MIT license. Ⓒ Jonas Schneider
