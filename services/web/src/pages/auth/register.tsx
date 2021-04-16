@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { FC, useState } from "react";
 import Layout from "../../components/layout";
 import { register as registerAccount } from "../../hooks/auth";
@@ -15,6 +16,7 @@ import { getCSRF } from "../../hooks/auth/csrf";
 import { useRouter } from "next/router";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import Link from "next/link";
 
 export type RegisterDto = {
     username: string;
@@ -146,6 +148,11 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                             getStepContent(activeStep, handleNext, handleBack, dto, setDto)
                         )}
                     </div>
+                    <Link href="/auth/login">
+                        <a className="text-center block w-full text-blue-700 hover:text-blue-500 transition-colors duration-100">
+                            {t("if you already have an account login here")}
+                        </a>
+                    </Link>
                 </form>
             </div>
         </Layout>
