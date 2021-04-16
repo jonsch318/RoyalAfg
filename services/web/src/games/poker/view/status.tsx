@@ -2,6 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { Text } from "@inlet/react-pixi";
 import { useResize } from "../../../hooks/dimensions";
 import { StatusPadding } from "./constants";
+import { useTranslation } from "next-i18next";
 
 type StatusProps = {
     pot: string;
@@ -12,6 +13,7 @@ type StatusProps = {
 };
 
 const Status: FC<StatusProps> = ({ pot, bet, lobbyId, appWidth, appHeight }) => {
+    const { t } = useTranslation("poker");
     const [text, setText] = useState("");
     const ref = useRef(null);
     const { width, height } = useResize(ref);
@@ -19,13 +21,13 @@ const Status: FC<StatusProps> = ({ pot, bet, lobbyId, appWidth, appHeight }) => 
     useEffect(() => {
         let w = "";
         if (pot) {
-            w = "Pot: " + pot;
+            w = t("Pot: ") + pot;
         }
         if (bet) {
-            w += ", To Bet: " + bet;
+            w += t(", To bet: ") + bet;
         }
         if (lobbyId) {
-            w += ", LobbyID: " + lobbyId;
+            w += t(", Lobby id: ") + lobbyId;
         }
         setText(w);
     }, [pot, bet, lobbyId]);

@@ -1,3 +1,4 @@
+import { useTranslation } from "next-i18next";
 import React, { FC } from "react";
 import FooterCard from "./card";
 import FooterCardItem from "./cardItem";
@@ -7,6 +8,7 @@ type FooterProps = {
 };
 
 const Footer: FC<FooterProps> = ({ absolute }) => {
+    const { t } = useTranslation("common");
     let containerClass = "w-full";
 
     if (absolute) {
@@ -29,18 +31,17 @@ const Footer: FC<FooterProps> = ({ absolute }) => {
                         </a>
                     </div>
                     <div className="md:grid footer-grid-content row-span-2 md:gap-2 md:grid-cols-3 md:justify-items-center">
-                        <FooterCard title="legal">
-                            <FooterCardItem href="/legal/terms">Terms & Conditions</FooterCardItem>
-                            <FooterCardItem href="/legal/privacy">Privacy Statement</FooterCardItem>
+                        <FooterCard title={t("Contact")}>
+                            <FooterCardItem href="/about">{t("About this project")}</FooterCardItem>
                         </FooterCard>
-                        <FooterCard title="Games">
-                            <FooterCardItem href="/games">Game Selection</FooterCardItem>
-                            <FooterCardItem href="/games/poker">Poker</FooterCardItem>
-                            <FooterCardItem href="/games/pacman">Pacman</FooterCardItem>
+                        <FooterCard title={t("Games")}>
+                            <FooterCardItem href="/games">{t("Game Selection")}</FooterCardItem>
+                            <FooterCardItem href="/games/poker">{t("Poker")}</FooterCardItem>
+                            <FooterCardItem href="/games/pacman">{t("Pacman")}</FooterCardItem>
                         </FooterCard>
-                        <FooterCard title="legal">
-                            <FooterCardItem href="/legal/terms">Terms & Conditions</FooterCardItem>
-                            <FooterCardItem href="/legal/privacy">Privacy Statement</FooterCardItem>
+                        <FooterCard title={t("Legal")}>
+                            <FooterCardItem href="/legal/terms">{t("Terms & Conditions")}</FooterCardItem>
+                            <FooterCardItem href="/legal/privacy">{t("Privacy Statement")}</FooterCardItem>
                         </FooterCard>
                     </div>
                 </div>

@@ -13,6 +13,8 @@ import moment from "moment";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
 import { useRouter } from "next/router";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 export type RegisterDto = {
     username: string;
@@ -44,12 +46,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
     return {
         props: {
-            csrf: csrf
+            csrf: csrf,
+            ...(await serverSideTranslations(context.locale, ["common", "auth"]))
         }
     };
 };
 
 const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+    const { t } = useTranslation("auth");
+
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set<number>());
     const steps = getSteps();
@@ -99,7 +104,7 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
             csrf
         ).then((res) => {
             if (res.ok) {
-                enqueueSnackbar("Successfully Registered", { variant: "success" });
+                enqueueSnackbar(t("Successfully Registered"), { variant: "success" });
                 console.log("Refreshing: ", router.asPath);
                 if (res.ok && typeof window !== undefined) {
                     window.location.href = "/";

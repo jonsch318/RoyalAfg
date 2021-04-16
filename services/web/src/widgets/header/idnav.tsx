@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import Avatar from "../../components/header/id/avatar";
 import Link from "next/link";
 import { signOut, useSession } from "../../hooks/auth";
+import { useTranslation } from "next-i18next";
 
 type NavButtonProps = {
     onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -18,6 +19,7 @@ const NavButton: FC<NavButtonProps> = ({ children, onClick }) => {
 };
 
 const IdNav: FC = () => {
+    const { t } = useTranslation("common");
     const [session] = useSession();
     if (!session) {
         return (
@@ -25,12 +27,12 @@ const IdNav: FC = () => {
                 <div className="flex items-center h-full w-full px-4">
                     <Link href="/auth/register">
                         <a className="id-nav-item md:bg-transparent px-4 py-1 rounded bg-gray-300 md:hover:bg-blue-700 md:mx-2 transition-colors duration-150 flex">
-                            Register
+                            {t("Register")}
                         </a>
                     </Link>
                     <Link href="/auth/login">
                         <a className="id-nav-item bg-blue-800 px-6 py-1 rounded hover:bg-blue-900 md:mx-2 text-white transition-colors duration-150 flex mr-0 ml-auto">
-                            Login
+                            {t("Login")}
                         </a>
                     </Link>
                 </div>
@@ -41,7 +43,7 @@ const IdNav: FC = () => {
     return (
         <nav className="flex items-center h-full">
             <Avatar />
-            <NavButton onClick={signOut}>Logout</NavButton>
+            <NavButton onClick={signOut}>{t("Logout")}</NavButton>
         </nav>
     );
 };

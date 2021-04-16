@@ -1,3 +1,4 @@
+import { useTranslation } from "next-i18next";
 import React, { FC, useEffect, useRef, useState } from "react";
 
 import useDebounce from "../../hooks/debounce";
@@ -27,6 +28,7 @@ const Search = async (query: string): Promise<SearchResult[]> => {
 };
 
 const SearchInput: FC = () => {
+    const { t } = useTranslation("common");
     const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -65,7 +67,7 @@ const SearchInput: FC = () => {
                 ref={inputRef}
                 className="relative font-sans md:py-0 py-2 bg-white w-full h-full text-black outline-none px-4 rounded"
                 id="global-search-input"
-                placeholder="Search"
+                placeholder={t("Search")}
                 onChange={(e) => setQuery(e.target.value)}
                 onBlur={() => {
                     setFocused(false);

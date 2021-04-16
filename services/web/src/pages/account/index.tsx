@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import { refreshSession, useSession } from "../../hooks/auth";
 import { GetServerSideProps } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
@@ -28,7 +30,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return {
             props: {
                 csrf: csrf,
-                user: user.user
+                user: user.user,
+                ...(await serverSideTranslations(context.locale, ["common", "account"]))
             }
         };
     } catch (e) {
@@ -36,7 +39,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return {
             props: {
                 csrf: csrf,
-                user: {}
+                user: {},
+                ...(await serverSideTranslations(context.locale, ["common", "account"]))
             }
         };
     }
@@ -55,6 +59,8 @@ type AccountProps = {
 const Account: FC<AccountProps> = ({ csrf, user }) => {
     const [session, loading] = useSession();
     const router = useRouter();
+
+    const { t } = useTranslation("account");
 
     const [u, setUser] = useState({
         fullName: user.fullName,
@@ -99,10 +105,10 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
     return (
         <Layout>
             <div>
-                <Front>{"Your Account " + u.fullName}</Front>
+                <Front>{t("Your account") + u.fullName}</Front>
                 <div className="px-10 pb-10 bg-gray-200">
                     <ActionMenu>
-                        <ActionMenuLink href="/wallet">My Wallet</ActionMenuLink>
+                        <ActionMenuLink href="/wallet">{t("My wallet")}</ActionMenuLink>
                     </ActionMenu>
                 </div>
             </div>
@@ -111,7 +117,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                     <div className="px-10 pb-10 bg-gray-200">
                         <ActionMenu>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">Username: </label>
+                                <label htmlFor="username">{t("Username:")} </label>
                                 <input
                                     type="text"
                                     name="username"
@@ -123,7 +129,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                                 />
                             </div>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">Email: </label>
+                                <label htmlFor="username">{t("Email:")} </label>
                                 <input
                                     type="email"
                                     name="email"
@@ -135,7 +141,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                                 />
                             </div>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">Full Name: </label>
+                                <label htmlFor="username">{t("Fullname:")} </label>
                                 <input
                                     type="text"
                                     name="fullName"
@@ -148,7 +154,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                             </div>
                             <div className="grid justify-end mt-14 mx-10">
                                 <button type="submit" className="bg-black text-white px-8 py-1 rounded ">
-                                    Save
+                                    {t("Save")}
                                 </button>
                             </div>
                         </ActionMenu>

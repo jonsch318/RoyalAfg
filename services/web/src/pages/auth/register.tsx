@@ -10,6 +10,8 @@ import { useSnackbar } from "notistack";
 import Checkbox from "@material-ui/core/Checkbox";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 type RegisterDto = {
     username: string;
@@ -23,12 +25,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
     return {
         props: {
-            csrf: csrf
+            csrf: csrf,
+            ...(await serverSideTranslations(context.locale, ["common", "auth"]))
         }
     };
 };
 
 const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+    const { t } = useTranslation("auth");
     const { register, handleSubmit, errors } = useForm<RegisterDto>();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -45,7 +49,7 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
             csrf
         );
         if (res.ok) {
-            enqueueSnackbar("Successfully Registered", { variant: "success" });
+            enqueueSnackbar(t("Successfully Registered"), { variant: "success" });
             if (typeof window !== undefined) {
                 window.location.href = "/";
             }
@@ -55,19 +59,19 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
     return (
         <>
             <Head>
-                <title>{formatTitle("Register a new Account")}</title>
+                <title>{formatTitle(t("TitleRegister"))}</title>
             </Head>
             <Layout disableFooter>
                 <div className="w-full md:h-screen flex items-center justify-center md:absolute md:inset-0">
                     <div className="bg-gray-200 md:rounded-md shadow-md">
                         <div className="heading mx-16 mt-8 mb-2">
-                            <h1 className="text-center font-sans font-semibold text-3xl">Register A New Account</h1>
+                            <h1 className="text-center font-sans font-semibold text-3xl">{t("Register a new account")}</h1>
                         </div>
                         <div className="content md:px-24 px-4">
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <FormItem>
                                     <label htmlFor="username" className="mb-2 block">
-                                        Username*:
+                                        {t("Username*:")}
                                     </label>
                                     <input
                                         className="block px-4 py-4 rounded w-full"
@@ -75,18 +79,18 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                                         type="text"
                                         id="username"
                                         name="username"
-                                        placeholder="Your Username"
+                                        placeholder={t("Your username")}
                                     />
                                     {errors.username && (
                                         <span className="text-sm text-red-700">
-                                            This field is required and can only be more than 3 and less than 100!
+                                            {t("This field is required and can only be more than 3 and less than 100!")}
                                         </span>
                                     )}
                                 </FormItem>
                                 <PasswordBox errors={errors} register={register} />
                                 <FormItem>
                                     <label htmlFor="birthdate" className="mb-2 block">
-                                        Birthdate*:
+                                        {t("Birthdate*:")}
                                     </label>
                                     <input
                                         className="block px-4 py-4 rounded w-full"
@@ -95,10 +99,10 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                                         id="birthdate"
                                         name="birthdate"
                                     />
-                                    {errors.birthdate && <span className="text-sm text-red-700">This field is required!</span>}
+                                    {errors.birthdate && <span className="text-sm text-red-700">{t("This field is required!")}</span>}
                                 </FormItem>
                                 <FormItem>
-                                    <label htmlFor="email">Email*:</label>
+                                    <label htmlFor="email">{t("Email*:")}</label>
                                     <input
                                         className="block px-4 py-4 rounded w-full"
                                         ref={register({
@@ -109,12 +113,12 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                                         name="email"
                                         id="email"
                                         type="email"
-                                        placeholder="Your Email"
+                                        placeholder={t("Your email")}
                                     />
-                                    {errors.birthdate && <span className="text-sm text-red-700">This field is required</span>}
+                                    {errors.birthdate && <span className="text-sm text-red-700">{t("This field is required")}</span>}
                                 </FormItem>
                                 <FormItem>
-                                    <label htmlFor="fullname">Fullname*:</label>
+                                    <label htmlFor="fullname">{t("Fullname*:")}</label>
                                     <input
                                         className="block px-4 py-4 rounded w-full"
                                         ref={register({
@@ -125,36 +129,36 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                                         name="fullName"
                                         id="fullName"
                                         type="fullName"
-                                        placeholder="Your Name"
+                                        placeholder={t("Your name")}
                                     />
-                                    {errors.birthdate && <span className="text-sm text-red-700">This field is required</span>}
+                                    {errors.birthdate && <span className="text-sm text-red-700">{"This field is required"}</span>}
                                 </FormItem>
                                 <div className="mb-4 font-sans text-lg font-medium">
                                     <Checkbox value="on" color="primary" required></Checkbox>
                                     <span>
-                                        I consent to the{" "}
+                                        {t("I consent to the") + " "}
                                         <a href="/legal/terms" className="font-sans text-blue-800">
-                                            terms and conditions
+                                            {t("terms and conditions")}
                                         </a>{" "}
-                                        and our{" "}
+                                        {t("and our") + " "}
                                         <a href="/legal/privacy" className="font-sans text-blue-800">
-                                            privacy statement
+                                            {t("privacy statement")}
                                         </a>
                                     </span>
                                 </div>
                                 <button
                                     className="block w-full px-4 py-2  bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors duration-150 font-sans font-medium cursor-pointer"
                                     type="submit">
-                                    Register
+                                    {t("Register")}
                                 </button>
                                 <span className="font-sans font-light text-sm mb-8">
-                                    Or{" "}
+                                    {t("Or") + " "}
                                     <a href="/login" className="font-sans text-blue-800">
-                                        login
+                                        {t("login")}
                                     </a>{" "}
-                                    if you already have an account
+                                    {t("if you already have an account")}
                                 </span>
-                                <span className="text-sm mb-8 font-sans font-light block text-ce">Textfields with a * are required</span>
+                                <span className="text-sm mb-8 font-sans font-light block text-ce">{t("Text fields with a * are required")}</span>
                             </form>
                         </div>
                     </div>
