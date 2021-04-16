@@ -1,7 +1,7 @@
 import { useTranslation } from "next-i18next";
 import React, { FC } from "react";
 import * as sprintf from "sprintf";
-import { History } from "../../../pages/wallet";
+import { History } from "../../pages/wallet";
 
 const Deposited = "Deposited";
 
@@ -13,7 +13,7 @@ const Transaction: FC<History> = ({ game, amount, lobby, time, type }) => {
         if (game !== "" && game !== undefined) {
             contentString = lobby ? sprintf(t("Won %s in %s [%s]"), amount, game, lobby) : sprintf(t("Won %s in %s"), amount, game);
         } else {
-            contentString = sprintf("Deposited %s", amount);
+            contentString = sprintf(t("Deposited %s"), amount);
         }
     } else {
         if (game !== "" && game !== undefined) {

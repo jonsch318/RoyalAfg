@@ -3,7 +3,7 @@ import Layout from "../../components/layout";
 import Front from "../../components/layout/front";
 import Dinero from "dinero.js";
 import ActionMenu from "../../components/actionMenu";
-import TransactionList from "../../widgets/account/wallet/transactionList";
+import TransactionList from "../../widgets/wallet/transactionList";
 import BackToAccount from "../../widgets/account/back";
 import ActionMenuLink from "../../components/actionMenu/link";
 import { getSession } from "../../hooks/auth";

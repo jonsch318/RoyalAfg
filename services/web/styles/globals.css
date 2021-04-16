@@ -23,6 +23,20 @@ a {
     top: 4rem;
 }
 
+.no_highlights{
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.react-datepicker-wrapper, .react-datepicker__input-container {
+    display: block !important;
+}
+
 @layer utilities {
     .h-1px {
         height: 1px;

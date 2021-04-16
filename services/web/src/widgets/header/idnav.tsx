@@ -11,7 +11,7 @@ type NavButtonProps = {
 const NavButton: FC<NavButtonProps> = ({ children, onClick }) => {
     return (
         <button
-            className="id-nav-item w-fit px-6 py-1 text break-normal flex mr-0 ml-auto my-0 bg-blue-800 rounded hover:bg-blue-900 md:mx-2 text-white transition-colors duration-150 "
+            className="id-nav-item w-fit px-2 py-1 text break-normal flex mr-0 ml-auto my-0 bg-blue-800 rounded hover:bg-blue-900 md:mx-2 text-white transition-colors duration-150 "
             onClick={onClick}>
             {children}
         </button>

@@ -1,21 +1,21 @@
 {
 
-    "Register": "Register",
-    "Login": "Login",
-    "Logout": "Logout",
-    "Home": "Home",
-    "About": "About",
-    "Search": "Search",
-    "Searching...": "Searching...",
-    "Sorry nothing was found.": "Sorry nothing was found.",
+    "Register": "Registrieren",
+    "Login": "Anmelden",
+    "Logout": "Abmelden",
+    "Home": "Start",
+    "About": "Über uns",
+    "Search": "Suchen",
+    "Searching...": "Suche...",
+    "Sorry nothing was found.": "Wir konnten leider nichts finden",
 
-    "Contact": "Contact",
-    "About this project": "About this project",
-    "Games": "Games",
-    "Game Selection": "Game Selection",
+    "Contact": "Kontakt",
+    "About this project": "Über dieses Projekt",
+    "Games": "Spiele",
+    "Game Selection": "Spielauswahl",
     "Poker": "Poker",
     "Pacman": "Pacman",
-    "Legal": "Legal",
-    "Terms & Conditions": "Terms & Conditions",
-    "Privacy Statement": "Privacy Statement"
+    "Legal": "Rechtliches",
+    "Terms & Conditions": "Allgemeine Geschäftsbedingungen",
+    "Privacy Statement": "Datenschutzrichtlinien"
 }

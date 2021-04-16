@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { RegisterDto } from "../../pages/auth/registerstepper";
+import { RegisterDto } from "../../pages/auth/register";
 import Checkbox from "@material-ui/core/Checkbox";
 import DatePicker from "react-datepicker";
 import moment from "moment";
@@ -68,14 +68,23 @@ const Information: FC<InformationProps> = ({ handleNext, handleBack, dto, setDto
                 <label htmlFor="birthdate" className="mb-2 block">
                     {t("Birthdate*:")}
                 </label>
+
+                <style>
+                    {`
+                        .react-datepicker-wrapper {
+                            border: ${!isValidBirthdate(dto.birthdate) ? "2px solid rgb(190, 18, 60)" : "none"}
+                        }
+                    `}
+                </style>
+
                 <DatePicker
-                    className="block px-8 py-4 rounded w-full outline-none"
+                    className="px-8 py-4 rounded w-full outline-none"
                     type="date"
                     id="birthdate"
                     name="birthdate"
                     placeholder="Your Birthdate"
                     selected={dto.birthdate}
-                    style={{ border: !isValidBirthdate(dto.birthdate) ? "2px solid rgb(190, 18, 60)" : "" }}
+                    style={{ width: "100%", border: !isValidBirthdate(dto.birthdate) ? "2px solid rgb(190, 18, 60)" : "" }}
                     onChange={(e: Date) => setDto({ ...dto, birthdate: e })}
                     required
                 />
@@ -100,14 +109,14 @@ const Information: FC<InformationProps> = ({ handleNext, handleBack, dto, setDto
                 </div>
             </section>
             <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-gray-500 disabled:opacity-70 text-white my-2 rounded"
+                className="w-full font-sans font-semibold text-xl py-4 bg-gray-700 hover:bg-gray-800 transition-colors duration-150 disabled:opacity-70 text-white my-2 rounded"
                 onClick={() => {
                     handleBack();
                 }}>
                 {t("Back")}
             </button>
             <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-blue-500 disabled:opacity-70 text-white my-2 rounded"
+                className=" w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed opacity-100 text-white my-2 rounded mb-8"
                 disabled={shouldDisable()}
                 onClick={() => {
                     handleNext();

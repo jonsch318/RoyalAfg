@@ -9,6 +9,7 @@
     "Lost %s in %s [%s]": "Lost %s in %s [%s]",
     "Lost %s in %s": "Lost %s in %s",
     "Withdrawn %s": "Withdrawn %s",
+    "Deposited %s": "Deposited %s",
     "Error during depositing": "Error during depositing",
     "Deposited successfully": "Deposited successfully",
     "Specify a amount between $0.01 and 99,999,999.99": "Specify a amount between $0.01 and 99,999,999.99",

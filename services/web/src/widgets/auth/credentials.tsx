@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next";
 import React, { FC, useState } from "react";
-import { RegisterDto } from "../../pages/auth/registerstepper";
+import { RegisterDto } from "../../pages/auth/register";
 
 type Credentials = {
     username: string;
@@ -67,7 +67,7 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
                 </button>
             </section>
             <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-blue-500 disabled:opacity-70 text-white my-2 rounded"
+                className="w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-white my-2 rounded mb-8"
                 disabled={shouldDisable()}
                 onClick={() => {
                     handleNext();

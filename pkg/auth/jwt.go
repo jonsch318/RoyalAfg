@@ -34,10 +34,10 @@ func GetJwt(user *models.User) (string, error) {
 	signingKey := []byte(viper.GetString(config.JWTSigningKey))
 
 	claims := jwt.MapClaims{
-		"sub":      user.ID,
+		"sub":      user.ID.Hex(),
 		"iss":      viper.GetString(config.JWTIssuer),
 		"aud":      []string{"royalafg.games", "localhost:3000"},
-		"exp":      time.Now().Add(viper.GetDuration(config.JWTExpiresAt)),
+		"exp":      getExpiration(),
 		"jti":      uuid.New().String(),
 		"username": user.Username,
 		"name":     user.FullName,
@@ -62,6 +62,22 @@ func GenerateBearerToken(user *models.User) (string, error) {
 	}
 
 	return fmt.Sprintf("Bearer %v", token), nil
+}
+
+func WrapToken(token string) string {
+	return fmt.Sprintf("Bearer %s", token)
+}
+
+func CheckSignature(token string) error {
+	_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(viper.GetString(config.JWTSigningKey)), nil
+	})
+	return err
 }
 
 func ExtendToken(val string) (*jwt.Token, string, error) {
