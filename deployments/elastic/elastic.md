@@ -1,9 +1,13 @@
+# Install
+
+```
 kubectl apply -f https://download.elastic.co/downloads/eck/1.3.1/all-in-one.yaml
+```
 
 
-###SETUP mappings
+# SETUP mappings
 
-
+```
 curl --location --request PUT 'https://localhost:9200/games/' \
 --header 'Authorization: Basic ZWxhc3RpYzo3bkM5ak8zbkcwM3lSODk3ajBpbXRzOWY=' \
 --header 'Content-Type: application/json' \
@@ -25,10 +29,11 @@ curl --location --request PUT 'https://localhost:9200/games/' \
         }
     }
 }'
+```
 
-###SETUP Games
+# SETUP Games
 
-
+````
 curl --location --request POST 'https://localhost:9200/games/_doc' \
 --header 'Authorization: Basic ZWxhc3RpYzo3bkM5ak8zbkcwM3lSODk3ajBpbXRzOWY=' \
 --header 'Content-Type: application/json' \
@@ -58,3 +63,4 @@ curl --location --request POST 'https://localhost:9200/games/_doc' \
     "maxPlayers": 1,
     "suggest": ["Slot", "Machine"]
 }'
+```
