@@ -1,4 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useTranslation } from "next-i18next";
+import Link from "next/link";
 import React, { FC } from "react";
 import FooterCard from "./card";
 import FooterCardItem from "./cardItem";
@@ -8,7 +10,7 @@ type FooterProps = {
 };
 
 const Footer: FC<FooterProps> = ({ absolute }) => {
-    const { t } = useTranslation("common");
+    const { t, i18n } = useTranslation("common");
     let containerClass = "w-full";
 
     if (absolute) {
@@ -45,6 +47,9 @@ const Footer: FC<FooterProps> = ({ absolute }) => {
                         </FooterCard>
                     </div>
                 </div>
+                <Link href="/" locale={i18n.language == "en" ? "de" : "en"}>
+                    <a>{t("LanguageSwap")}</a>
+                </Link>
             </footer>
         </div>
     );
