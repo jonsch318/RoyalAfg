@@ -1,0 +1,22 @@
+{
+
+    "Register": "Register",
+    "Login": "Login",
+    "Logout": "Logout",
+    "Home": "Home",
+    "About": "About",
+    "Search": "Search",
+    "Searching...": "Searching...",
+    "Sorry nothing was found.": "Sorry nothing was found",
+
+    "Contact": "Contact",
+    "About this project": "About this project",
+    "Games": "Games",
+    "Game Selection": "Game Selection",
+    "Poker": "Poker",
+    "Pacman": "Pacman",
+    "Legal": "Legal",
+    "Terms & Conditions": "Terms & Conditions",
+    "Privacy Statement": "Privacy Statement",
+    "LanguageSwap": "To the german site"
+}

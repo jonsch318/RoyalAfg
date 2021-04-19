@@ -2,8 +2,10 @@ import React, { FC, useEffect, useState } from "react";
 import { useDots } from "./dots";
 import { CircularProgress, LinearProgress } from "@material-ui/core";
 import { usePoker } from "../provider";
+import { useTranslation } from "next-i18next";
 
 const NextGameStartAfterTime: FC = () => {
+    const { t } = useTranslation("poker");
     const dots = useDots();
 
     return (
@@ -11,8 +13,8 @@ const NextGameStartAfterTime: FC = () => {
             <div className="mx-auto flex mb-12">
                 <CircularProgress variant="indeterminate" size="6rem" color="primary" />
             </div>
-            <h1 className="font-sans font-semibold text-5xl text-center mb-4">Royalafg Poker</h1>
-            <h2 className="text-center">Waiting for next game to start{dots}</h2>
+            <h1 className="font-sans font-semibold text-5xl text-center mb-4">{t("Royalafg Poker")}</h1>
+            <h2 className="text-center">{t("Waiting for next game to start") + dots}</h2>
         </div>
     );
 };
@@ -22,6 +24,7 @@ type NextGameStartTimedProps = {
     timeout: number;
 };
 const NextGameStartTimed: FC<NextGameStartTimedProps> = ({ time, timeout }) => {
+    const { t } = useTranslation("poker");
     const dots = useDots();
 
     return (
@@ -37,10 +40,8 @@ const NextGameStartTimed: FC<NextGameStartTimedProps> = ({ time, timeout }) => {
             <div className="box mb-12" style={{ width: "65%" }}>
                 <LinearProgress variant={"determinate"} value={(time / timeout) * 100} />
             </div>
-            <h1 className="font-sans font-semibold text-5xl text-center mb-4">Royalafg Poker</h1>
-            <h2 className="text-center">
-                Waiting {time} seconds to game start{dots}
-            </h2>
+            <h1 className="font-sans font-semibold text-5xl text-center mb-4">{t("Royalafg Poker")}</h1>
+            <h2 className="text-center">{t("Waiting for next game to start") + "[" + time + "]" + dots}</h2>
         </div>
     );
 };

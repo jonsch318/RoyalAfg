@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import Result from "./result";
 import { AnimatePresence, motion } from "framer-motion";
 import { SearchResult } from "./search";
+import { useTranslation } from "next-i18next";
 
 const items = {
     initial: {
@@ -20,6 +21,7 @@ type SearchResultListProps = {
 };
 
 const SearchResultList: FC<SearchResultListProps> = ({ results, loading }) => {
+    const { t } = useTranslation("common");
     return (
         <AnimatePresence>
             <motion.ul className="py-4 md:py-2 md: px-4 bg-blue ">
@@ -31,7 +33,7 @@ const SearchResultList: FC<SearchResultListProps> = ({ results, loading }) => {
                     ))}
                 {results.length < 1 && (
                     <motion.li variants={items} animate="animate" initial="initial" className="px-5 text-black">
-                        {loading ? "Searching..." : "Sorry nothing was found."}
+                        {loading ? t("Searching...") : t("Sorry nothing was found.")}
                     </motion.li>
                 )}
             </motion.ul>

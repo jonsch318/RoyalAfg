@@ -2,8 +2,10 @@ import React, { FC } from "react";
 import { useDots } from "./dots";
 import { usePoker } from "../provider";
 import { LinearProgress } from "@material-ui/core";
+import { useTranslation } from "next-i18next";
 
 const PreLobby: FC = () => {
+    const { t } = useTranslation("poker");
     const dots = useDots();
     const { lobbyInfo } = usePoker();
 
@@ -20,9 +22,9 @@ const PreLobby: FC = () => {
             <div className="box mb-12" style={{ width: "65%" }}>
                 <LinearProgress variant={"determinate"} value={(lobbyInfo.playerCount / lobbyInfo.minPlayersToStart) * 100} />
             </div>
-            <h1 className="font-sans font-semibold text-5xl text-center mb-4">Royalafg Poker</h1>
+            <h1 className="font-sans font-semibold text-5xl text-center mb-4">{t("Royalafg Poker")}</h1>
             <h2 className="text-center">
-                Waiting for more players [{lobbyInfo.playerCount} out of {lobbyInfo.minPlayersToStart}]{dots}
+                {t("Waiting for more players") + "[" + lobbyInfo.playerCount + t("out of") + lobbyInfo.minPlayersToStart + "]" + dots}
             </h2>
         </div>
     );

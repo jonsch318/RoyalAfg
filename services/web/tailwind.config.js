@@ -64,7 +64,8 @@ module.exports = {
             "disabled"
         ],
         extend: {
-            opacity: ["disabled"]
+            opacity: ["disabled"],
+            cursor: ["disabled"]
         }
     },
     plugins: [require("@tailwindcss/custom-forms")]
