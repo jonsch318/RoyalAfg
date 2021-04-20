@@ -35,7 +35,9 @@ import (
 func (h *Auth) Session(rw http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(viper.GetString(config.SessionCookieName))
 	if err != nil || cookie.Value == "" {
-		h.l.Errorw("Cookie Extraction", "error", err, "cookieName")
+		if err != http.ErrNoCookie {
+			h.l.Debug("Cookie Extraction", "error", err)
+		}
 		responses.Unauthorized(rw)
 		return
 	}

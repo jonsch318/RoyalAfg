@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import Layout from "../../components/layout";
 import { useRouter } from "next/router";
@@ -7,6 +7,7 @@ import { useSnackbar } from "notistack";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import { useSecure, useSession } from "../../hooks/auth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const csrf = await getCSRF(context);
@@ -24,6 +25,7 @@ type DepositProps = {
 
 const Deposit: FC<DepositProps> = ({ csrf }) => {
     const { t } = useTranslation("wallet");
+    useSecure();
 
     const { locale } = useRouter();
     const [loading, setLoading] = useState(false);
@@ -63,7 +65,7 @@ const Deposit: FC<DepositProps> = ({ csrf }) => {
     };
 
     return (
-        <Layout disableFooter={true} headerAbsolute={true}>
+        <Layout disableFooter headerAbsolute>
             <div className="m-0 flex justify-center">
                 {amount == 0 && (
                     <span className="text-sm bg-red-700 text-white px-3 py-1 rounded h-auto absolute top-16">
