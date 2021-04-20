@@ -4,6 +4,7 @@ consumes:
 - application/x-www-form-urlencoded
 definitions:
   AccountHistoryEvent:
+    description: AccountHistoryEvent is a transaction event
     properties:
       amount:
         $ref: '#/definitions/CurrencyDto'
@@ -21,7 +22,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos
+    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
   CurrencyDto:
     description: CurrencyDto is the data transfer object for a monetary value
     properties:
@@ -110,55 +111,6 @@ definitions:
     - birthdate
     type: object
     x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
-  UserDTO:
-    description: UserDTO is the data transfer object of the internal user object
-    properties:
-      birthdate:
-        description: The unix birthdate of the user
-        format: int64
-        type: integer
-        x-go-name: Birthdate
-      created_at:
-        description: The registration time of the user
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      email:
-        description: The email of the user
-        format: email
-        maxLength: 100
-        minLength: 4
-        type: string
-        x-go-name: Email
-      fullName:
-        description: The full name of the user
-        maxLength: 100
-        minLength: 1
-        type: string
-        x-go-name: FullName
-      id:
-        description: The user id
-        type: string
-        x-go-name: ID
-      updated_at:
-        description: The time when the user was updated last
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      username:
-        description: The username of the user
-        maxLength: 100
-        minLength: 4
-        type: string
-        x-go-name: Username
-    required:
-    - id
-    - username
-    - email
-    - fullName
-    - birthdate
-    type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/dto
   ValidationError:
     description: Each form property that has missing requirements is listet under
       Errors (validationErrors)
@@ -171,6 +123,7 @@ definitions:
     type: object
     x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/responses
   VerifyAmount:
+    description: VeriyAmount is a result of a verification
     properties:
       result:
         type: boolean
@@ -246,10 +199,8 @@ paths:
       responses:
         "200":
           $ref: '#/responses/NoContentResponse'
-        "401":
-          $ref: '#/responses/ErrorResponse'
         default:
-          $ref: '#/responses/ErrorResponse'
+          $ref: '#/responses/SessionInfo'
       schemes:
       - http
       - https
