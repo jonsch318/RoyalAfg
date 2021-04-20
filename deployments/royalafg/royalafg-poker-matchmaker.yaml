@@ -81,7 +81,7 @@ spec:
       serviceAccountName: royalafg-poker-matchmaker
       containers:
       - name: royalafg-poker-matchmaker
-        image: docker.io/johnnys318/royalafg_poker_match:latest
+        image: docker.io/johnnys318/royalafg_poker_match:1.0
         resources:
           limits:
             memory: "128Mi"

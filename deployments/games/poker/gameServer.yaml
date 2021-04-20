@@ -87,7 +87,7 @@ spec:
           serviceAccountName: royalafg-poker
           containers:
             - name: royalafg-poker
-              image: docker.io/johnnys318/royalafg_poker:latest
+              image: docker.io/johnnys318/royalafg_poker:1.0
               # env:
               #   - name: POKER_RABBITMQ_USERNAME
               #     valueFrom:

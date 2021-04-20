@@ -76,7 +76,7 @@ spec:
       serviceAccountName: royalafg-web
       containers:
         - name: royalafg-web
-          image: docker.io/johnnys318/royalafg_web:latest
+          image: docker.io/johnnys318/royalafg_web:1.0
           ports:
             - protocol: TCP
               containerPort: 3000

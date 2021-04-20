@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
         - name: royalafg-search
-          image: "docker.io/johnnys318/royalafg_search:latest"
+          image: "docker.io/johnnys318/royalafg_search:1.0"
           resources:
             limits:
               memory: "20Mi"

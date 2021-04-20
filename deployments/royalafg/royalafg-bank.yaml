@@ -91,7 +91,7 @@ spec:
       serviceAccountName: royalafg-bank
       containers:
         - name: royalafg-bank
-          image: docker.io/johnnys318/royalafg_bank:latest
+          image: docker.io/johnnys318/royalafg_bank:1.0
           env:
             # - name: BANK_RABBITMQ_USERNAME
             #   valueFrom:

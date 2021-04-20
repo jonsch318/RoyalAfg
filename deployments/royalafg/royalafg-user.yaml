@@ -128,7 +128,7 @@ spec:
       containers:
         - name: royalafg-user
           imagePullPolicy: Always
-          image: docker.io/johnnys318/royalafg_user:latest
+          image: docker.io/johnnys318/royalafg_user:1.0
           resources:
             requests:
               memory: 10Mi
