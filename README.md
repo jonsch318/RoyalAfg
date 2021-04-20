@@ -6,6 +6,9 @@
   <br>
 </p>
 
+## This is the released version of this project. 
+
+This version of the project was handed in for the special learning achievement. 
 
 ## Documentation
 
