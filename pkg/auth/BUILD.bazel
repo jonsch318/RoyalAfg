@@ -22,4 +22,11 @@ go_test(
     name = "auth_test",
     srcs = ["jwt_test.go"],
     embed = [":auth"],
+    deps = [
+        "//pkg/config",
+        "//pkg/models",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_stretchr_testify//assert",
+        "@org_mongodb_go_mongo_driver//bson/primitive",
+    ],
 )
