@@ -10,6 +10,7 @@ import { IClass, ILobby, LobbyInit } from "../../../games/poker/models/class";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import { getSession, useSession } from "../../../hooks/auth";
 
 type PokerInfoContext = {
     lobby: ILobby;
@@ -64,6 +65,14 @@ const Poker: FC<PokerProps> = ({ info, error }) => {
     const [lobby, setLobby] = useState<ILobby>(LobbyInit);
     const { enqueueSnackbar } = useSnackbar();
 
+    const [session, loading] = useSession();
+
+    useEffect(() => {
+        if (!session && !loading) {
+            router.replace("/games").then();
+        }
+    }, [session, loading]);
+
     useEffect(() => {
         if (error !== "") {
             enqueueSnackbar("Unable to reach the poker server", { variant: "error" });
@@ -72,19 +81,22 @@ const Poker: FC<PokerProps> = ({ info, error }) => {
 
     const join = (params: JoinOptions) => {
         router
-            .push({
-                pathname: "/games/poker/play",
-                query: {
-                    lobbyId: params.lobbyId,
-                    buyIn: params.buyIn,
-                    buyInClass: params.class
-                }
-            })
+            .replace(
+                {
+                    pathname: "/games/poker/play",
+                    query: {
+                        lobbyId: params.lobbyId,
+                        buyIn: params.buyIn,
+                        buyInClass: params.class
+                    }
+                },
+                "/games/poker/play"
+            )
             .then();
     };
 
     return (
-        <Layout>
+        <Layout footerAbsolute>
             <Head>
                 <title>{formatTitle(t("TitleSelection"))}</title>
             </Head>
@@ -102,6 +114,17 @@ const Poker: FC<PokerProps> = ({ info, error }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const session = await getSession();
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/auth/register",
+                permanent: true
+            }
+        };
+    }
+
     try {
         console.log("Calling: ", process.env.POKER_INFO_HOST ? `${process.env.POKER_INFO_HOST}/api/poker/pokerinfo` : "/api/pokerinfo");
         const res = await fetch(process.env.POKER_INFO_HOST ? `${process.env.POKER_INFO_HOST}/api/poker/pokerinfo` : "/api/pokerinfo", {

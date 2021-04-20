@@ -70,3 +70,7 @@ func (l *BlockingList) Get(i int) int {
 func (l *BlockingList) Length() int {
 	return len(l.list)
 }
+
+func (l *BlockingList) ContainsIndex(i int) bool {
+	return i >= 0 && i < len(l.list)
+}

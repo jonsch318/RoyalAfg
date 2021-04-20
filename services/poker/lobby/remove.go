@@ -37,14 +37,14 @@ func (l *Lobby) RemovePlayer(index int) error {
 
 	if !l.GetGameStarted() {
 		log.Logger.Debugf("Game not started start removal")
-		l.RemoveAfterRound()
+		l.RemoveLeftPlayers()
 	}
 
 	return nil
 }
 
-//RemoveAfterRound starts the recursive removal of hanging players
-func (l *Lobby) RemoveAfterRound() {
+//RemoveLeftPlayers starts the recursive removal of hanging players
+func (l *Lobby) RemoveLeftPlayers() {
 
 	log.Logger.Debugf("Starting Removal of players after round.")
 
@@ -86,19 +86,25 @@ func (l *Lobby) removePlayer() {
 	player := r.(RemovalRequest)
 	log.Logger.Warnf("REMOVING Player [%v]", player.ID)
 
-	if player.Pos < 0 || player.Pos > len(l.Players) || len(l.Players) == 0 {
+	i := player.Pos
+
+	if player.Pos < 0 || player.Pos >= len(l.Players) || len(l.Players) == 0 {
 		log.Logger.Errorf("Player position is invalid. Player [%v]", player.ID)
-		l.removePlayer()
-		return
+		i = l.FindPlayerByID(player.ID)
 	}
 
 	if l.Players[player.Pos].ID != player.ID {
 		log.Logger.Errorf("Removal Request of Player [%v] is not the player at position %v", player.ID, player.Pos)
+		i = l.FindPlayerByID(player.ID)
+	}
+
+	if i == -1 {
+		log.Logger.Errorf("Removal Request of Player [%v] is invalid because player does not exist", player.ID)
 		l.removePlayer()
 		return
 	}
 
-	public := l.PublicPlayers[player.Pos]
+	public := l.PublicPlayers[i]
 	if public.ID != player.ID {
 		log.Logger.Errorf("Public Playerlist is not syncronised with Playerlist. [%v] != [%v]", public.ID, player.ID)
 		l.removePlayer()
@@ -113,12 +119,12 @@ func (l *Lobby) removePlayer() {
 	}
 
 	//Remove player from list, public list and bank
-	l.Players = append(l.Players[:player.Pos], l.Players[player.Pos+1:]...)
-	l.PublicPlayers = append(l.PublicPlayers[:player.Pos], l.PublicPlayers[player.Pos+1:]...)
+	l.Players = append(l.Players[:i], l.Players[i+1:]...)
+	l.PublicPlayers = append(l.PublicPlayers[:i], l.PublicPlayers[i+1:]...)
 	l.PlayerCount--
 
 	//Send leave event
-	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, player.Pos, l.Count(), l.GameStarted))
+	utils.SendToAll(l.Players, events.NewPlayerLeavesEvent(&public, i, l.Count(), l.GameStarted))
 
 	//Update gameserver label
 	l.SetPlayerCountLabel()

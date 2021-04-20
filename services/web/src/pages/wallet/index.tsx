@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import Layout from "../../components/layout";
 import Front from "../../components/layout/front";
 import Dinero from "dinero.js";
@@ -6,11 +6,12 @@ import ActionMenu from "../../components/actionMenu";
 import TransactionList from "../../widgets/wallet/transactionList";
 import BackToAccount from "../../widgets/account/back";
 import ActionMenuLink from "../../components/actionMenu/link";
-import { getSession } from "../../hooks/auth";
+import { getSession, useSecure, useSession } from "../../hooks/auth";
 import moment from "moment";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 
 type WalletHeaderProps = {
     value: string;
@@ -46,6 +47,7 @@ type WalletProps = {
 };
 
 const Wallet: FC<WalletProps> = ({ balance, history }) => {
+    //useSecure();
     const { t } = useTranslation("wallet");
 
     return (
@@ -64,13 +66,13 @@ const Wallet: FC<WalletProps> = ({ balance, history }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { req } = ctx;
-    const session = getSession();
+    const session = await getSession();
 
     if (!session) {
         console.log("No session");
         return {
             redirect: {
-                destination: "/",
+                destination: "/auth/register",
                 permanent: true
             },
             props: {
@@ -95,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 async function getBalance(req): Promise<string> {
-    console.log("API ADDRESS", process.env.API_ADRESS);
+    if (!process.env.API_ADRESS) return null;
     const res = await fetch(`${process.env.API_ADRESS}/api/bank/balance`, {
         headers: {
             cookie: req.headers.cookie ?? ""
@@ -107,6 +109,7 @@ async function getBalance(req): Promise<string> {
 }
 
 async function getHistory(req) {
+    if (!process.env.API_ADRESS) return null;
     const res = await fetch(`${process.env.API_ADRESS}/api/bank/history`, {
         headers: {
             cookie: req.headers.cookie ?? ""

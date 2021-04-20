@@ -12,6 +12,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getCSRF } from "../../hooks/auth/csrf";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import moment from "moment";
 
 type RegisterDto = {
     username: string;
@@ -43,8 +44,9 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                 username: data.username,
                 password: data.password,
                 email: data.email,
-                birthdate: new Date(data.birthdate).toISOString(),
-                fullName: data.fullName
+                birthdate: moment(data.birthdate).unix(),
+                fullName: data.fullName,
+                acceptTerms: true
             },
             csrf
         );

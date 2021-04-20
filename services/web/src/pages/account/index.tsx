@@ -105,7 +105,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
     return (
         <Layout>
             <div>
-                <Front>{t("Your account") + u.fullName}</Front>
+                <Front>{t("Your account") + " " + u.fullName}</Front>
                 <div className="px-10 pb-10 bg-gray-200">
                     <ActionMenu>
                         <ActionMenuLink href="/wallet">{t("My wallet")}</ActionMenuLink>

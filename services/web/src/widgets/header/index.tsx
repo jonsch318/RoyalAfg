@@ -19,7 +19,7 @@ const Header: FC<HeaderProps> = ({ absolute }) => {
     };
 
     return (
-        <header className="md:h-full h-16 bg-blue-600 text-white w-full z-50" style={{ position: absolute ? "absolute" : "relative" }}>
+        <header className="md:h-14 h-16 bg-blue-600 text-white w-full z-50" style={{ position: absolute ? "absolute" : "relative" }}>
             <div className="grid h-full z-50" style={{ gridTemplateColumns: "auto 1fr" }}>
                 <button
                     className="no_highlights hamburger md:hidden grid h-full items-center ml-6 z-10 cursor-pointer focus:outline-none outline-none select-none w-6"

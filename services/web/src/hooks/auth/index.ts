@@ -3,6 +3,7 @@
 // But a custom solution is required to accommodate the custom requirements
 
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import { createContext, createElement, FC, useContext, useEffect, useState } from "react";
 import { LoginDto, RegisterDto } from "../../dtos/auth";
 import { Session } from "../../dtos/session";
@@ -56,6 +57,15 @@ export const useSession = (session?: Session): [Session, boolean] => {
         return ctx;
     }
     return _useSessionHook(session);
+};
+
+export const useSecure = (route = "/auth/register"): [Session, boolean] => {
+    const [session, loading] = useSession();
+    const router = useRouter();
+    useEffect(() => {
+        if (!session && !loading) router.push(route);
+    }, [session, loading]);
+    return [session, loading];
 };
 
 // Internal hook for getting session from the api.
@@ -116,7 +126,16 @@ export const signIn = async (args: LoginDto, csrfToken: string): Promise<Respons
     return res;
 };
 
-export const register = async (args: RegisterDto, csrfToken: string): Promise<Response> => {
+interface Register {
+    username: string;
+    password: string;
+    birthdate: number;
+    email: string;
+    fullName: string;
+    acceptTerms: boolean;
+}
+
+export const register = async (args: Register, csrfToken: string): Promise<Response> => {
     console.log("REGISTER: ", `${_apiBaseUrl()}/register`);
     console.log("regiser args: ", args, " CSRF: ", csrfToken);
     const res = await _fetch(`${_apiBaseUrl()}/register`, {
@@ -155,7 +174,7 @@ export const Provider: FC<ProviderProps> = ({ children, session }) => {
 
 const _apiBaseUrl = (): string => {
     if (process.env.AUTH_HOST == undefined) {
-        if (window) {
+        if (typeof window !== undefined) {
             return "/api/auth";
         }
     }

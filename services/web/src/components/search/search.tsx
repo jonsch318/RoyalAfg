@@ -84,9 +84,6 @@ const SearchInput: FC = () => {
                         style={{
                             width: inputWidth
                         }}>
-                        {
-                            //isSearching && <span className="text-black">Searching...</span>
-                        }
                         <SearchResultList results={results} loading={loading} />
                     </div>
                 </div>

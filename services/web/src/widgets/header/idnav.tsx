@@ -4,6 +4,7 @@ import Avatar from "../../components/header/id/avatar";
 import Link from "next/link";
 import { signOut, useSession } from "../../hooks/auth";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 
 type NavButtonProps = {
     onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -21,6 +22,17 @@ const NavButton: FC<NavButtonProps> = ({ children, onClick }) => {
 const IdNav: FC = () => {
     const { t } = useTranslation("common");
     const [session] = useSession();
+    const router = useRouter();
+
+    const logout = () => {
+        signOut().then((res) => {
+            console.log("Refreshing: ", router.asPath);
+            if (res.ok && typeof window !== undefined) {
+                window.location.href = "/";
+            }
+        });
+    };
+
     if (!session) {
         return (
             <nav className="flex items-center h-full w-full">
@@ -43,7 +55,7 @@ const IdNav: FC = () => {
     return (
         <nav className="flex items-center h-full">
             <Avatar />
-            <NavButton onClick={signOut}>{t("Logout")}</NavButton>
+            <NavButton onClick={logout}>{t("Logout")}</NavButton>
         </nav>
     );
 };

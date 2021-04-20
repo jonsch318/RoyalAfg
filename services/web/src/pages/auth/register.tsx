@@ -100,8 +100,9 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
                 username: dto.username,
                 password: dto.password,
                 email: dto.email,
-                birthdate: moment(dto.birthdate).toISOString(),
-                fullName: dto.fullName
+                birthdate: moment(dto.birthdate).unix(),
+                fullName: dto.fullName,
+                acceptTerms: true //Can only press register with accepted terms
             },
             csrf
         ).then((res) => {
