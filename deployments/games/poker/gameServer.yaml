@@ -70,6 +70,12 @@ spec:
             app: royalafg-poker-gameserver
           annotations:
             "consul.hashicorp.com/connect-inject": "false"
+        
+            "vault.hashicorp.com/agent-limits-cpu": "200m"
+            "vault.hashicorp.com/agent-limits-mem": "100Mi"
+            "vault.hashicorp.com/agent-requests-cpu": "20m"
+            "vault.hashicorp.com/agent-requests-mem": "25Mi"
+
             "vault.hashicorp.com/agent-inject": "true"
             "vault.hashicorp.com/agent-inject-secret-poker.yaml": "kv-v2/poker"
             "vault.hashicorp.com/agent-inject-template-poker.yaml": |
@@ -104,11 +110,11 @@ spec:
                   mountPath: "/etc/royalafg-poker"
               resources:
                 requests:
-                  memory: "64Mi"
-                  cpu: "20m"
+                  memory: 10Mi
+                  cpu: 10m
                 limits:
-                  memory: "64Mi"
-                  cpu: "20m"                       
+                  memory: 50Mi
+                  cpu: 25m                       
           volumes:
             - name: royalafg-poker-config
               configMap:

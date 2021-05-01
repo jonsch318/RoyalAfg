@@ -11,6 +11,7 @@ import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import { getSession, useSession } from "../../../hooks/auth";
+import { getCSRF } from "../../../hooks/auth/csrf";
 
 type PokerInfoContext = {
     lobby: ILobby;
@@ -114,7 +115,8 @@ const Poker: FC<PokerProps> = ({ info, error }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    const session = await getSession();
+    const csrf = await getCSRF(ctx);
+    const session = await getSession({ req: ctx.req });
 
     if (!session) {
         return {
@@ -137,6 +139,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
             console.log("not ok: ", res.status);
             return {
                 props: {
+                    csrf: csrf,
                     error: "Status invalid: " + res.status,
                     ...(await serverSideTranslations(ctx.locale, ["common", "poker"]))
                 }
@@ -148,6 +151,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         if (!info || !info?.classes || !info?.classes.length || !info?.lobbies || !info?.lobbies.length) {
             return {
                 props: {
+                    csrf: csrf,
                     error: "Status invalid: " + res.status,
                     ...(await serverSideTranslations(ctx.locale, ["common", "poker"]))
                 }
@@ -155,6 +159,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
         return {
             props: {
+                csrf: csrf,
                 info: info,
                 error: "",
                 ...(await serverSideTranslations(ctx.locale, ["common", "poker"]))
@@ -164,6 +169,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         console.log("e", e);
         return {
             props: {
+                csrf: csrf,
                 error: "Error: " + e,
                 ...(await serverSideTranslations(ctx.locale, ["common", "poker"]))
             }

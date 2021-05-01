@@ -46,5 +46,8 @@ func NewUser() (*User, error) {
 }
 
 func (u *User) Close() {
-	u.conn.Close()
+	err := u.conn.Close()
+	if err != nil {
+		log.Logger.Errorw("Error during user closing", "error", err)
+	}
 }

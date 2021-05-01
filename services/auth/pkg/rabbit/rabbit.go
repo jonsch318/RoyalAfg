@@ -71,8 +71,16 @@ func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) er
 //Close closes the connection to rabbitmq.
 func (r *RabbitMessageBroker) Close() {
 	//Close Channel
-	r.ch.Close()
+	err := r.ch.Close()
+
+	if err != nil {
+		r.logger.Errorw("Error during Rabbitmq close", "error", err)
+	}
 
 	//Close RabbitMQ Connection
-	r.conn.Close()
+	err = r.conn.Close()
+
+	if err != nil {
+		r.logger.Errorw("Error during Rabbitmq close", "error", err)
+	}
 }

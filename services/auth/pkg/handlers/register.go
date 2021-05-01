@@ -39,6 +39,9 @@ import (
 //		200: UserResponse
 //
 func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
+
+	h.l.Warnf("REGISTER CALLED")
+
 	// Set content type header to json
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")
