@@ -41,11 +41,11 @@ spec:
         image: redis
         resources:
           requests:
-            cpu: 50m
-            memory: 50Mi
+            cpu: 10m
+            memory: 10Mi
           limits:
-            cpu: 200m
-            memory: 200Mi
+            cpu: 25m
+            memory: 50Mi
         ports:
         - containerPort: 6379
 ---
@@ -109,6 +109,17 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service-upstreams": "redis:6379"
+
+        "consul.hashicorp.com/sidecar-proxy-cpu-request": "10m"
+        "consul.hashicorp.com/sidecar-proxy-cpu-limit": "25m"
+        "consul.hashicorp.com/sidecar-proxy-memory-request": "20Mi"
+        "consul.hashicorp.com/sidecar-proxy-memory-limit": "50Mi"
+        
+        "vault.hashicorp.com/agent-limits-cpu": "200m"
+        "vault.hashicorp.com/agent-limits-mem": "100Mi"
+        "vault.hashicorp.com/agent-requests-cpu": "20m"
+        "vault.hashicorp.com/agent-requests-mem": "25Mi"
+        
         "vault.hashicorp.com/agent-inject": "true"
         "vault.hashicorp.com/agent-inject-secret-mongodb.yaml": "kv-v2/royalafg-user-mongo"
         "vault.hashicorp.com/agent-inject-template-mongodb.yaml": |
@@ -131,10 +142,10 @@ spec:
           image: docker.io/johnnys318/royalafg_user:latest
           resources:
             requests:
-              memory: 10Mi
-              cpu: 50m
+              memory: 20Mi
+              cpu: 10m
             limits:
-              cpu: 150m
+              cpu: 25m
               memory: 50Mi
           ports:
             - containerPort: 5001

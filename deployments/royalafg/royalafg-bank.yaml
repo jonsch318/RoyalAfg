@@ -70,6 +70,17 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service-upstreams": "eventstore:2113"
+
+        "consul.hashicorp.com/sidecar-proxy-cpu-request": "10m"
+        "consul.hashicorp.com/sidecar-proxy-cpu-limit": "25m"
+        "consul.hashicorp.com/sidecar-proxy-memory-request": "20Mi"
+        "consul.hashicorp.com/sidecar-proxy-memory-limit": "50Mi"
+        
+        "vault.hashicorp.com/agent-limits-cpu": "200m"
+        "vault.hashicorp.com/agent-limits-mem": "100Mi"
+        "vault.hashicorp.com/agent-requests-cpu": "20m"
+        "vault.hashicorp.com/agent-requests-mem": "25Mi"
+
         "vault.hashicorp.com/agent-inject": "true"
         "vault.hashicorp.com/agent-inject-status": "update"
         "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
@@ -103,13 +114,13 @@ spec:
             #     secretKeyRef:
             #       key: password
             #       name: royalafg-rabbitmq-default-user
-          resources:
-              requests:
-                memory: 10Mi
-                cpu: 50m
-              limits:
-                memory: 100Mi
-                cpu: 150m
+          # resources:
+          #     requests:
+          #       memory: 10Mi
+          #       cpu: 10m
+          #     limits:
+          #       memory: 50Mi
+          #       cpu: 20m
           ports:
             - protocol: TCP
               containerPort: 8080

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"time"
 
 	"github.com/gorilla/schema"
@@ -16,7 +17,17 @@ import (
 // StartGracefully starts a http server on another go routine so when an interrupt signal hits,
 // a timout is initialized and all active requests can be handled before shutting down.
 func StartGracefully(logger *zap.SugaredLogger, server *http.Server, timeoutDuration time.Duration) {
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+		}
+	}()
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+			}
+		}()
 		if err := server.ListenAndServe(); err != nil {
 			logger.Fatalw("Http server counld not listen and serve", "error", err)
 		}

@@ -59,9 +59,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (!res.ok) {
         return {
             props: {
+                csrf: csrf,
                 ticket: { address: "", token: "" },
                 error: "error during ticket. Code: " + res.status,
-                csrf: "",
                 ...(await serverSideTranslations(context.locale, ["common", "poker"]))
             }
         };
@@ -84,7 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             props: {
                 ticket: { address: "", token: "" },
                 error: "error during ticket fetch: " + e,
-                csrf: "",
+                csrf: csrf,
                 ...(await serverSideTranslations(context.locale, ["common", "poker"]))
             }
         };
