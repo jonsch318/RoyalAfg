@@ -116,7 +116,8 @@ spec:
         args:
           - --insecure
           - --run-projections=All
-          - --enable-external-tcp 
+          - --enable-external-tcp
+          - --enable-atom-pub-over-http
         ports:
           - containerPort: 2113
             name: db

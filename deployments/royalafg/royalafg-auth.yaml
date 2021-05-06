@@ -105,11 +105,7 @@ spec:
       serviceAccountName: royalafg-auth
       containers:
         - name: royalafg-auth
-<<<<<<< Updated upstream
-          image: docker.io/johnnys318/royalafg_auth:dev
-=======
           image: docker.io/johnnys318/royalafg_auth:latest
->>>>>>> Stashed changes
           env:
             - name: GRPC_GO_LOG_VERBOSITY_LEVEL
               value: "99"
