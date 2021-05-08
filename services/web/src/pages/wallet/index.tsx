@@ -1,21 +1,25 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import Layout from "../../components/layout";
 import Front from "../../components/layout/front";
 import Dinero from "dinero.js";
-import PropTypes from "prop-types";
 import ActionMenu from "../../components/actionMenu";
-import TransactionList from "../../widgets/account/wallet/transactionList";
+import TransactionList from "../../widgets/wallet/transactionList";
 import BackToAccount from "../../widgets/account/back";
 import ActionMenuLink from "../../components/actionMenu/link";
-import { getSession } from "../../hooks/auth";
+import { getSession, useSecure, useSession } from "../../hooks/auth";
 import moment from "moment";
 import { GetServerSideProps } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 
 type WalletHeaderProps = {
     value: string;
 };
 
 const WalletHeader: FC<WalletHeaderProps> = ({ value }) => {
+    const { t } = useTranslation("wallet");
+
     if (!value) {
         return;
     }
@@ -23,7 +27,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ value }) => {
         <Front>
             <div className="md:px-10 font-sans text-5xl font-semibold text-center grid grid-cols-2 justify-center items-center">
                 <h1 className="text-6xl h-auto align-middle">{value}</h1>
-                <h1>Your Wallet</h1>
+                <h1>{t("Your wallet")}</h1>
             </div>
         </Front>
     );
@@ -43,13 +47,16 @@ type WalletProps = {
 };
 
 const Wallet: FC<WalletProps> = ({ balance, history }) => {
+    //useSecure();
+    const { t } = useTranslation("wallet");
+
     return (
         <Layout>
             <BackToAccount />
             {balance && <WalletHeader value={balance} />}
             <div className="px-10 pb-10 bg-gray-200">
                 <ActionMenu>
-                    <ActionMenuLink href="/wallet/deposit">Deposit</ActionMenuLink>
+                    <ActionMenuLink href="/wallet/deposit">{t("Deposit")}</ActionMenuLink>
                 </ActionMenu>
             </div>
             <div className="p-10 bg-white">{history && <TransactionList transactions={history} />}</div>
@@ -59,16 +66,18 @@ const Wallet: FC<WalletProps> = ({ balance, history }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { req } = ctx;
-    const session = getSession();
+    const session = await getSession({ req: req });
 
     if (!session) {
         console.log("No session");
         return {
             redirect: {
-                destination: "/",
+                destination: "/auth/register",
                 permanent: true
             },
-            props: {}
+            props: {
+                ...(await serverSideTranslations(ctx.locale, ["common", "wallet"]))
+            }
         };
     }
 
@@ -81,13 +90,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
         props: {
             history: history,
-            balance: balance
+            balance: balance,
+            ...(await serverSideTranslations(ctx.locale, ["common", "wallet"]))
         }
     };
 };
 
 async function getBalance(req): Promise<string> {
-    console.log("API ADDRESS", process.env.API_ADRESS);
+    if (!process.env.API_ADRESS) return null;
     const res = await fetch(`${process.env.API_ADRESS}/api/bank/balance`, {
         headers: {
             cookie: req.headers.cookie ?? ""
@@ -99,6 +109,7 @@ async function getBalance(req): Promise<string> {
 }
 
 async function getHistory(req) {
+    if (!process.env.API_ADRESS) return null;
     const res = await fetch(`${process.env.API_ADRESS}/api/bank/history`, {
         headers: {
             cookie: req.headers.cookie ?? ""

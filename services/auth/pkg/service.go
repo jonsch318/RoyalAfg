@@ -3,6 +3,7 @@ package pkg
 import (
 	"fmt"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	metricsMW "github.com/slok/go-http-metrics/middleware"
@@ -33,6 +34,13 @@ import (
 
 // Start starts the account service
 func Start(logger *zap.SugaredLogger) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Logger.Debugf("recovering in round start from %v Stacktrace: \n %s", r, string(debug.Stack()))
+		}
+	}()
+
 	//Bind to environment variables
 	viper.SetEnvPrefix("auth")
 	_ = viper.BindEnv(config.RabbitMQUsername)
@@ -76,7 +84,7 @@ func Start(logger *zap.SugaredLogger) {
 		Recorder: prometheus.NewRecorder(prometheus.Config{}),
 		Service:  "authHTTP",
 	})
-	n := negroni.New(mw.NewLogger(logger.Desugar()), negroni.NewRecovery(), metricsNegroni.Handler("", metricsMiddleware))
+	n := negroni.New(negroni.NewRecovery(), mw.NewLogger(logger.Desugar()), metricsNegroni.Handler("", metricsMiddleware))
 
 	//enable cors if wanted
 	if viper.GetBool(config.CorsEnabled) {
@@ -95,11 +103,11 @@ func Start(logger *zap.SugaredLogger) {
 	port := viper.GetString(config.HTTPPort)
 	logger.Warnf("HTTP Port set to %v", port)
 	srv := &http.Server{
-		Addr:         ":" + port,
-		WriteTimeout: viper.GetDuration(config.WriteTimeout),
-		ReadHeaderTimeout:  viper.GetDuration(config.ReadTimeout),
-		IdleTimeout:  viper.GetDuration(config.IdleTimeout),
-		Handler:      n,
+		Addr:              ":" + port,
+		WriteTimeout:      viper.GetDuration(config.WriteTimeout),
+		ReadHeaderTimeout: viper.GetDuration(config.ReadTimeout),
+		IdleTimeout:       viper.GetDuration(config.IdleTimeout),
+		Handler:           n,
 	}
 
 	//Start HTTP server

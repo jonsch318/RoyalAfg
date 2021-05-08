@@ -6,6 +6,8 @@ html,
 body {
     padding: 0;
     margin: 0;
+    width: 100vw;
+    height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
         Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
@@ -21,6 +23,20 @@ a {
 
 .move-down-nav-top {
     top: 4rem;
+}
+
+.no_highlights{
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.react-datepicker-wrapper, .react-datepicker__input-container {
+    display: block !important;
 }
 
 @layer utilities {

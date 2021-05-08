@@ -188,7 +188,7 @@ metadata:
   labels:
     app: traefik
 spec:
-  type: NodePort 
+  type: LoadBalancer 
   ports:
     - protocol: TCP
       name: web

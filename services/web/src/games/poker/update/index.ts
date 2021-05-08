@@ -17,6 +17,7 @@ import {
 import { IPlayer, Player } from "../models/player";
 import { IPoker, PokerInitState } from "../models/poker";
 import { IEvent } from "../models/event";
+import { TFunction } from "next-i18next";
 
 //FOLD describes the action of a player quiting this hand
 export const FOLD = 1;
@@ -43,7 +44,7 @@ const _findPlayer = (id: string, arr: IPlayer[]): number => {
     return arr.findIndex((x) => x.id === id);
 };
 
-export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>, e: IEvent): void => {
+export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>, e: IEvent, t: TFunction): void => {
     switch (e.event) {
         case LOBBY_INFO:
             setPoker((p) => {
@@ -97,7 +98,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                     ...p,
                     dealer: -1,
                     board: [],
-                    notification: "Game Started",
+                    notification: t("Game started"),
                     players: _addPlayers(e.data.players, true),
                     pot: e.data.pot,
                     index: e.data.position,
@@ -216,7 +217,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                 }
                 return {
                     ...p,
-                    notification: "Game Ended. Winner is: " + w,
+                    notification: t("Game ended. Winner is: ") + w,
                     pot: PokerInitState.pot,
                     bet: PokerInitState.bet,
                     possibleActions: PokerInitState.possibleActions,

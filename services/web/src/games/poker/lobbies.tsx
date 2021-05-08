@@ -3,6 +3,7 @@ import Lobby from "./join/lobby";
 import Chip from "./join/chip";
 import { PokerInfoContext } from "../../pages/games/poker";
 import { IClass, ILobby } from "./models/class";
+import { useTranslation } from "next-i18next";
 
 type LobbiesProps = {
     info: {
@@ -12,11 +13,12 @@ type LobbiesProps = {
 };
 
 const Lobbies: FC<LobbiesProps> = ({ info }) => {
+    const { t } = useTranslation("poker");
     const { lobby, setLobby } = useContext(PokerInfoContext);
 
     return (
         <div>
-            <h1 className="font-sans text-xl text-center my-4 font-medium">Buy In Classes</h1>
+            <h1 className="font-sans text-xl text-center my-4 font-medium">{t("Buy in classes")}</h1>
             <div className="flex justify-center items-center">
                 {info?.classes?.length &&
                     info?.classes.map((c, i) => (
@@ -31,7 +33,7 @@ const Lobbies: FC<LobbiesProps> = ({ info }) => {
                         />
                     ))}
             </div>
-            <h1 className="font-sans text-xl text-center my-4 font-medium">Lobbies</h1>
+            <h1 className="font-sans text-xl text-center my-4 font-medium">{t("Lobbies")}</h1>
             <div className="flex justify-center">
                 {info?.lobbies?.length &&
                     info?.lobbies.map((c) => {
@@ -55,7 +57,7 @@ const Lobbies: FC<LobbiesProps> = ({ info }) => {
                             })
                         );
                     })}
-                {info?.lobbies?.length == 0 && <p>No lobbies found.</p>}
+                {info?.lobbies?.length == 0 && <p>{t("No lobbies active.")}</p>}
             </div>
         </div>
     );

@@ -44,6 +44,12 @@ func (r *Round) recursiveAction(options *ActionRoundOptions) {
 		return
 	}
 
+	//Check if blocking index is invalid. (Anchor)
+	if !options.BlockingList.ContainsIndex(options.BlockingIndex) {
+		log.Logger.Errorf("Blocking contains an index bigger than list or smaller than 0")
+		return
+	}
+
 	options.Current = options.BlockingList.Get(options.BlockingIndex)
 	options.PlayerId = r.Players[options.Current].ID
 	options.Success = false
@@ -117,8 +123,7 @@ func (r *Round) recursiveAction(options *ActionRoundOptions) {
 		return
 	}
 
-	//No one is blocking to continue, so we return
-	return
+	//No one is blocking to continue, so we exit
 }
 
 func (r *Round) actionTries(options *ActionRoundOptions) error {
@@ -187,6 +192,7 @@ func (r *Round) action(options *ActionRoundOptions) {
 	case events.ALL_IN:
 		raise, err := r.Bank.PerformAllIn(options.PlayerId)
 		if err == nil {
+			options.CanCheck = false
 			options.Success = true
 			if raise {
 				options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
@@ -204,7 +210,7 @@ func (r *Round) action(options *ActionRoundOptions) {
 			options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
 			return
 		}
-		r.playerError(options.BlockingIndex, fmt.Sprintf("Raise must be higher than the highest bet."))
+		r.playerError(options.BlockingIndex, "Raise must be higher than the highest bet.")
 		return
 
 	case events.BET:
@@ -215,6 +221,6 @@ func (r *Round) action(options *ActionRoundOptions) {
 			options.BlockingList.RemoveBlocking(options.BlockingIndex)
 			return
 		}
-		r.playerError(options.BlockingIndex, fmt.Sprintf("Bet must be equal to the current highest bet."))
+		r.playerError(options.BlockingIndex, "Bet must be equal to the current highest bet.")
 	}
 }

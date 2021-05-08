@@ -108,13 +108,15 @@ spec:
       labels:
         app: eventstore
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
       - name: eventstore
         image: eventstore/eventstore:latest
         args:
           - --insecure
           - --run-projections=All
-          - --enable-external-tcp 
+          - --enable-external-tcp
           - --enable-atom-pub-over-http
         ports:
           - containerPort: 2113

@@ -66,6 +66,17 @@ spec:
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
         "consul.hashicorp.com/connect-service-upstreams": "redis:6379, royalafg-bank:8000"
+
+        "consul.hashicorp.com/sidecar-proxy-cpu-request": "10m"
+        "consul.hashicorp.com/sidecar-proxy-cpu-limit": "25m"
+        "consul.hashicorp.com/sidecar-proxy-memory-request": "20Mi"
+        "consul.hashicorp.com/sidecar-proxy-memory-limit": "50Mi"
+        
+        "vault.hashicorp.com/agent-limits-cpu": "250m"
+        "vault.hashicorp.com/agent-limits-mem": "250Mi"
+        "vault.hashicorp.com/agent-requests-cpu": "20m"
+        "vault.hashicorp.com/agent-requests-mem": "25Mi"
+
         "vault.hashicorp.com/agent-inject": "true"
         "vault.hashicorp.com/agent-inject-secret-poker.yaml": "kv-v2/poker"
         "vault.hashicorp.com/agent-inject-template-poker.yaml": |
@@ -86,9 +97,12 @@ spec:
       - name: royalafg-poker-matchmaker
         image: docker.io/johnnys318/royalafg_poker_match:latest
         resources:
+          requests:
+            memory: 10Mi
+            cpu: 10m
           limits:
-            memory: "128Mi"
-            cpu: "150m"
+            memory: "20Mi"
+            cpu: "10m"
         ports:
           - protocol: TCP
             containerPort: 8080 

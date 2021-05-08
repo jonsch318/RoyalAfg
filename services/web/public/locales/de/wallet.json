@@ -1,0 +1,21 @@
+{
+    "Title": "Ihr Bankkonto",
+    "Description": "Sehen sie ihr Bankkonto ein",
+    "Your wallet": "Ihr Bankkonto",
+    "Deposit": "Einzahlen",
+    "Withdraw": "Abheben",
+    "Won %s in %s [%s]": "Gewinn von %s in %s [%s]",
+    "Won %s in %s": "Gewinn von %s in %s",
+    "Lost %s in %s [%s]": "Verloren %s in %s [%s]",
+    "Lost %s in %s": "Verloren %s in %s",
+    "Withdrawn %s": "Abhebung von %s",
+    "Deposited %s": "Einzahlung von %s",
+    "Error during depositing": "Fehler bei dem einzahlem",
+    "Deposited successfully": "Einzahlung erfolgreich",
+    "Specify a amount between $0.01 and 99,999,999.99": "Geben sie einen Betrag zwischen €0.01 und 99,999,999.99 an",
+    "Deposit...": "Einzahlung von",
+    "...to your account.": "in Ihr Bankkonto.",
+    "Continue": "Weiter",
+    "Success": "Erfolgreich",
+    "Loading...": "Laden..."
+}

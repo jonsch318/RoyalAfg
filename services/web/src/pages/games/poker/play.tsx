@@ -7,6 +7,9 @@ import { useRouter } from "next/router";
 import { useSnackbar } from "notistack";
 import { getCSRF } from "../../../hooks/auth/csrf";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 const Poker = dynamic(import("../../../games/poker/index"), { ssr: false });
 
@@ -56,9 +59,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (!res.ok) {
         return {
             props: {
+                csrf: csrf,
                 ticket: { address: "", token: "" },
                 error: "error during ticket. Code: " + res.status,
-                csrf: ""
+                ...(await serverSideTranslations(context.locale, ["common", "poker"]))
             }
         };
     }
@@ -70,7 +74,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             props: {
                 csrf: csrf,
                 ticket: ticket,
-                error: ""
+                error: "",
+                ...(await serverSideTranslations(context.locale, ["common", "poker"]))
             }
         };
     } catch (e) {
@@ -79,7 +84,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             props: {
                 ticket: { address: "", token: "" },
                 error: "error during ticket fetch: " + e,
-                csrf: ""
+                csrf: csrf,
+                ...(await serverSideTranslations(context.locale, ["common", "poker"]))
             }
         };
     }
@@ -92,18 +98,26 @@ type PlayProps = {
 };
 
 const Play: FC<PlayProps> = ({ csrf, ticket, error }) => {
+    const { t } = useTranslation("poker");
     const router = useRouter();
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         if (error !== "") {
             console.log("Error: ", error);
-            enqueueSnackbar("Could not connect to the poker server", { variant: "error" });
+            enqueueSnackbar(t("Could not connect to the poker server"), { variant: "error" });
             router.push("/games/poker").then();
         }
     }, [error]);
 
-    return <Poker ticket={ticket} csrf={csrf} />;
+    return (
+        <>
+            <Head>
+                <title>{t("TitleGame")}</title>
+            </Head>
+            <Poker ticket={ticket} csrf={csrf} />
+        </>
+    );
 };
 
 export default Play;

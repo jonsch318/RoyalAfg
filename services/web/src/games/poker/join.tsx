@@ -4,6 +4,7 @@ import CurrencyInput from "react-currency-input-field";
 import { useRouter } from "next/router";
 import { useSnackbar } from "notistack";
 import { IClass } from "./models/class";
+import { useTranslation } from "next-i18next";
 
 //Selects the class in that the buy in falls. Returns true if a warning should be displayed
 const GetClass = (classes, v, setLobby, lobby) => {
@@ -33,6 +34,7 @@ type JoinProps = {
 };
 
 const Join: FC<JoinProps> = ({ onJoin, classes }) => {
+    const { t } = useTranslation("poker");
     const { lobby, setLobby } = useContext(PokerInfoContext);
     const [buyIn, setBuyIn] = useState<string>("0");
     const { locale } = useRouter();
@@ -62,7 +64,7 @@ const Join: FC<JoinProps> = ({ onJoin, classes }) => {
     };
 
     if (!classes || !classes.length) {
-        return <div>Cant load poker information</div>;
+        return <div>{t("Could not load poker information")}</div>;
     }
     return (
         <div>
@@ -73,7 +75,7 @@ const Join: FC<JoinProps> = ({ onJoin, classes }) => {
                 <CurrencyInput
                     name="buyIn"
                     className="mx-4 p-1 pl-3 rounded outline-none"
-                    placeholder={"Buy In Amount"}
+                    placeholder={t("Buy in amount")}
                     intlConfig={{ locale: locale, currency: "USD" }}
                     value={buyIn}
                     onValueChange={(val) => {
@@ -90,7 +92,7 @@ const Join: FC<JoinProps> = ({ onJoin, classes }) => {
                     className="mx-4 p-1 pl-3 rounded outline-none"
                     name="lobbyId"
                     id="lobbyId"
-                    placeholder="Lobby Id"
+                    placeholder={t("Lobby id")}
                     type="text"
                     value={lobby?.id ?? ""}
                     onChange={(e) => setLobby({ ...lobby, id: e.target.value, i: -1 })}
@@ -99,7 +101,7 @@ const Join: FC<JoinProps> = ({ onJoin, classes }) => {
                     className="bg-yellow-500 text-gray-800 hover:bg-yellow-600 transition-colors duration-150 ease-in-out rounded py-1 px-3 mr-3 disabled:opacity-75"
                     type="submit"
                     disabled={!buyIn || lobby.classIndex < 0}>
-                    Join
+                    {t("Join")}
                 </button>
             </form>
         </div>

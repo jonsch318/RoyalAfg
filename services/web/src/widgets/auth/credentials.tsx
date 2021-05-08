@@ -1,5 +1,6 @@
+import { useTranslation } from "next-i18next";
 import React, { FC, useState } from "react";
-import { RegisterDto } from "../../pages/auth/registerstepper";
+import { RegisterDto } from "../../pages/auth/register";
 
 type Credentials = {
     username: string;
@@ -13,6 +14,8 @@ type CredentialsProps = {
 };
 
 const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
+    const { t } = useTranslation("auth");
+
     const [hidePassword, setHidePassword] = useState(true);
 
     const shouldDisable = (): boolean => {
@@ -23,14 +26,14 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
         <div className="mx-16 my-6">
             <section className="mb-6 font-sans text-lg font-medium">
                 <label htmlFor="username" className="mb-2 block">
-                    Username*:
+                    {t("Username*:")}
                 </label>
                 <input
                     className="block px-8 py-4 rounded w-full outline-none"
                     type="text"
                     id="username"
                     name="username"
-                    placeholder="Your Username"
+                    placeholder={t("Your username")}
                     required
                     style={{ border: dto.username == "" ? "2px solid rgb(190, 18, 60)" : "" }}
                     value={dto.username}
@@ -39,7 +42,7 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
             </section>
             <section className="mb-6 font-sans text-lg font-medium">
                 <label htmlFor="password" className="mb-2 block">
-                    Passphrase*:
+                    {t("Passphrase*:")}
                 </label>
                 <input
                     className="block px-8 py-4 rounded w-full outline-none"
@@ -47,7 +50,7 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
                     id="password"
                     name="password"
                     autoComplete="current-password"
-                    placeholder="Your Password"
+                    placeholder={t("Your password")}
                     aria-describedby="password-constraints"
                     style={{ border: dto.password == "" ? "2px solid rgb(190, 18, 60)" : "" }}
                     value={dto.password}
@@ -60,16 +63,16 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
                         setHidePassword(!hidePassword);
                     }}
                     aria-label={hidePassword ? "Show password in plain text. This will show your password on screen." : "Hide Password."}>
-                    {hidePassword ? "Show Password" : "Hide Password"}
+                    {hidePassword ? t("Show password") : t("Hide password")}
                 </button>
             </section>
             <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-blue-500 disabled:opacity-70 text-white my-2 rounded"
+                className="w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-white my-2 rounded mb-8"
                 disabled={shouldDisable()}
                 onClick={() => {
                     handleNext();
                 }}>
-                Next
+                {t("Next")}
             </button>
         </div>
     );

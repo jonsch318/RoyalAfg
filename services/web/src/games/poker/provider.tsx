@@ -5,6 +5,7 @@ import { JOIN } from "./events/constants";
 import { OnMessage } from "./update";
 import { IEvent } from "./models/event";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
 export function usePoker(): IPoker {
     const context = useContext(PokerContext);
@@ -43,6 +44,7 @@ type PokerConnectionProps = {
 };
 
 const PokerProvider: FC<PokerConnectionProps> = ({ children, ticket }) => {
+    const { t } = useTranslation("poker");
     const [poker, setPoker] = useState(PokerInitState);
     const ws = useRef<WebSocket>();
     const router = useRouter();
@@ -81,7 +83,7 @@ const PokerProvider: FC<PokerConnectionProps> = ({ children, ticket }) => {
             if (e.data && setPoker !== undefined) {
                 const message = JSON.parse(e.data);
                 console.log("Message:", message);
-                OnMessage(setPoker, message);
+                OnMessage(setPoker, message, t);
             }
         };
     }, []);

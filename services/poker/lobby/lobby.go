@@ -26,6 +26,7 @@ type Lobby struct {
 	dealer        int
 	c             chan bool
 	GameStarted   bool
+	once          Once
 }
 
 //NewLobby creates a new lobby object

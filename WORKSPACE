@@ -56,7 +56,7 @@ http_archive(
     ],
 )
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 
@@ -64,13 +64,6 @@ load("//:deps.bzl", "go_dependencies")
 
 #gazelle:repository_macro deps.bzl%go_dependencies
 go_dependencies()
-
-#go_repository(
-#    name = "io_k8s_api",
-#    build_file_proto_mode = "disable_global",
-#    commit = "a191abe0b71e00ce4cde58af8002aa4c1a8bb068",
-#    importpath = "k8s.io/api",
-#)
 
 #Docker
 

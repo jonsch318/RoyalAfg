@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import { Send } from "./provider";
 import { PLAYER_ACTION } from "./events/constants";
 import Raise from "./raise";
+import { useTranslation } from "next-i18next";
 
 const send = (s: Send | undefined, action: number, payload?: number) => {
     if (s === undefined) {
@@ -23,6 +24,8 @@ type ActionsProps = {
 };
 
 const Actions: FC<ActionsProps> = ({ possibleActions, conn }) => {
+    const { t } = useTranslation("poker");
+
     return (
         <div style={{ height: 60 }} className="flex justify-center items-center">
             <div
@@ -35,21 +38,21 @@ const Actions: FC<ActionsProps> = ({ possibleActions, conn }) => {
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"
                         onClick={() => send(conn, 1)}>
-                        FOLD
+                        {t("FOLD")}
                     </button>
                 )}
                 {((possibleActions >> 3) & 1) === 1 && (
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"
                         onClick={() => send(conn, 4)}>
-                        CHECK
+                        {t("CHECK")}
                     </button>
                 )}
                 {((possibleActions >> 1) & 1) === 1 && (
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"
                         onClick={() => send(conn, 2)}>
-                        CALL
+                        {t("CALL")}
                     </button>
                 )}
                 {((possibleActions >> 2) & 1) === 1 && <Raise onRaise={(amount) => send(conn, 3, amount)} />}
@@ -57,7 +60,7 @@ const Actions: FC<ActionsProps> = ({ possibleActions, conn }) => {
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"
                         onClick={() => send(conn, 5)}>
-                        ALL IN
+                        {t("ALL IN")}
                     </button>
                 )}
             </div>

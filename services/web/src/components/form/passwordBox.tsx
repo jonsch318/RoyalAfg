@@ -1,3 +1,4 @@
+import { useTranslation } from "next-i18next";
 import React, { useState } from "react";
 
 type PasswordBoxProps = {
@@ -8,11 +9,13 @@ type PasswordBoxProps = {
 };
 
 const PasswordBox: React.FC<PasswordBoxProps> = ({ errors, register }: PasswordBoxProps) => {
+    const { t } = useTranslation("auth");
+
     const [hidePassword, setHidePassword] = useState(true);
     return (
         <section className="mb-6 font-sans text-lg font-medium">
             <label htmlFor="password" className="mb-2 block">
-                Passphrase*:
+                {t("Passphrase*:")}
             </label>
             <input
                 className="block px-8 py-4 rounded w-full"
@@ -21,7 +24,7 @@ const PasswordBox: React.FC<PasswordBoxProps> = ({ errors, register }: PasswordB
                 id="password"
                 name="password"
                 autoComplete="current-password"
-                placeholder="Your Password"
+                placeholder={t("Your password")}
                 aria-describedby="password-constraints"
                 required
             />
@@ -31,11 +34,11 @@ const PasswordBox: React.FC<PasswordBoxProps> = ({ errors, register }: PasswordB
                     setHidePassword(!hidePassword);
                 }}
                 aria-label={hidePassword ? "Show password in plain text. This will show your password on screen." : "Hide Password."}>
-                {hidePassword ? "Show Password" : "Hide Password"}
+                {hidePassword ? t("Show password") : t("Hide password")}
             </button>
             {errors?.password && (
                 <span className="text-sm text-red-700" id="password-constraints">
-                    This field is required and can only be more than 3 and less than 100!
+                    {t("This field is required and can only be more than 3 and less than 100!")}
                 </span>
             )}
         </section>
