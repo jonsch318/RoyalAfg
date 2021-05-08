@@ -160,7 +160,6 @@ func (l *Lobby) watchPlayerConnClose(playerIndex int, id string) {
 	//wait for closing message
 	m, ok := <-l.Players[playerIndex].Close
 	if !ok {
-
 		l.lock.RLock()
 		//find player after close. (Player array could have changed so playerIndex is out of date)
 		i := l.FindPlayerByID(id)
