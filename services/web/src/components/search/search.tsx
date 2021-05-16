@@ -5,6 +5,23 @@ import useDebounce from "../../hooks/debounce";
 
 import SearchResultList from "./resultList";
 
+function useOnClickOutside(ref, handler: (e: MouseEvent) => void) {
+    useEffect(() => {
+        const listener = (event: MouseEvent) => {
+            if (!ref.current || ref.current.contains(event.target)) {
+                return;
+            }
+            handler(event);
+        };
+        document.addEventListener("mousedown", listener);
+        document.addEventListener("touchstart", listener);
+        return () => {
+            document.removeEventListener("mousedown", listener);
+            document.removeEventListener("touchstart", listener);
+        };
+    }, [ref, handler]);
+}
+
 export interface SearchResult {
     name: string;
     url: string;
@@ -34,8 +51,10 @@ const SearchInput: FC = () => {
     const [loading, setLoading] = useState(false);
     const [inputWidth, setInputWidth] = useState(0);
     const [focused, setFocused] = useState(false);
+    const ref = useRef();
 
     const debouncedQuery = useDebounce(query, 150);
+    useOnClickOutside(ref, () => setFocused(false));
 
     useEffect(() => {
         const f = async () => {
@@ -69,15 +88,10 @@ const SearchInput: FC = () => {
                 id="global-search-input"
                 placeholder={t("Search")}
                 onChange={(e) => setQuery(e.target.value)}
-                onBlur={() => {
-                    setFocused(false);
-                }}
-                onFocus={() => {
-                    setFocused(true);
-                }}
+                onFocus={() => setFocused(true)}
             />
             {query && focused && (
-                <div>
+                <div ref={ref}>
                     <hr className="md:hidden bg-black h-1px opacity-50" />
                     <div
                         className="md:popup"
