@@ -18,17 +18,18 @@ const items = {
 type SearchResultListProps = {
     results: SearchResult[];
     loading: boolean;
+    focused: number;
 };
 
-const SearchResultList: FC<SearchResultListProps> = ({ results, loading }) => {
+const SearchResultList: FC<SearchResultListProps> = ({ results, loading, focused }) => {
     const { t } = useTranslation("common");
     return (
         <AnimatePresence>
             <motion.ul className="py-4 md:py-2 md: px-4 bg-blue ">
                 {!loading &&
-                    results.map((result) => (
+                    results.map((result, i) => (
                         <motion.li variants={items} animate="animate" initial="initial" key={result.name} className="px-5">
-                            <Result result={result} />
+                            <Result result={result} focused={focused == i} />
                         </motion.li>
                     ))}
                 {results.length < 1 && (

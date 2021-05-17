@@ -51,7 +51,9 @@ const SearchInput: FC = () => {
     const [loading, setLoading] = useState(false);
     const [inputWidth, setInputWidth] = useState(0);
     const [focused, setFocused] = useState(false);
-    const ref = useRef();
+    const [focusedIndex, setFocusedIndex] = useState(-2);
+    const ref = useRef<HTMLDivElement>();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const debouncedQuery = useDebounce(query, 150);
     useOnClickOutside(ref, () => setFocused(false));
@@ -73,10 +75,37 @@ const SearchInput: FC = () => {
         setLoading(true);
     }, [query]);
 
-    const inputRef = useRef(null);
     useEffect(() => {
         setInputWidth(inputRef.current ? inputRef.current?.offsetWidth : 0);
     }, [inputRef.current?.offsetWidth]);
+
+    useEffect(() => {
+        if (focusedIndex == -1) {
+            inputRef.current?.focus();
+        } else if (focusedIndex > -1) {
+            inputRef.current?.blur();
+        }
+    }, [focusedIndex, inputRef.current]);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (focusedIndex >= -1 && e.key == "ArrowDown") {
+                if (focusedIndex < results.length - 1) {
+                    setFocusedIndex((x) => x + 1);
+                }
+                e.preventDefault();
+            } else if (focusedIndex > -1 && e.key == "ArrowUp") {
+                setFocusedIndex((x) => x - 1);
+                e.preventDefault();
+            }
+        };
+
+        document.addEventListener("keydown", handler);
+
+        return () => {
+            document.removeEventListener("keydown", handler);
+        };
+    }, [focusedIndex, results]);
 
     return (
         <div className="relative h-full mx-4">
@@ -87,8 +116,23 @@ const SearchInput: FC = () => {
                 className="relative font-sans md:py-0 py-2 bg-white w-full h-full text-black outline-none px-4 rounded"
                 id="global-search-input"
                 placeholder={t("Search")}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setFocused(true)}
+                onChange={(e) => {
+                    setQuery(e.target.value);
+                    if (focusedIndex == -1 && e.target.value == "") {
+                        setFocusedIndex(-2);
+                    } else {
+                        setFocusedIndex(-1);
+                    }
+                }}
+                onFocus={() => {
+                    setFocused(true);
+                    setFocusedIndex(-1);
+                }}
+                onBlur={() => {
+                    if (focusedIndex == -1) {
+                        setFocusedIndex(-2);
+                    }
+                }}
             />
             {query && focused && (
                 <div ref={ref}>
@@ -98,7 +142,7 @@ const SearchInput: FC = () => {
                         style={{
                             width: inputWidth
                         }}>
-                        <SearchResultList results={results} loading={loading} />
+                        <SearchResultList results={results} loading={loading} focused={focusedIndex} />
                     </div>
                 </div>
             )}
