@@ -9,7 +9,9 @@ export interface IPoker {
     dealer: number;
     board: ICard[];
     pot: string;
+    potNum: number;
     bet: string;
+    betNum: number;
     lobbyInfo: ILobby;
     gameRunning: boolean;
     possibleActions: number;
@@ -24,7 +26,9 @@ export const PokerInitState: IPoker = {
     dealer: -1,
     board: [],
     pot: "€0.0",
+    potNum: 0.0,
     bet: "€0.0",
+    betNum: 0.0,
     lobbyInfo: {
         lobbyId: "",
         blind: 0,

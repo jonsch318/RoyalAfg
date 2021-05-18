@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useRouter } from "next/router";
@@ -6,12 +6,13 @@ import { useTranslation } from "next-i18next";
 
 type RaiseProps = {
     onRaise: (amount: number) => void;
+    bet: number;
 };
 
-const Raise: FC<RaiseProps> = ({ onRaise }) => {
+const Raise: FC<RaiseProps> = ({ onRaise, bet }) => {
     const { t } = useTranslation("poker");
     const { locale } = useRouter();
-    const [raise, setRaise] = useState(0.0);
+    const [raise, setRaise] = useState(bet);
 
     return (
         <div className="flex justify-center items-center rounded mx-4 h-full">
@@ -21,7 +22,7 @@ const Raise: FC<RaiseProps> = ({ onRaise }) => {
                 placeholder={t("Raise amount")}
                 intlConfig={{ locale: locale, currency: "USD" }}
                 autoComplete="off"
-                defaultValue={0.0}
+                defaultValue={bet}
                 onValueChange={(val: string | undefined) => {
                     if (val !== undefined) setRaise(parseFloat(val));
                 }}
@@ -32,8 +33,9 @@ const Raise: FC<RaiseProps> = ({ onRaise }) => {
                     className="bg-white px-3 flex justify-center items-center h-full rounded text-black overflow-hidden hover:bg-yellow-500 transition-colors ease-in-out duration-150 disabled:opacity-60"
                     onClick={() => {
                         if (raise > 0) onRaise(raise * 100);
-                    }}>
-                    {t("RAISE")}
+                    }}
+                    disabled={raise < bet}>
+                    {raise == bet ? t("RAISE") : t("CALL")}
                 </button>
             </Tooltip>
         </div>

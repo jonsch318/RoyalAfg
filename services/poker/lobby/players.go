@@ -87,7 +87,7 @@ func (l *Lobby) FillLobbyPosition() {
 			register.In = player.In
 			register.Left = false
 
-			err := utils.SendToPlayerInListTimeout(l.Players, registeredIndex, events.NewJoinSuccessEvent(l.PublicPlayers, registeredIndex, public.BuyIn, l.GameStarted))
+			err := utils.SendToPlayerInListTimeout(l.Players, registeredIndex, events.NewJoinSuccessEvent(l.PublicPlayers, registeredIndex, player.BuyIn, l.GameStarted))
 			if err != nil {
 				log.Logger.Infof("Could not send join success event to player. Trying to remove player now.")
 				if err := l.RemovePlayerByID(l.Players[playerIndex].ID); err != nil {
@@ -144,8 +144,10 @@ func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) er
 
 	//Send to currently active players. The joining player is not included. He will get a different confirmation
 	utils.SendToAll(l.Players, events.NewPlayerJoinEvent(public, playerIndex, l.Count(), l.GameStarted))
+
 	//Send join confirmation to player
-	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, l.PublicPlayers[playerIndex].BuyIn, l.GameStarted))
+	ev := events.NewJoinSuccessEvent(l.PublicPlayers, playerIndex, player.BuyIn, l.GameStarted)
+	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, ev)
 }
 
 //WatchPlayerConnClose watches the close channel and removes the player when leaving.

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/Rhymond/go-money"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -51,16 +52,18 @@ func NewLobbyInfoEvent(lobbyId string, players, minToStart, maxBuyIn, minBuyIn, 
 type JoinSuccess struct {
 	Players     []models.PublicPlayer `json:"players"`
 	BuyIn       string                `json:"buyin"`
+	BuyInNum    float64               `json:"buyInNum"`
 	Position    int                   `json:"position"`
 	GameStarted bool                  `json:"gameStarted"`
 	Reconnect   bool                  `json:"reconnect"`
 }
 
-func NewJoinSuccessEvent(players []models.PublicPlayer, position int, buyIn string, gameStarted bool) *models.Event {
+func NewJoinSuccessEvent(players []models.PublicPlayer, position int, buyIn *money.Money, gameStarted bool) *models.Event {
 	return models.NewEvent(JOIN_SUCCESS, &JoinSuccess{
 		Players:     players,
 		Position:    position,
-		BuyIn:       buyIn,
+		BuyIn:       buyIn.Display(),
+		BuyInNum:    buyIn.AsMajorUnits(),
 		GameStarted: gameStarted,
 	})
 }

@@ -9,7 +9,7 @@ import { useTranslation } from "next-i18next";
 
 const PokerVisual: FC = () => {
     const { t } = useTranslation("poker");
-    const { loaded, possibleActions } = usePoker();
+    const { loaded, possibleActions, betNum } = usePoker();
     const { close, send } = usePokerConn();
     const router = useRouter();
 
@@ -26,7 +26,7 @@ const PokerVisual: FC = () => {
             </button>
             {loaded && (
                 <div>
-                    <Actions possibleActions={possibleActions} conn={send} />
+                    <Actions possibleActions={possibleActions} conn={send} bet={betNum} />
                     <View />
                 </div>
             )}

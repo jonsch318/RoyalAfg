@@ -35,7 +35,7 @@ export const CHECK = 4;
 const _addPlayers = (data: any, setIn = false): IPlayer[] => {
     const players = [];
     for (let i = 0; i < data.length; i++) {
-        players.push(new Player(data[i].id, data[i].username, data[i].buyIn, setIn));
+        players.push(new Player(data[i].id, data[i].username, data[i].buyIn, data[i].buyInNum, setIn));
     }
     return players;
 };
@@ -57,6 +57,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                 const players = _addPlayers(e.data.players);
 
                 players[e.data.position].buyIn = e.data.buyIn;
+                players[e.data.position].buyInNum = e.data.buyInNum;
 
                 return { ...p, players: players, index: e.data.position, gameRunning: e.data.gameStarted };
             });
@@ -66,7 +67,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
             setPoker((p) => {
                 return {
                     ...p,
-                    players: [...p.players, new Player(e.data.id, e.data.username, e.data.player.buyIn)],
+                    players: [...p.players, new Player(e.data.id, e.data.username, e.data.player.buyIn, e.data.player.buyInNum)],
                     lobbyInfo: {
                         ...p.lobbyInfo,
                         playerCount: e.data.playerCount
@@ -101,6 +102,7 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                     notification: t("Game started"),
                     players: _addPlayers(e.data.players, true),
                     pot: e.data.pot,
+                    potNum: e.data.potNum,
                     index: e.data.position,
                     loaded: true,
                     gameRunning: true
@@ -163,13 +165,18 @@ export const OnMessage = (setPoker: React.Dispatch<React.SetStateAction<IPoker>>
                 }
 
                 player.bet = e.data.totalAmount;
+                player.betNum = e.data.totalAmountNum;
                 player.buyIn = e.data.wallet;
+                player.buyInNum = e.data.walletNum;
+
                 console.log("Player [", e.data.position, "] betting ", e.data.totalAmount);
 
                 return {
                     ...p,
                     pot: e.data.pot,
+                    potNum: e.data.potNum,
                     bet: e.data.totalAmount,
+                    betNum: e.data.totalAmountNum,
                     players: players
                 };
             });
