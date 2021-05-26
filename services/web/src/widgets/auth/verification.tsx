@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { RegisterDto } from "../../pages/auth/register";
 import useDigitInput from "react-digit-input";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { verifyUser } from "../../hooks/auth";
+import { useDots } from "../../hooks/dots";
 
 type VerficationProps = {
     handleNext: () => void;
@@ -21,6 +22,7 @@ const Verification: FC<VerficationProps> = ({ handleNext, dto, setDet, csrf }) =
     const [val, setVal] = useState("");
     const [num, setNum] = useState(0);
     const [verified, setVerified] = useState(false);
+    const dots = useDots();
 
     const digits = useDigitInput({
         acceptedCharacters: /^[0-9]$/,
@@ -87,13 +89,13 @@ const Verification: FC<VerficationProps> = ({ handleNext, dto, setDet, csrf }) =
             )}
             {numVerify(num) && !verified && (
                 <div className="flex flex-col justify-center items-center my-8">
-                    <h2 className="font-sans font-semibold text-2xl my-4">Verifing...</h2>
+                    <h2 className="font-sans font-semibold text-2xl my-4">Verifing</h2>
                     <div className="flex flex-row items-center justify-center ">
                         <CircularProgress variant="indeterminate" size="2rem" color="primary" />
                     </div>
                 </div>
             )}
-            {verified && <h1 className="font-sans text-2xl font-semibold my-8">Thank you for registering. You will be redirected soon...</h1>}
+            {verified && <h1 className="font-sans text-2xl font-semibold my-8">Thank you for registering. You will be redirected soon {dots}</h1>}
         </div>
     );
 };
