@@ -89,19 +89,23 @@ func (l *Lobby) removePlayer() {
 	i := player.Pos
 
 	if player.Pos < 0 || player.Pos >= len(l.Players) || len(l.Players) == 0 {
-		log.Logger.Errorf("Player position is invalid. Player [%v]", player.ID)
+		log.Logger.Infof("Player position is invalid. Trying to recover position of player [%v]", player.ID)
 		i = l.FindPlayerByID(player.ID)
-	}
-
-	if l.Players[player.Pos].ID != player.ID {
-		log.Logger.Errorf("Removal Request of Player [%v] is not the player at position %v", player.ID, player.Pos)
-		i = l.FindPlayerByID(player.ID)
+		if i < 0 || i >= len(l.Players) || len(l.Players) == 0 {
+			log.Logger.Errorf("Player position recovery unsucessfull. Player [%v]", player.ID)
+			return
+		}
 	}
 
 	if i == -1 {
 		log.Logger.Errorf("Removal Request of Player [%v] is invalid because player does not exist", player.ID)
 		l.removePlayer()
 		return
+	}
+
+	if l.Players[player.Pos].ID != player.ID {
+		log.Logger.Errorf("Removal Request of Player [%v] is not the player at position %v", player.ID, player.Pos)
+		i = l.FindPlayerByID(player.ID)
 	}
 
 	public := l.PublicPlayers[i]
