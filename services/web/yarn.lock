@@ -5378,6 +5378,11 @@ react-datepicker@^3.6.0:
     react-onclickoutside "^6.10.0"
     react-popper "^1.3.8"
 
+react-digit-input@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-digit-input/-/react-digit-input-2.1.0.tgz#8b0be6d3ea247fd361855483f21d0aafba341196"
+  integrity sha512-pGv0CtSmu3Mf4cD79LoYtJI7Wq4dpPiLiY1wvKsNaR+X2sJyk1ETiIxjq6G8i+XJqNXExM6vuytzDqblkkSaFw==
+
 react-dom@^17.0.1:
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.1.tgz#1de2560474ec9f0e334285662ede52dbc5426fc6"

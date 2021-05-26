@@ -14,13 +14,22 @@ const Raise: FC<RaiseProps> = ({ onRaise, bet }) => {
     const { locale } = useRouter();
     const [raise, setRaise] = useState(bet);
 
+    useEffect(() => {
+        setRaise(bet);
+    }, [bet]);
+
+    useEffect(() => {
+        console.log(raise, " < ", bet, " => ", raise < bet);
+        console.log(raise, " = ", bet, " => ", raise == bet);
+    }, [bet, raise]);
+
     return (
         <div className="flex justify-center items-center rounded mx-4 h-full">
             <CurrencyInput
                 name="amount"
                 className="border-blue-600 justify-center items-center h-full px-3 outline-none py-1 flex w-80 font-sans placeholder-blue-300 text-black border-solid ml-4 mr-2 rounded"
                 placeholder={t("Raise amount")}
-                intlConfig={{ locale: locale, currency: "USD" }}
+                intlConfig={{ locale: locale, currency: "EUR" }}
                 autoComplete="off"
                 defaultValue={bet}
                 onValueChange={(val: string | undefined) => {
@@ -35,7 +44,7 @@ const Raise: FC<RaiseProps> = ({ onRaise, bet }) => {
                         if (raise > 0) onRaise(raise * 100);
                     }}
                     disabled={raise < bet}>
-                    {raise == bet ? t("RAISE") : t("CALL")}
+                    {raise == bet ? t("CALL") : t("RAISE")}
                 </button>
             </Tooltip>
         </div>

@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import Link from "next/link";
+import Verification from "../../widgets/auth/verification";
 
 export type RegisterDto = {
     username: string;
@@ -36,6 +37,8 @@ function getStepContent(step: number, handleNext: () => void, handleBack: () => 
         case 0:
             return <Credentials handleNext={handleNext} dto={dto} setDto={setDto} />;
         case 1:
+            return <Verification handleNext={handleNext} dto={dto} setDet={setDto} />;
+        case 2:
             return <Information handleNext={handleNext} handleBack={handleBack} dto={dto} setDto={setDto} />;
         default:
             return "Unknown step";
