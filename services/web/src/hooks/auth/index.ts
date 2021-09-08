@@ -5,7 +5,7 @@
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { createContext, createElement, FC, useContext, useEffect, useState } from "react";
-import { LoginDto, RegisterDto } from "../../dtos/auth";
+import { LoginDto } from "../../dtos/auth";
 import { Session } from "../../dtos/session";
 
 const __AUTH = {
@@ -129,7 +129,7 @@ export const signIn = async (args: LoginDto, csrfToken: string): Promise<Respons
 interface Register {
     username: string;
     password: string;
-    birthdate: number;
+    birthdate: string;
     email: string;
     fullName: string;
     acceptTerms: boolean;
@@ -148,6 +148,19 @@ export const register = async (args: Register, csrfToken: string): Promise<Respo
     });
     await getSession();
     return res;
+};
+
+export const verifyUser = async (args: number, csrfToken: string): Promise<Response> => {
+    console.log("VERIFING with code: ", args, "CSRF: ", csrfToken);
+
+    return await _fetch(`${_apiBaseUrl()}/verification`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({ verificationCode: args })
+    });
 };
 
 export const refreshSession = async (): Promise<[Session, boolean]> => {

@@ -28,10 +28,9 @@ const ALL_IN = 5
 
 //Action describes a action a player can make one a normal hand stage
 type Action struct {
-	Action  int `json:"action" mapstructure:"action"`
+	Action  int          `json:"action" mapstructure:"action"`
 	Payload *money.Money `json:"payload" mapstructure:"payload"`
 }
-
 
 //Action describes a action a player can make one a normal hand stage
 type ActionDTO struct {
@@ -63,9 +62,9 @@ func ToAction(raw *models.Event) (*Action, error) {
 
 //WaitForActionEvent encodes all possible actions the user can perform.
 type WaitForActionEvent struct {
-	Player *models.PublicPlayer `json:"player"`
-	Position        int  `json:"position" mapstructure:"position"`
-	PossibleActions byte `json:"possibleActions" mapstructure:"possibleActions"`
+	Player          *models.PublicPlayer `json:"player"`
+	Position        int                  `json:"position" mapstructure:"position"`
+	PossibleActions byte                 `json:"possibleActions" mapstructure:"possibleActions"`
 }
 
 // NewWaitForAction is an event that the server is waiting for an action from a given player. The possible actions range from 0001 = Fold | 0010=Bet | 0100=Raise | 1000=Check to 1111=All
@@ -74,23 +73,31 @@ func NewWaitForActionEvent(player *models.PublicPlayer, position int, possibleAc
 }
 
 type ActionProcessedEvent struct {
-	Player   *models.PublicPlayer `json:"player" mapstructure:"player"`
-	Pot string `json:"pot" mapstructure:"pot"`
-	Wallet       string `json:"wallet" mapstructure:"wallet"`
-	TotalAmount string `json:"totalAmount" mapstructure:"totalAmount"`
-	Amount      string `json:"amount" mapstructure:"amount"`
-	Action int `json:"action" mapstructure:"action"`
-	Position    int     `json:"position" mapstructure:"position"`
+	Player         *models.PublicPlayer `json:"player" mapstructure:"player"`
+	Pot            string               `json:"pot" mapstructure:"pot"`
+	PotNum         float64              `json:"potNum" mapstructure:"potNum"`
+	Wallet         string               `json:"wallet" mapstructure:"wallet"`
+	WalletNum      float64              `json:"walletNum" mapstructure:"wallet"`
+	TotalAmount    string               `json:"totalAmount" mapstructure:"totalAmount"`
+	TotalAmountNum float64              `json:"totalAmountNum" mapstructure:"totalAmountNum"`
+	Amount         string               `json:"amount" mapstructure:"amount"`
+	AmountNum      float64              `json:"amountNum" mapstructure:"amountNum"`
+	Action         int                  `json:"action" mapstructure:"action"`
+	Position       int                  `json:"position" mapstructure:"position"`
 }
 
-func NewActionProcessedEvent(player *models.PublicPlayer, action, position int, amount, totalAmount, wallet, pot string) *models.Event {
+func NewActionProcessedEvent(player *models.PublicPlayer, action, position int, amount, totalAmount, wallet, pot *money.Money) *models.Event {
 	return models.NewEvent(ACTION_PROCESSED, &ActionProcessedEvent{
-		Player: player,
-		Action:      action,
-		Position:    position,
-		Amount:      amount,
-		TotalAmount: totalAmount,
-		Wallet:       wallet,
-		Pot: pot,
+		Player:         player,
+		Action:         action,
+		Position:       position,
+		Amount:         amount.Display(),
+		AmountNum:      amount.AsMajorUnits(),
+		TotalAmount:    totalAmount.Display(),
+		TotalAmountNum: amount.AsMajorUnits(),
+		Wallet:         wallet.Display(),
+		WalletNum:      wallet.AsMajorUnits(),
+		Pot:            pot.Display(),
+		PotNum:         pot.AsMajorUnits(),
 	})
 }

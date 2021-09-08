@@ -1,27 +1,32 @@
 package events
 
-import "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+import (
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/Rhymond/go-money"
+)
 
 type GameEndEvent struct {
-	Winners []models.PublicPlayer `json:"winners"`
-	Shares   string               `json:"shares"`
+	Winners   []models.PublicPlayer `json:"winners"`
+	Shares    string                `json:"shares"`
+	SharesNum float64               `json:"sharesNum"`
 }
 
-func NewGameEndEvent(winners []models.PublicPlayer, shares string) *models.Event {
+func NewGameEndEvent(winners []models.PublicPlayer, shares *money.Money) *models.Event {
 	return models.NewEvent(GAME_END, &GameEndEvent{
-		Winners: winners,
-		Shares:   shares,
+		Winners:   winners,
+		Shares:    shares.Display(),
+		SharesNum: shares.AsMajorUnits(),
 	})
 }
 
 type LobbyPause struct {
-	Players []models.PublicPlayer `json:"players"`
-	PlayerCount int `json:"playerCount"`
+	Players     []models.PublicPlayer `json:"players"`
+	PlayerCount int                   `json:"playerCount"`
 }
 
-func NewLobbyPauseEvent(players []models.PublicPlayer, playerCount int) *models.Event  {
+func NewLobbyPauseEvent(players []models.PublicPlayer, playerCount int) *models.Event {
 	return models.NewEvent(LOBBY_PAUSE, &LobbyPause{
-		Players: players,
+		Players:     players,
 		PlayerCount: playerCount,
 	})
 }

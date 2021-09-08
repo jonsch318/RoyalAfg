@@ -21,9 +21,10 @@ const send = (s: Send | undefined, action: number, payload?: number) => {
 type ActionsProps = {
     conn: Send;
     possibleActions: number;
+    bet: number;
 };
 
-const Actions: FC<ActionsProps> = ({ possibleActions, conn }) => {
+const Actions: FC<ActionsProps> = ({ possibleActions, conn, bet }) => {
     const { t } = useTranslation("poker");
 
     return (
@@ -48,14 +49,14 @@ const Actions: FC<ActionsProps> = ({ possibleActions, conn }) => {
                         {t("CHECK")}
                     </button>
                 )}
-                {((possibleActions >> 1) & 1) === 1 && (
+                {/*((possibleActions >> 1) & 1) === 1 && (
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"
                         onClick={() => send(conn, 2)}>
                         {t("CALL")}
                     </button>
-                )}
-                {((possibleActions >> 2) & 1) === 1 && <Raise onRaise={(amount) => send(conn, 3, amount)} />}
+                )*/}
+                {((possibleActions >> 2) & 1) === 1 && <Raise bet={bet} onRaise={(amount) => send(conn, 3, amount)} />}
                 {((possibleActions >> 4) & 1) === 1 && (
                     <button
                         className="bg-white px-3 flex justify-center items-center h-full text-black mx-4 rounded hover:bg-yellow-500 transition-colors ease-in-out duration-150"

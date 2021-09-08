@@ -87,7 +87,7 @@ func (r *Round) fold(id string) error {
 			&r.PublicPlayers[i],
 			events.FOLD,
 			i,
-			moneyUtils.Zero().Display(),
+			moneyUtils.Zero(),
 			r.Bank.GetPlayerBet(r.Players[i].ID),
 			r.Bank.GetPlayerWallet(r.Players[i].ID),
 			r.Bank.GetPot(),

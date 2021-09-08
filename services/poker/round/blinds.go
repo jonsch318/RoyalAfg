@@ -16,7 +16,7 @@ func (r *Round) setBlinds() error {
 	for !success {
 
 		if s >= len(r.Players)-1 {
-			return errors.New("Nobody can bet smallBlind and bigBlind")
+			return errors.New("nobody can bet smallBlind and bigBlind")
 		}
 
 		var i int
@@ -40,7 +40,7 @@ func (r *Round) setBlinds() error {
 			&r.PublicPlayers[i],
 			2,
 			i,
-			r.SmallBlind.Display(),
+			r.SmallBlind,
 			r.Bank.GetPlayerBet(r.Players[i].ID),
 			r.Bank.GetPlayerWallet(r.Players[i].ID),
 			r.Bank.GetPot(),
@@ -54,7 +54,7 @@ func (r *Round) setBlinds() error {
 	for !success {
 
 		if s >= len(r.Players) {
-			return errors.New("Nobody can bet bigBlind")
+			return errors.New("nobody can bet bigBlind")
 		}
 
 		var i int
@@ -78,7 +78,7 @@ func (r *Round) setBlinds() error {
 			&r.PublicPlayers[i],
 			2,
 			i,
-			bigBlind.Display(),
+			bigBlind,
 			r.Bank.GetPlayerBet(r.Players[i].ID),
 			r.Bank.GetPlayerWallet(r.Players[i].ID),
 			r.Bank.GetPot(),

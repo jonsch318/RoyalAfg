@@ -3,6 +3,7 @@ package bank
 import (
 	"fmt"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/Rhymond/go-money"
 )
 
@@ -12,20 +13,34 @@ func (b *Bank) PerformBet(id string) error {
 }
 
 //PerformRaise checks if it
-func (b *Bank) PerformRaise(id string, amount *money.Money) error {
-	if res, err := amount.GreaterThan(b.MaxBet); err != nil || !res {
-		return fmt.Errorf("the specified amount is not higher than the highest bet")
+func (b *Bank) PerformRaise(id string, amount *money.Money) (int, error) {
+
+	//Check for regular call
+	if b.amountIsCall(amount) {
+		log.Logger.Debugf("Raise equals current bet. Calling")
+		return 2, b.PerformBet(id)
 	}
-	return b.bet(id, amount)
+
+	//check for all in
+	if allIn, err := b.amountIsAllIn(id, amount); err == nil && allIn {
+		return 5, b.bet(id, b.allIn(id))
+	}
+
+	//check for raise
+	if b.amountIsRaise(amount) {
+		return 3, b.bet(id, amount)
+	}
+
+	return 3, fmt.Errorf("the specified amount is not higher than the highest bet or something else was wrong")
 }
 
-//Perform Check
+//PerformAllIn
 func (b *Bank) PerformAllIn(id string) (bool, error) {
 	raise, err := b.MustAllIn(id)
 	if err != nil {
 		return false, err
 	}
-	//If raise == true Bet is considered a check, because the player cannot equal the max bet without going all in.
+	//If raise == true Bet is considered a call, because the player cannot equal the max bet without going all in.
 	//Else bet is considered a raise because the player can equal the max bet without going all in.
 	return raise, b.bet(id, b.allIn(id))
 }

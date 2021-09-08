@@ -5,10 +5,11 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
+	"github.com/Rhymond/go-money"
 )
 
 //ConcludeRound resets the current round and adds the fair share of the to the winners wallets.
-func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []string {
+func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []*money.Money {
 	b.lock.Lock()
 
 	if winners == nil || b.Pot.IsZero() || b.Pot.IsNegative() {
@@ -24,7 +25,6 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 	}
 
 	//Add share to all round winners
-	ret := make([]string, len(winners))
 	for i, player := range winners {
 		res, err2 := b.PlayerWallet[player.Player.ID].Add(shares[i])
 
@@ -34,7 +34,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 		b.PlayerWallet[player.Player.ID] = res
 
 		//Subtract the winning amount of the current bet. (Compression). This could be done separately to clarify the wins and expenses of users and oneself. And to include more information to the bank service.
-		res, err2 =  b.PlayerBets[player.Player.ID].Subtract(shares[i])
+		res, err2 = b.PlayerBets[player.Player.ID].Subtract(shares[i])
 		if err2 != nil {
 			log.Logger.Errorw("error during win calculations", "error", err2) // We should remove this person from the round.
 			continue
@@ -43,7 +43,6 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 		b.PlayerBets[player.Player.ID] = res // Change the bet. It would be reset soon anyway.
 
 		log.Logger.Infof("User [%v] wins share %s", player.String(), shares[i].Display())
-		ret[i] = shares[i].Display()
 	}
 
 	//Will send the compressed commands to the rabbitmq message broker, so that the bank service will transact these changes.
@@ -54,9 +53,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 	//Reset Bank values like pot, max bet, player bets etc...
 	b.reset()
 
-
-
-	return ret
+	return shares
 }
 
 //reset resets the state of the Bank for a new round
