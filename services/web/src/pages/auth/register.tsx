@@ -85,7 +85,7 @@ const Register: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSide
             <Head>
                 <title>{formatTitle(t("TitleRegister"))}</title>
             </Head>
-            <div className="flex w-full h-full md:absolute items-center justify-center md:inset-0">
+            <div className="flex flex-col w-full h-full md:absolute items-center justify-center md:inset-0">
                 <div className="bg-gray-200 md:rounded-md shadow-md">
                     <Stepper activeStep={activeStep} orientation={"horizontal"}>
                         {steps.map((label, index) => {

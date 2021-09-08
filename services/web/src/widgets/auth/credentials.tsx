@@ -1,11 +1,10 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "next-i18next";
 import React, { FC, useState } from "react";
+import { useForm } from "react-hook-form";
+import PasswordBox from "../../components/form/passwordBox";
+import { credentials } from "../../models/register";
 import { RegisterDto } from "../../pages/auth/register";
-
-type Credentials = {
-    username: string;
-    password: string;
-};
 
 type CredentialsProps = {
     handleNext: () => void;
@@ -13,67 +12,61 @@ type CredentialsProps = {
     setDto: React.Dispatch<React.SetStateAction<RegisterDto>>;
 };
 
+interface IFormInput {
+    username: string;
+    password: string;
+}
+
 const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
     const { t } = useTranslation("auth");
 
-    const [hidePassword, setHidePassword] = useState(true);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<IFormInput>({
+        resolver: yupResolver(credentials)
+    });
 
-    const shouldDisable = (): boolean => {
-        return dto.username == "" || dto.password == "";
+    const onSubmit = (data: IFormInput) => {
+        setDto((x) => {
+            return { ...x, username: data.username, password: data.password };
+        });
+        handleNext();
     };
 
     return (
         <div className="mx-16 my-6">
-            <section className="mb-6 font-sans text-lg font-medium">
-                <label htmlFor="username" className="mb-2 block">
-                    {t("Username*:")}
-                </label>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <section className="mb-8 text-lg">
+                    <label htmlFor="username" className="mb-2 block">
+                        {t("Username")}
+                    </label>
+                    <input
+                        className="block px-8 py-4 rounded w-full outline-none"
+                        {...register("username", { required: true, maxLength: 100, minLength: 3 })}
+                        type="text"
+                        name="username"
+                        placeholder={t("Your username")}
+                        aria-describedby="username-constraints"
+                        value={dto.username}
+                    />
+                    <p className="text-sm text-red-700" id="username-constraints">
+                        {errors.username && t("This field is required and can only be more than 3 and less than 100!")}
+                    </p>
+                </section>
+                <section className="mb-6 text-lg">
+                    <PasswordBox register={register} value={dto.password} />
+                    <p className="text-sm text-red-700" id="username-constraints">
+                        {errors.password && t("This field is required and can only be more than 3 and less than 100!")}
+                    </p>
+                </section>
                 <input
-                    className="block px-8 py-4 rounded w-full outline-none"
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder={t("Your username")}
-                    required
-                    style={{ border: dto.username == "" ? "2px solid rgb(190, 18, 60)" : "" }}
-                    value={dto.username}
-                    onChange={(e) => setDto({ ...dto, username: e.target.value })}
+                    className="w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-white my-2 rounded mb-8"
+                    type="submit"
+                    value={t("Next").toString()}
                 />
-            </section>
-            <section className="mb-6 font-sans text-lg font-medium">
-                <label htmlFor="password" className="mb-2 block">
-                    {t("Passphrase*:")}
-                </label>
-                <input
-                    className="block px-8 py-4 rounded w-full outline-none"
-                    type={hidePassword ? "password" : "text"}
-                    id="password"
-                    name="password"
-                    autoComplete="current-password"
-                    placeholder={t("Your password")}
-                    aria-describedby="password-constraints"
-                    style={{ border: dto.password == "" ? "2px solid rgb(190, 18, 60)" : "" }}
-                    value={dto.password}
-                    onChange={(e) => setDto({ ...dto, password: e.target.value })}
-                    required
-                />
-                <button
-                    type="button"
-                    onClick={() => {
-                        setHidePassword(!hidePassword);
-                    }}
-                    aria-label={hidePassword ? "Show password in plain text. This will show your password on screen." : "Hide Password."}>
-                    {hidePassword ? t("Show password") : t("Hide password")}
-                </button>
-            </section>
-            <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-white my-2 rounded mb-8"
-                disabled={shouldDisable()}
-                onClick={() => {
-                    handleNext();
-                }}>
-                {t("Next")}
-            </button>
+            </form>
         </div>
     );
 };

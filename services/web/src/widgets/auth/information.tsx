@@ -11,7 +11,8 @@ import { information } from "../../models/register";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 type InformationProps = {
-    setStep: (value: SetStateAction<number>) => void;
+    handleNext: () => void;
+    handleBack: () => void;
     dto: RegisterDto;
     setDto: React.Dispatch<React.SetStateAction<RegisterDto>>;
     csrf: string;
@@ -34,7 +35,7 @@ interface IFormInputs {
     acceptTerms: boolean;
 }
 
-const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
+const Information: FC<InformationProps> = ({ handleBack, handleNext, dto, setDto, csrf }) => {
     const { t } = useTranslation("auth");
     const { enqueueSnackbar } = useSnackbar();
     const {
@@ -58,12 +59,15 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
 
     const onSubmit = (data: IFormInputs): Promise<void> => {
         console.log("Register");
+        setDto((x) => {
+            return { ...x, email: data.email, fullName: data.fullName, birthdate: data.birthdate, acceptTerms: data.acceptTerms };
+        });
         return registerAccount(
             {
                 username: dto.username,
                 password: dto.password,
                 email: dto.email,
-                birthdate: moment(dto.birthdate).unix(),
+                birthdate: dto.birthdate.toISOString(),
                 fullName: dto.fullName,
                 acceptTerms: true //Can only press register with accepted terms
             },
@@ -72,6 +76,7 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
             if (res.ok) {
                 //Successfully registered a new account
                 enqueueSnackbar(t("Successfully Registered"), { variant: "success" });
+                handleNext();
             } else {
                 enqueueSnackbar("Something went wrong! Error code [" + res.status + "] " + res.statusText, { variant: "error" });
                 handleReset();
@@ -93,7 +98,9 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
                         placeholder={t("Your email")}
                         {...register("email")}
                     />
-                    <p>{errors.email?.message}</p>
+                    <p>
+                        {errors.email?.type}:{errors.email?.message}
+                    </p>
                 </section>
                 <section className="mb-6 font-sans text-lg font-medium">
                     <label htmlFor="fullName" className="mb-2 block">
@@ -106,7 +113,9 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
                         placeholder={t("Your name")}
                         {...register("fullName")}
                     />
-                    <p>{errors.fullName?.message}</p>
+                    <p>
+                        {errors.fullName?.type}:{errors.fullName?.message}
+                    </p>
                 </section>
                 <section className="mb-6 font-sans text-lg font-medium">
                     <label htmlFor="birthdate" className="mb-2 block">
@@ -119,7 +128,9 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
                         placeholder="Your Birthdate"
                         {...register("birthdate")}
                     />
-                    <p>{errors.birthdate?.message}</p>
+                    <p>
+                        {errors.birthdate?.type}:{errors.birthdate?.message}
+                    </p>
                 </section>
                 <section>
                     <div className="mb-4 font-sans text-lg font-medium">
@@ -139,14 +150,16 @@ const Information: FC<InformationProps> = ({ setStep, dto, setDto, csrf }) => {
                                 {t("privacy statement")}
                             </a>
                         </span>
-                        <p>{errors.acceptTerms?.message}</p>
+                        <p>
+                            {errors.acceptTerms?.type}:{errors.acceptTerms?.message}
+                        </p>
                     </div>
                 </section>
                 <div>
                     <button
                         className="w-full font-semibold text-xl py-4 bg-gray-700 hover:bg-gray-800 transition-colors duration-150 disabled:opacity-70 text-white my-2 rounded"
                         onClick={() => {
-                            setStep((x) => x - 1);
+                            handleBack();
                         }}>
                         {t("Back")}
                     </button>

@@ -129,7 +129,7 @@ export const signIn = async (args: LoginDto, csrfToken: string): Promise<Respons
 interface Register {
     username: string;
     password: string;
-    birthdate: number;
+    birthdate: string;
     email: string;
     fullName: string;
     acceptTerms: boolean;

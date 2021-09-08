@@ -20,8 +20,8 @@ export const DefaultRegisterDto = {
 };
 
 export const credentials = yup.object().shape({
-    username: yup.string().min(4).max(100).required(),
-    password: yup.string().min(4).max(100).required()
+    username: yup.string().min(3).max(100).required(),
+    password: yup.string().min(3).max(100).required()
 });
 
 export const information = yup.object().shape({
