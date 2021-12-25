@@ -66,7 +66,7 @@ const Wallet: FC<WalletProps> = ({ balance, history }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { req } = ctx;
-    const session = await getSession();
+    const session = await getSession({ req: req });
 
     if (!session) {
         console.log("No session");

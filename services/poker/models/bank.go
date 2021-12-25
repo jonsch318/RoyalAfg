@@ -1,6 +1,8 @@
 package models
 
+import "github.com/Rhymond/go-money"
+
 type Bank interface {
-	GetPlayerWallet(string) string
-	GetMaxBet(string) string
+	GetPlayerWallet(string) *money.Money
+	GetMaxBet(string) *money.Money
 }

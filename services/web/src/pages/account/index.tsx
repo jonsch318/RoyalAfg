@@ -117,7 +117,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                     <div className="px-10 pb-10 bg-gray-200">
                         <ActionMenu>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">{t("Username:")} </label>
+                                <label htmlFor="username">{t("Username")} </label>
                                 <input
                                     type="text"
                                     name="username"
@@ -129,7 +129,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                                 />
                             </div>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">{t("Email:")} </label>
+                                <label htmlFor="username">{t("Email")} </label>
                                 <input
                                     type="email"
                                     name="email"
@@ -141,7 +141,7 @@ const Account: FC<AccountProps> = ({ csrf, user }) => {
                                 />
                             </div>
                             <div className="grid grid-cols-2 mx-10 my-5">
-                                <label htmlFor="username">{t("Fullname:")} </label>
+                                <label htmlFor="username">{t("Fullname")} </label>
                                 <input
                                     type="text"
                                     name="fullName"

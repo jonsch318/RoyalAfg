@@ -1,16 +1,21 @@
-import React, { FC } from "react";
-import { RegisterDto } from "../../pages/auth/register";
+import React, { FC, SetStateAction } from "react";
+import { DefaultRegisterDto, RegisterDto } from "../../pages/auth/register";
 import Checkbox from "@material-ui/core/Checkbox";
-import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import { useTranslation } from "next-i18next";
+import { register as registerAccount } from "../../hooks/auth";
+import { useSnackbar } from "notistack";
+import { Controller, useForm } from "react-hook-form";
+import { information } from "../../models/register";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type InformationProps = {
     handleNext: () => void;
     handleBack: () => void;
     dto: RegisterDto;
     setDto: React.Dispatch<React.SetStateAction<RegisterDto>>;
+    csrf: string;
 };
 
 const isEmail = (str: string): boolean => {
@@ -23,106 +28,148 @@ const isValidBirthdate = (date: Date): boolean => {
     return moment(date).isBefore(moment().subtract(16, "years")) && moment(date).isAfter(moment().subtract(100, "years"));
 };
 
-const Information: FC<InformationProps> = ({ handleNext, handleBack, dto, setDto }) => {
-    const { t } = useTranslation("auth");
+interface IFormInputs {
+    email: string;
+    birthdate: Date;
+    fullName: string;
+    acceptTerms: boolean;
+}
 
-    const shouldDisable = (): boolean => {
-        return !isValidBirthdate(dto.birthdate) || dto.fullName == "" || dto.email == "" || !isEmail(dto.email) || !dto.acceptTerms;
+const Information: FC<InformationProps> = ({ handleBack, handleNext, dto, setDto, csrf }) => {
+    const { t } = useTranslation("auth");
+    const { enqueueSnackbar } = useSnackbar();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        control
+    } = useForm<IFormInputs>({
+        resolver: yupResolver(information)
+    });
+
+    const handleReset = () => {
+        setDto({
+            ...dto,
+            acceptTerms: true,
+            birthdate: DefaultRegisterDto.birthdate,
+            email: DefaultRegisterDto.email,
+            fullName: DefaultRegisterDto.fullName
+        });
+    };
+
+    const onSubmit = (data: IFormInputs): Promise<void> => {
+        console.log("Register");
+        setDto((x) => {
+            return { ...x, email: data.email, fullName: data.fullName, birthdate: data.birthdate, acceptTerms: data.acceptTerms };
+        });
+        return registerAccount(
+            {
+                username: dto.username,
+                password: dto.password,
+                email: dto.email,
+                birthdate: dto.birthdate.toISOString(),
+                fullName: dto.fullName,
+                acceptTerms: true //Can only press register with accepted terms
+            },
+            csrf
+        ).then((res) => {
+            if (res.ok) {
+                //Successfully registered a new account
+                enqueueSnackbar(t("Successfully Registered"), { variant: "success" });
+                handleNext();
+            } else {
+                enqueueSnackbar("Something went wrong! Error code [" + res.status + "] " + res.statusText, { variant: "error" });
+                handleReset();
+            }
+        });
     };
 
     return (
-        <div className="mx-16 my-6">
-            <section className="mb-6 font-sans text-lg font-medium">
-                <label htmlFor="email" className="mb-2 block">
-                    {t("Email*:")}
-                </label>
-                <input
-                    className="block px-8 py-4 rounded w-full outline-none"
-                    style={{ border: dto.email == "" || !isEmail(dto.email) ? "2px solid rgb(190, 18, 60)" : "" }}
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder={t("Your email")}
-                    required
-                    value={dto.email}
-                    onChange={(e) => setDto({ ...dto, email: e.target.value })}
-                />
-            </section>
-            <section className="mb-6 font-sans text-lg font-medium">
-                <label htmlFor="fullName" className="mb-2 block">
-                    {t("Fullname*:")}
-                </label>
-                <input
-                    className="block px-8 py-4 rounded w-full outline-none"
-                    type={"text"}
-                    id="fullName"
-                    name="fullName"
-                    placeholder={t("Your name")}
-                    style={{ border: dto.fullName == "" ? "2px solid rgb(190, 18, 60)" : "" }}
-                    value={dto.fullName}
-                    onChange={(e) => setDto({ ...dto, fullName: e.target.value })}
-                    required
-                />
-            </section>
-            <section className="mb-6 font-sans text-lg font-medium">
-                <label htmlFor="birthdate" className="mb-2 block">
-                    {t("Birthdate*:")}
-                </label>
-
-                <style>
-                    {`
-                        .react-datepicker-wrapper {
-                            border: ${!isValidBirthdate(dto.birthdate) ? "2px solid rgb(190, 18, 60)" : "none"}
-                        }
-                    `}
-                </style>
-
-                <DatePicker
-                    className="px-8 py-4 rounded w-full outline-none"
-                    type="date"
-                    id="birthdate"
-                    name="birthdate"
-                    placeholder="Your Birthdate"
-                    selected={dto.birthdate}
-                    style={{ width: "100%", border: !isValidBirthdate(dto.birthdate) ? "2px solid rgb(190, 18, 60)" : "" }}
-                    onChange={(e: Date) => setDto({ ...dto, birthdate: e })}
-                    required
-                />
-            </section>
-            <section>
-                <div className="mb-4 font-sans text-lg font-medium">
-                    <Checkbox
-                        checked={dto.acceptTerms}
-                        onChange={(e) => setDto({ ...dto, acceptTerms: e.target.checked })}
-                        color="primary"
-                        required></Checkbox>
-                    <span>
-                        {t("I consent to the") + " "}
-                        <a href="/legal/terms" className="font-sans text-blue-800">
-                            {t("terms and conditions")}
-                        </a>{" "}
-                        {t("and our") + " "}
-                        <a href="/legal/privacy" className="font-sans text-blue-800">
-                            {t("privacy statement")}
-                        </a>
-                    </span>
+        <div className="mx-16 my-6 font-sans">
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <section className="mb-6 font-sans text-lg font-medium">
+                    <label htmlFor="email" className="mb-2 block">
+                        {t("Email*:")}
+                    </label>
+                    <input
+                        className="block px-8 py-4 rounded w-full outline-none"
+                        type="text"
+                        name="email"
+                        placeholder={t("Your email")}
+                        {...register("email")}
+                    />
+                    <p>
+                        {errors.email?.type}:{errors.email?.message}
+                    </p>
+                </section>
+                <section className="mb-6 font-sans text-lg font-medium">
+                    <label htmlFor="fullName" className="mb-2 block">
+                        {t("Fullname*:")}
+                    </label>
+                    <input
+                        className="block px-8 py-4 rounded w-full outline-none"
+                        type="text"
+                        name="fullName"
+                        placeholder={t("Your name")}
+                        {...register("fullName")}
+                    />
+                    <p>
+                        {errors.fullName?.type}:{errors.fullName?.message}
+                    </p>
+                </section>
+                <section className="mb-6 font-sans text-lg font-medium">
+                    <label htmlFor="birthdate" className="mb-2 block">
+                        {t("Birthdate*:")}
+                    </label>
+                    <input
+                        className="block px-8 py-4 rounded w-full outline-none"
+                        type="date"
+                        name="birthdate"
+                        placeholder="Your Birthdate"
+                        {...register("birthdate")}
+                    />
+                    <p>
+                        {errors.birthdate?.type}:{errors.birthdate?.message}
+                    </p>
+                </section>
+                <section>
+                    <div className="mb-4 font-sans text-lg font-medium">
+                        <Controller
+                            name="birthdate"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => <Checkbox color="primary" {...field} />}
+                        />
+                        <span>
+                            {t("I consent to the") + " "}
+                            <a href="/legal/terms" className="font-sans text-blue-800">
+                                {t("terms and conditions")}
+                            </a>{" "}
+                            {t("and our") + " "}
+                            <a href="/legal/privacy" className="font-sans text-blue-800">
+                                {t("privacy statement")}
+                            </a>
+                        </span>
+                        <p>
+                            {errors.acceptTerms?.type}:{errors.acceptTerms?.message}
+                        </p>
+                    </div>
+                </section>
+                <div>
+                    <button
+                        className="w-full font-semibold text-xl py-4 bg-gray-700 hover:bg-gray-800 transition-colors duration-150 disabled:opacity-70 text-white my-2 rounded"
+                        onClick={() => {
+                            handleBack();
+                        }}>
+                        {t("Back")}
+                    </button>
+                    <input
+                        className="w-full font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed opacity-100 text-white my-2 rounded mb-8"
+                        type="submit"
+                        value={t("Register").toString()}
+                    />
                 </div>
-            </section>
-            <button
-                className="w-full font-sans font-semibold text-xl py-4 bg-gray-700 hover:bg-gray-800 transition-colors duration-150 disabled:opacity-70 text-white my-2 rounded"
-                onClick={() => {
-                    handleBack();
-                }}>
-                {t("Back")}
-            </button>
-            <button
-                className=" w-full font-sans font-semibold text-xl py-4 bg-blue-600 hover:bg-blue-500 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed opacity-100 text-white my-2 rounded mb-8"
-                disabled={shouldDisable()}
-                onClick={() => {
-                    handleNext();
-                }}>
-                {t("Register")}
-            </button>
+            </form>
         </div>
     );
 };

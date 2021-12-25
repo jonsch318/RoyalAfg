@@ -9,9 +9,12 @@ import (
 	"time"
 
 	allocationv1 "agones.dev/agones/pkg/apis/allocation/v1"
+	"github.com/spf13/viper"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 //NewLobby allocates a new GameServer for a new RoundId
@@ -66,9 +69,7 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 		return nil, errors.New("no new server can be allocated")
 	}
 
-	ip := allocationResponse.Status.Address
-	port := allocationResponse.Status.Ports[0].Port
-	addr := fmt.Sprintf("%s:%v", ip, port)
+
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
 		LobbyID:     id,
@@ -77,8 +78,21 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 		PlayerCount: 0,
 	})
 
+	addresses := viper.GetStringSlice(serviceconfig.NodeIPAddresses)
+	addr := allocationResponse.Status.Address
+
+	for _, address := range addresses {
+		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, allocationResponse.Status.Ports[0].Port)) ; err2 == nil {
+			log.Logger.Debugf("Poker Address found of addresses %v => %v", addresses, address)
+			addr = address
+			break
+		}
+		log.Logger.Warnf("Poker Address was not valid %v => %v", addresses, address)
+	}
+
+
 	return &TicketRequestResult{
-		Address: addr,
+		Address: fmt.Sprintf("%s:%v", addr, allocationResponse.Status.Ports[0].Port),
 		LobbyId: id,
 	}, nil
 }

@@ -36,7 +36,7 @@ func (b *Bank) executeQueue() {
 		if val.IsZero() {
 			continue
 		}
-		cmd := new(bank.Command)
+		var cmd *bank.Command
 		if val.IsNegative() {
 			// Win because player bets are the expenses of the player. We deposit the winning amount to the player
 			res := val.Multiply(-1)

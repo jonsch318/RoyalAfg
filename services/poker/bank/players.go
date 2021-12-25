@@ -41,7 +41,7 @@ func (b *Bank) UpdatePublicPlayerBuyIn(p []models.PublicPlayer) {
 			log.Logger.Warnf("Player [%v] has no wallet", p[i].ID)
 			continue
 		}
-		p[i].SetBuyIn(t.Display())
+		p[i].SetBuyIn(t.Display(), t.AsMajorUnits())
 		log.Logger.Debugf("Player [%v] wallet is %v ", p[i].Username, p[i].BuyIn)
 	}
 }

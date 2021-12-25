@@ -97,7 +97,7 @@ func (r *Round) recursiveAction(options *ActionRoundOptions) {
 			&r.PublicPlayers[options.Current],
 			options.SuccessfulAction.Action,
 			options.Current,
-			options.Payload.Display(),
+			options.Payload,
 			r.Bank.GetPlayerBet(options.PlayerId),
 			r.Bank.GetPlayerWallet(options.PlayerId),
 			r.Bank.GetPot(),
@@ -203,10 +203,11 @@ func (r *Round) action(options *ActionRoundOptions) {
 		return
 
 	case events.RAISE:
-		err := r.Bank.PerformRaise(options.PlayerId, options.Payload)
+		action, err := r.Bank.PerformRaise(options.PlayerId, options.Payload)
 		if err == nil {
 			options.Success = true
 			options.CanCheck = false
+			options.SuccessfulAction.Action = action
 			options.BlockingList.AddAllButThisBlocking(r.Players, options.Current, r.Bank)
 			return
 		}

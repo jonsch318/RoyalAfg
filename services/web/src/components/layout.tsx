@@ -14,7 +14,7 @@ const Layout: FC<LayoutProps> = (props) => {
     const foot = <Footer absolute={props.footerAbsolute} />;
 
     return (
-        <div id="root" className="root">
+        <div id="root" className="root h-full w-full">
             {!props.disableNav && <Header absolute={props.headerAbsolute} />}
             {props.enableAlternativeNav && props.alternativeNav}
             {props.children}

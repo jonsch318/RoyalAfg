@@ -12,6 +12,11 @@ import (
 //bet handles the betting process for a given player and Amount
 func (b *Bank) bet(id string, amount *money.Money) error {
 
+	if b.IsAllIn(id) {
+		//Player is already all in. Nothing to do more
+		return nil
+	}
+
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
@@ -28,15 +33,13 @@ func (b *Bank) bet(id string, amount *money.Money) error {
 		return err
 	}
 
-
 	log.Logger.Debugf("Amound: %v, AD: %v, Val: %s", amount, newAmount, rest.Display())
-
 
 	//We have to validate the amount correctly so that no invalid bet can occurs.
 	//First we check if the player can bet the specified amount
 	if res, err2 := rest.LessThan(newAmount); res || err2 != nil {
 		log.Logger.Warnf("The player %v does not have the capacity to bet %v [%v]", id, rest.Display(), amount.Display())
-		return fmt.Errorf("The player does not have the capacity to bet %v ", amount)
+		return fmt.Errorf("the player does not have the capacity to bet %v ", amount)
 	}
 
 	//Check if bet is lower than the round bet and the player is not all in
@@ -53,7 +56,7 @@ func (b *Bank) bet(id string, amount *money.Money) error {
 		return err
 	}
 
-	if lessThanRoundBet &&  !allIn {
+	if lessThanRoundBet && !allIn {
 		log.Logger.Errorf("Bet attemted that is not all in and lower than the current round bet %v < %v", amount.Display(), b.MaxBet.Display())
 		return fmt.Errorf("the player has to bet more or equal the round bet or go all in")
 	}

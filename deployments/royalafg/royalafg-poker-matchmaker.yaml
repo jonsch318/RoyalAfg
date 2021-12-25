@@ -5,6 +5,9 @@ metadata:
 data:
   config.yaml: |
     bank_service_url: localhost:8000
+    node_ips:
+      - 20.52.141.56
+      - 20.52.141.76
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute

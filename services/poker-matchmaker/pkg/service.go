@@ -21,6 +21,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 //Start the poker matchmaker service
@@ -33,6 +34,9 @@ func Start(logger *zap.SugaredLogger) {
 		*models.NewClass(10000, 49999, 20),
 		*models.NewClass(50000, 1000000, 20),
 	}
+
+
+	logger.Debugf("Node Addresses %v", viper.GetStringSlice(serviceconfig.NodeIPAddresses))
 
 	//Connect to Kubernetes and Agones API
 	kubeConfig, err := rest.InClusterConfig()

@@ -30,8 +30,8 @@ func (m *Manager) RequestTicket(class int) (*TicketRequestResult, error) {
 	m.logger.Infow("Search result ranking", "results", res)
 
 	for i := len(res) - 1; i >= 0; i-- {
-		ret, err := m.Connect(res[i].LobbyID)
-		if err == nil {
+		ret, err2 := m.Connect(res[i].LobbyID)
+		if err2 == nil {
 			m.logger.Infof("Connection success [%v]", res[i].LobbyID)
 			return ret, nil
 		}

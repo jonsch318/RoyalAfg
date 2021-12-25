@@ -120,7 +120,7 @@ func (r *Round) evaluate() {
 
 	if len(winners) == 0 {
 		log.Logger.Debugf("All players left or folded. No one wins")
-		utils.SendToAll(r.Players, events.NewGameEndEvent([]models.PublicPlayer{}, money.Zero().Display()))
+		utils.SendToAll(r.Players, events.NewGameEndEvent([]models.PublicPlayer{}, money.Zero()))
 		return
 	}
 

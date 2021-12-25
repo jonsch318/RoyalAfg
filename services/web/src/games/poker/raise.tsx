@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useRouter } from "next/router";
@@ -6,12 +6,22 @@ import { useTranslation } from "next-i18next";
 
 type RaiseProps = {
     onRaise: (amount: number) => void;
+    bet: number;
 };
 
-const Raise: FC<RaiseProps> = ({ onRaise }) => {
+const Raise: FC<RaiseProps> = ({ onRaise, bet }) => {
     const { t } = useTranslation("poker");
     const { locale } = useRouter();
-    const [raise, setRaise] = useState(0.0);
+    const [raise, setRaise] = useState(bet);
+
+    useEffect(() => {
+        setRaise(bet);
+    }, [bet]);
+
+    useEffect(() => {
+        console.log(raise, " < ", bet, " => ", raise < bet);
+        console.log(raise, " = ", bet, " => ", raise == bet);
+    }, [bet, raise]);
 
     return (
         <div className="flex justify-center items-center rounded mx-4 h-full">
@@ -19,9 +29,9 @@ const Raise: FC<RaiseProps> = ({ onRaise }) => {
                 name="amount"
                 className="border-blue-600 justify-center items-center h-full px-3 outline-none py-1 flex w-80 font-sans placeholder-blue-300 text-black border-solid ml-4 mr-2 rounded"
                 placeholder={t("Raise amount")}
-                intlConfig={{ locale: locale, currency: "USD" }}
+                intlConfig={{ locale: locale, currency: "EUR" }}
                 autoComplete="off"
-                defaultValue={0.0}
+                defaultValue={bet}
                 onValueChange={(val: string | undefined) => {
                     if (val !== undefined) setRaise(parseFloat(val));
                 }}
@@ -32,8 +42,9 @@ const Raise: FC<RaiseProps> = ({ onRaise }) => {
                     className="bg-white px-3 flex justify-center items-center h-full rounded text-black overflow-hidden hover:bg-yellow-500 transition-colors ease-in-out duration-150 disabled:opacity-60"
                     onClick={() => {
                         if (raise > 0) onRaise(raise * 100);
-                    }}>
-                    {t("RAISE")}
+                    }}
+                    disabled={raise < bet}>
+                    {raise == bet ? t("CALL") : t("RAISE")}
                 </button>
             </Tooltip>
         </div>
