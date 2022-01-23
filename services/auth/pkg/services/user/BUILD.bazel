@@ -18,7 +18,7 @@ go_library(
         "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
         "@com_github_go_ozzo_ozzo_validation_v4//is",
         "@com_github_spf13_viper//:viper",
-        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//:go_default_library",
         "@org_mongodb_go_mongo_driver//bson/primitive",
     ],
 )

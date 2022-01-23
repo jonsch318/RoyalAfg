@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -38,18 +39,19 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	serverLabels["blind"] = strconv.Itoa(class.Blind)
 	serverLabels["class-index"] = strconv.Itoa(classIndex)
 
+	labelSelector := v1.LabelSelector{
+		MatchLabels: map[string]string{
+			"game": "poker",
+		},
+		MatchExpressions: nil,
+	}
 	alloc := &allocationv1.GameServerAllocation{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      id,
 			Namespace: "default",
 		},
 		Spec: allocationv1.GameServerAllocationSpec{
-			Required: v1.LabelSelector{
-				MatchLabels: map[string]string{
-					"game": "poker",
-				},
-				MatchExpressions: nil,
-			},
+			Required:  allocationv1.GameServerSelector{LabelSelector: labelSelector},
 			Preferred: nil,
 			MetaPatch: allocationv1.MetaPatch{
 				Labels:      serverLabels,
@@ -57,7 +59,7 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 			},
 		}}
 
-	allocationResponse, err := gsa.GameServerAllocations("default").Create(alloc)
+	allocationResponse, err := gsa.GameServerAllocations("default").Create(context.Background(), alloc, v1.CreateOptions{})
 
 	m.logger.Warnw("Allocation", "error", err, "lobbyId", id)
 
@@ -68,8 +70,6 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	if allocationResponse.Status.GameServerName == "" || len(allocationResponse.Status.Ports) <= 0 {
 		return nil, errors.New("no new server can be allocated")
 	}
-
-
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
 		LobbyID:     id,
@@ -82,14 +82,13 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	addr := allocationResponse.Status.Address
 
 	for _, address := range addresses {
-		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, allocationResponse.Status.Ports[0].Port)) ; err2 == nil {
+		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, allocationResponse.Status.Ports[0].Port)); err2 == nil {
 			log.Logger.Debugf("Poker Address found of addresses %v => %v", addresses, address)
 			addr = address
 			break
 		}
 		log.Logger.Warnf("Poker Address was not valid %v => %v", addresses, address)
 	}
-
 
 	return &TicketRequestResult{
 		Address: fmt.Sprintf("%s:%v", addr, allocationResponse.Status.Ports[0].Port),

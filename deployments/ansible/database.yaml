@@ -1,0 +1,162 @@
+---
+- hosts: localhost
+  collections:
+    - kubernetes.core
+  vars:
+    user_mongodb_psw: mongodbtestpassword
+    vault_mongodb_psw: vaultmongodb
+  tasks:
+    - name: Deploy rabbitmq royalafg
+      k8s:
+        state: present
+        definition:
+          apiVersion: rabbitmq.com/v1beta1
+          kind: RabbitmqCluster
+          metadata:
+            name: royalafg-rabbitmq
+            namespace: default
+            annotations:
+#              "consul.hashicorp.com/connect-inject": "true"
+          spec:
+            replicas: 1
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                cpu: 800m
+                memory: 1Gi
+    - name: Create Service Account for elastic-consul
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: elastic-consul
+            namespace: default
+
+    - name: Deploy elastic search db
+      k8s:
+        state: present
+        definition:
+          apiVersion: elasticsearch.k8s.elastic.co/v1
+          kind: Elasticsearch
+          metadata:
+            name: search
+            namespace: default
+          spec:
+            version: 7.16.2
+            nodeSets:
+              - name: default
+                count: 1
+                config:
+                  node.store.allow_mmap: false
+                podTemplate:
+                  metadata:
+                    annotations:
+                      "consul.hashicorp.com/connect-inject": "true"
+                      "consul.hashicorp.com/connect-service": "elastic-consul"
+                  spec:
+                    automountServiceAccountToken: true
+                    serviceAccount: elastic-consul
+    - name: Configure Secret  user-mongodb-psw
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: royalafg-user-mongodb-password
+            namespace: default
+          type: Opaque
+          stringData:
+            password: "{{ user_mongodb_psw }}"
+
+    - name: Configure Secret  vault-mongodb-psw
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: royalafg-user-mongodb-vault-password
+            namespace: default
+          type: Opaque
+          stringData:
+            password: "{{ vault_mongodb_psw }}"
+    - name: Deploy Mongodb
+      k8s:
+        state: present
+        definition:
+          apiVersion: mongodbcommunity.mongodb.com/v1
+          kind: MongoDBCommunity
+          metadata:
+            name: royalafg-user-mongodb
+            namespace: default
+          spec:
+            members: 1
+            type: ReplicaSet
+            version: "5.0.5"
+            security:
+              authentication:
+                modes: ["SCRAM"]
+            users:
+              - name: admin
+                db: admin
+                passwordSecretRef:  # a reference to the secret that will be used to generate the user's password 
+                  name: royalafg-user-mongodb-password
+                roles:
+                  - name: clusterAdmin
+                    db: admin
+                  - name: userAdminAnyDatabase
+                    db: admin
+                  - name: readWrite
+                    db: RoyalafgUser
+                scramCredentialsSecretName: my-scram
+              - name: vault
+                db: admin
+                passwordSecretRef:  # a reference to the secret that will be used to generate the user's password 
+                  name: royalafg-user-mongodb-vault-password
+                roles:
+                  - name: clusterAdmin
+                    db: admin
+                  - name: userAdminAnyDatabase
+                    db: admin
+                  - name: readWrite
+                    db: admin
+                  - name: readWrite
+                    db: RoyalafgUser
+                scramCredentialsSecretName: vault-scram
+            additionalMongodConfig:
+              storage.wiredTiger.engineConfig.journalCompressor: zlib
+    - name: Deploy Kibana user Secret (TODO Auslagern)
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: search-kibana-user
+            namespace: default
+          stringData:
+            users: |-
+              admin:admin
+            users_roles: |-
+              admin:admin
+    - name: Deploy Kibana instance to monitor search engine
+      k8s:
+        state: present
+        definition:
+          apiVersion: kibana.k8s.elastic.co/v1
+          kind: Kibana
+          metadata:
+            name: search
+            namespace: default
+          spec:
+            version: 7.16.2
+            count: 1
+            elasticsearchRef:
+              name: search
+- name: Continue with royalafg services and service configuration
+  import_playbook: ./royalafg.yaml

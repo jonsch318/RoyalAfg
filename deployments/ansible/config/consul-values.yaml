@@ -1,0 +1,27 @@
+global:
+  domain: consul
+  datacenter: dc1
+
+ui:
+  service:
+    type: "NodePort"
+  
+connectInject: 
+  enabled: true
+
+controller:
+  enabled: true
+
+client:
+  enabled: true
+  grpc: true
+
+server:
+  replicas: 1
+  bootstrapExpect: 1
+  disruptionBudget:
+    enable: true
+    maxUnavailable: 0
+
+syncCatalog:
+  enabled: true

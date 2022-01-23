@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next";
 import React, { FC } from "react";
-import * as sprintf from "sprintf";
+import * as sprintf from "sprintf-js";
 import { History } from "../../pages/wallet";
 
 const Deposited = "Deposited";

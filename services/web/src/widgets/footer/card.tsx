@@ -13,12 +13,11 @@ const Content: FC = ({ children }) => {
         return (
             <li key={shortid.generate()}>
                 <style jsx>{`
-                li:before {
-                    content: "-";
-                    margin-right: 0.5rem;
-                }
-            .
-            `}</style>
+                    li:before {
+                        content: "-";
+                        margin-right: 0.5rem;
+                    }
+                `}</style>
                 {child}
             </li>
         );

@@ -1,0 +1,169 @@
+---
+- hosts: localhost
+  collections:
+    - kubernetes.core
+  vars:
+    rylafg_ns: royalafg
+  tasks:
+    - name: Configure Vault server
+      k8s_exec:
+        namespace: hashicorp-system
+        pod: vault-0
+        command: ./bin/sh 
+      register: command_status
+
+    - name: Check last command status
+      debug:
+        msg: "cmd failed"
+      when: command_status.rc != 0
+    - name: Create royalafg namespace
+      k8s:
+        api_version: v1
+        state: present
+        kind: Namespace
+        name: "{{rylafg_ns}}"
+    - name: Deploy royal_auth ingress config
+      k8s:
+        state: present
+        definition:
+          apiVersion: traefik.containo.us/v1alpha1
+          kind: IngressRoute
+          metadata:
+            name: royalafg-auth
+            namespace: "{{rylafg_ns}}"
+          spec:
+            entryPoints:
+              - web
+            routes:
+              - match: PathPrefix(`/api/auth`)
+                kind: Rule
+                services:
+                  - name: royalafg-auth
+                    port: 8080
+    - name: Deploy Service for royalafg_auth
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: royalafg-auth
+            namespace: "{{rylafg_ns}}"
+            labels:
+              app: royalafg-auth
+          spec:
+            selector:
+              app: royalafg-auth
+            ports:
+              - name: web
+                port: 8080
+                targetPort: 8080
+    - name: Deploy Service Account for royalafg_auth
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: royalafg-auth
+            namespace: "{{rylafg_ns}}"
+    - name: Deploy ConfigMap for royalafg_auth
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: royalafg-auth
+            namespace: "{{rylafg_ns}}"
+            labels:
+              app: royalafg-auth
+          data:
+            config.yaml: |
+              jwt_signing_key: testsecret
+              userservice_url: localhost:5200
+              cors_enabled: false
+              rabbitmq_url: royalafg-rabbitmq.default.svc.cluster.local:5672
+    - name: Deploy royalafg_auth
+      k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: royalafg-auth
+            namespace: "{{rylafg_ns}}"
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: royalafg-auth
+            template:
+              metadata:
+                annotations:
+                  "consul.hashicorp.com/connect-inject": "true"
+                  "consul.hashicorp.com/connect-service-upstreams": "royalafg-user:5200"
+
+                  "consul.hashicorp.com/sidecar-proxy-cpu-request": "10m"
+                  "consul.hashicorp.com/sidecar-proxy-cpu-limit": "25m"
+                  "consul.hashicorp.com/sidecar-proxy-memory-request": "20Mi"
+                  "consul.hashicorp.com/sidecar-proxy-memory-limit": "50Mi"
+                  
+                  "vault.hashicorp.com/agent-limits-cpu": "200m"
+                  "vault.hashicorp.com/agent-limits-mem": "100Mi"
+                  "vault.hashicorp.com/agent-requests-cpu": "20m"
+                  "vault.hashicorp.com/agent-requests-mem": "25Mi"
+
+                  "vault.hashicorp.com/agent-inject": "true"
+                  "vault.hashicorp.com/agent-inject-secret-rabbitmq.yaml": "rabbitmq/creds/royalafg"
+                  "vault.hashicorp.com/agent-inject-template-rabbitmq.yaml": |
+                    {{ "{{" }}- with secret "rabbitmq/creds/royalafg" -}}
+                    rabbitmq_username: {{ "{{" }}.Data.username}}
+                    rabbitmq_password: {{ "{{" }}.Data.password}}
+                    {{ "{{" }}- end }}
+                  "vault.hashicorp.com/agent-inject-secret-session.yaml": "kv-v2/session-secret"
+                  "vault.hashicorp.com/agent-inject-template-session.yaml": |
+                    {{ "{{" }}- with secret "kv-v2/session-secret" -}}
+                    jwt_signing_key: {{ "{{" }}.Data.data.secret}}
+                    {{ "{{" }}- end }}
+                  "vault.hashicorp.com/role": "auth-role"
+                labels:
+                  app: royalafg-auth
+                  service: auth
+              spec:
+                serviceAccountName: royalafg-auth
+                containers:
+                  - name: royalafg-auth
+                    image: docker.io/johnnys318/royalafg_auth:latest
+                    env:
+                      - name: GRPC_GO_LOG_VERBOSITY_LEVEL
+                        value: "99"
+                      - name: GRPC_GO_LOG_SEVERITY_LEVEL
+                        value: info
+                      # - name: AUTH_RABBITMQ_PASSWORD
+                      #   valueFrom:
+                      #     secretKeyRef:
+                      #       key: password
+                      #       name: royalafg-rabbitmq-default-user
+                      # - name: AUTH_RABBITMQ_USERNAME
+                      #   valueFrom:
+                      #     secretKeyRef:
+                      #       key: username
+                      #       name: royalafg-rabbitmq-default-user
+                    resources:
+                      requests:
+                        memory: 10Mi
+                        cpu: 10m
+                      limits:
+                        memory: 50Mi
+                        cpu: 25m
+                    ports:
+                      - protocol: TCP
+                        containerPort: 8080
+                    volumeMounts:
+                      - name: royalafg-auth-config
+                        mountPath: "/etc/royalafg-auth"
+                volumes:
+                  - name: royalafg-auth-config
+                    configMap:
+                      name: royalafg-auth

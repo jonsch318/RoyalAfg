@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"encoding/json"
 	fmt "fmt"
 	"io/ioutil"
@@ -14,7 +15,7 @@ import (
 )
 
 func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
-	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+	list, err := m.agonesClient.AgonesV1().GameServers("default").List(context.Background(), metav1.ListOptions{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
@@ -37,7 +38,7 @@ func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 
 	adr := list.Items[0].Status.Address
 	for _, address := range addresses {
-		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, list.Items[0].Status.Ports[0].Port)) ; err2 == nil {
+		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, list.Items[0].Status.Ports[0].Port)); err2 == nil {
 			log.Logger.Debugf("Poker Address found of addresses %v => %v", addresses, address)
 			adr = address
 			break

@@ -1,3 +1,7 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@build_stack_rules_proto//rules/cc:grpc_cc_library.bzl", "grpc_cc_library")
+load("@build_stack_rules_proto//rules/cc:proto_cc_library.bzl", "proto_cc_library")
+load("@build_stack_rules_proto//rules:proto_compile.bzl", "proto_compile")
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
@@ -11,11 +15,52 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",
-        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//:go_default_library",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
         "@org_golang_google_protobuf//reflect/protoreflect",
         "@org_golang_google_protobuf//runtime/protoimpl",
         "@org_mongodb_go_mongo_driver//bson/primitive",
     ],
+)
+
+proto_library(
+    name = "protos_proto",
+    srcs = ["user.proto"],
+    visibility = ["//visibility:public"],
+)
+
+grpc_cc_library(
+    name = "protos_grpc_cc_library",
+    srcs = ["user.grpc.pb.cc"],
+    hdrs = ["user.grpc.pb.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":protos_cc_library",
+        "@com_github_grpc_grpc//:grpc++",
+        "@com_github_grpc_grpc//:grpc++_reflection",
+    ],
+)
+
+proto_cc_library(
+    name = "protos_cc_library",
+    srcs = ["user.pb.cc"],
+    hdrs = ["user.pb.h"],
+    visibility = ["//visibility:public"],
+    deps = ["@com_google_protobuf//:protobuf"],
+)
+
+proto_compile(
+    name = "protos_cpp_compile",
+    outputs = [
+        "user.grpc.pb.cc",
+        "user.grpc.pb.h",
+        "user.pb.cc",
+        "user.pb.h",
+    ],
+    plugins = [
+        "@build_stack_rules_proto//plugin/builtin:cpp",
+        "@build_stack_rules_proto//plugin/grpc/grpc:protoc-gen-grpc-cpp",
+    ],
+    proto = "protos_proto",
 )

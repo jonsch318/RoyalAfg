@@ -2,11 +2,11 @@ import React, { FC } from "react";
 import { Provider } from "../hooks/auth";
 import { SnackbarProvider } from "notistack";
 
-import "../../styles/globals.css";
 import "../../styles/tailwind.css";
+//import "../../styles/globals.css";
 
 import { appWithTranslation } from "next-i18next";
-import { AppProps } from "next/dist/next-server/lib/router/router";
+import { AppProps } from "next/app";
 
 const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
     return (

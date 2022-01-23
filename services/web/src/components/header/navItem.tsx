@@ -9,7 +9,7 @@ type HeaderNavItemProps = {
 const HeaderNavItem: FC<HeaderNavItemProps> = ({ href, children }) => {
     return (
         <Link href={href}>
-            <a className="nav-item cursor-pointer w-auto block py-4 px-4 md:p-0 border-gray-300 border-b-2 border-solid md:border-none">{children}</a>
+            <a className="nav-item cursor-pointer w-auto block py-4 px-4 border-gray-300 border-b-2 border-solid md:border-none">{children}</a>
         </Link>
     );
 };

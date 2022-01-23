@@ -13,3 +13,4 @@ spec:
       metadata:
         annotations:
           "consul.hashicorp.com/consul-inject": "true"
+        

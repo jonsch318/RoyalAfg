@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
@@ -44,7 +45,7 @@ func (m *Manager) GetRegisteredLobbies(count int) [][]models.LobbyBase {
 		return nil
 	}
 
-	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+	list, err := m.agonesClient.AgonesV1().GameServers("default").List(context.Background(), metav1.ListOptions{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",

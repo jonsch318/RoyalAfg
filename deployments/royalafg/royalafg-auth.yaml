@@ -97,7 +97,7 @@ spec:
           {{- with secret "kv-v2/session-secret" -}}
           jwt_signing_key: {{.Data.data.secret}}
           {{- end }}
-        "vault.hashicorp.com/role": auth-role
+        "vault.hashicorp.com/role": "auth-role"
       labels:
         app: royalafg-auth
         service: auth

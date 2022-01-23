@@ -187,7 +187,7 @@ export const Provider: FC<ProviderProps> = ({ children, session }) => {
 
 const _apiBaseUrl = (): string => {
     if (process.env.AUTH_HOST == undefined) {
-        if (typeof window !== undefined) {
+        if (typeof window != "undefined") {
             return window.location.origin + "/api/auth";
         }
     }

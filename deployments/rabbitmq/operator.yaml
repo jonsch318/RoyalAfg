@@ -3936,7 +3936,7 @@ spec:
         app.kubernetes.io/name: rabbitmq-cluster-operator
         app.kubernetes.io/part-of: rabbitmq
       annotations:
-        "consul.hashicorsp.com/connect-inject": "true"
+        "consul.hashicorp.com/connect-inject": "true"
     spec:
       containers:
       - command:

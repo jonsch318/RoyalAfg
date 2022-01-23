@@ -1,27 +1,23 @@
 workspace(name = "Royalafg")
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-##########################
-# Proto & GRPC
-##########################
 
-# proto rules
-# rules_proto defines abstract rules for building Protocol Buffers.
+#############################
+# Proto
+#############################
+
 http_archive(
-    name = "rules_proto_grpc",
-    sha256 = "8383116d4c505e93fd58369841814acc3f25bdb906887a2023980d8f49a0b95b",
-    strip_prefix = "rules_proto_grpc-4.1.0",
-    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.1.0.tar.gz"],
+    name = "build_stack_rules_proto",
+    sha256 = "1190c296a9f931343f70e58e5f6f9ee2331709be4e17001bb570e41237a6c497",
+    strip_prefix = "rules_proto-7c95feba87ae269d09690fcebb18c77d8b8bcf6a",
+    urls = ["https://github.com/stackb/rules_proto/archive/7c95feba87ae269d09690fcebb18c77d8b8bcf6a.tar.gz"],
 )
 
-load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_toolchains", "rules_proto_grpc_repos")
-rules_proto_grpc_toolchains()
-rules_proto_grpc_repos()
+register_toolchains("@build_stack_rules_proto//toolchain:standard")
 
-load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
-rules_proto_dependencies()
-rules_proto_toolchains()
+load("@build_stack_rules_proto//deps:core_deps.bzl", "core_deps")
+
+core_deps()
 
 ##############################
 # Golang
@@ -48,16 +44,42 @@ http_archive(
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
-go_rules_dependencies()
-
-go_register_toolchains(version = "1.17.5")
-
 load("//:deps.bzl", "go_dependencies")
 
 #gazelle:repository_macro deps.bzl%go_dependencies
+go_rules_dependencies()
 go_dependencies()
 
+
+go_register_toolchains(version = "1.17.5")
+
 gazelle_dependencies()
+
+
+#Proto 
+load("@build_stack_rules_proto//:go_deps.bzl", "gazelle_protobuf_extension_go_deps")
+
+gazelle_protobuf_extension_go_deps()
+
+load("@build_stack_rules_proto//deps:protobuf_core_deps.bzl", "protobuf_core_deps")
+
+protobuf_core_deps()
+
+
+http_archive(
+    name = "com_google_protobuf",
+    sha256 = "d0f5f605d0d656007ce6c8b5a82df3037e1d8fe8b121ed42e536f569dec16113",
+    strip_prefix = "protobuf-3.14.0",
+    urls = [
+        "https://mirror.bazel.build/github.com/protocolbuffers/protobuf/archive/v3.14.0.tar.gz",
+        "https://github.com/protocolbuffers/protobuf/archive/v3.14.0.tar.gz",
+    ],
+)
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
+
 
 ##################################
 # Docker
@@ -110,3 +132,18 @@ load(
 )
 
 _go_image_repos()
+
+#########################################################################################################
+# Nodejs
+######################################################################################################
+
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "d63ecec7192394f5cc4ad95a115f8a6c9de55c60d56c1f08da79c306355e4654",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.1/rules_nodejs-4.6.1.tar.gz"],
+)
+
+#load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
+
+#node_repositories(package_json = ["//services/web/:package.json"])

@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "next-i18next";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { useForm } from "react-hook-form";
 import PasswordBox from "../../components/form/passwordBox";
 import { credentials } from "../../models/register";
@@ -49,14 +49,14 @@ const Credentials: FC<CredentialsProps> = ({ handleNext, dto, setDto }) => {
                         name="username"
                         placeholder={t("Your username")}
                         aria-describedby="username-constraints"
-                        value={dto.username}
+                        //value={dto.username}
                     />
                     <p className="text-sm text-red-700" id="username-constraints">
                         {errors.username && t("This field is required and can only be more than 3 and less than 100!")}
                     </p>
                 </section>
                 <section className="mb-6 text-lg">
-                    <PasswordBox register={register} value={dto.password} />
+                    <PasswordBox register={register} />
                     <p className="text-sm text-red-700" id="username-constraints">
                         {errors.password && t("This field is required and can only be more than 3 and less than 100!")}
                     </p>

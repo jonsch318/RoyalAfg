@@ -56,6 +56,7 @@ const SearchInput: FC = () => {
     const [focusedIndex, setFocusedIndex] = useState(-2);
     const ref = useRef<HTMLDivElement>();
     const inputRef = useRef<HTMLInputElement>(null);
+    const inputDivRef = useRef<HTMLDivElement>(null);
 
     const debouncedQuery = useDebounce(query, 150);
     useOnClickOutside(ref, () => setFocused(false));
@@ -78,8 +79,9 @@ const SearchInput: FC = () => {
     }, [query]);
 
     useEffect(() => {
-        setInputWidth(inputRef.current ? inputRef.current?.offsetWidth : 0);
-    }, [inputRef.current?.offsetWidth]);
+        setInputWidth(inputDivRef.current?.getBoundingClientRect()?.width);
+        //setInputWidth(inputDivRef.current ? inputDivRef.current?.offsetWidth : 0);
+    }, [inputDivRef.current?.offsetWidth]);
 
     useEffect(() => {
         if (focusedIndex == -1) {
@@ -110,8 +112,10 @@ const SearchInput: FC = () => {
     }, [focusedIndex, results]);
 
     return (
-        <div className="relative h-full mx-4 font-sans">
-            <div className="flex h-full bg-white rounded justify-center items-center">
+        <div className="h-full px-4 font-sans">
+            <div
+                className="flex h-full bg-white rounded focus-within:rounded-b-none focus-within:border-2 border-black focus-within:border-b-0 justify-center items-center"
+                ref={inputDivRef}>
                 <span className="pl-3 pr-2 text-black" style={{ opacity: query ? "100%" : "20%" }}>
                     <FontAwesomeIcon icon={faSearch} />
                 </span>
@@ -120,7 +124,7 @@ const SearchInput: FC = () => {
                     type="text"
                     autoComplete="off"
                     ref={inputRef}
-                    className="relative md:py-0 py-2 w-full h-full text-black outline-none px-4 pl-0 bg-transparent"
+                    className="relative md:py-0 py-2 w-full h-full text-black outline-none px-4 pl-0 bg-transparent "
                     id="global-search-input"
                     placeholder={t("Search")}
                     onChange={(e) => {
@@ -143,8 +147,8 @@ const SearchInput: FC = () => {
                 />
             </div>
             {query && focused && (
-                <div ref={ref}>
-                    <hr className="md:hidden bg-black h-1px opacity-50" />
+                <div ref={ref} className="absolute bg-white rounded-b border-x-2 border-b-2 border-black">
+                    <hr className=" bg-black h-4px" />
                     <div
                         className="md:popup"
                         style={{

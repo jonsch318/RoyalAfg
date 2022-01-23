@@ -1,4 +1,4 @@
-@responsive {
+@layer components {
     .popup {
         @apply bg-gray-400 px-5 md:p-0 py-8 md:py-0 rounded-lg;
         position: absolute;

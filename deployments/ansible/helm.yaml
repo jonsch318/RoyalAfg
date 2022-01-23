@@ -1,0 +1,95 @@
+---
+- hosts: localhost
+  vars:
+    hashi_nspace: hashicorp-system
+  tasks:
+    - name: Deploy latest version of Consul chart inside hashicorp-system namespace (and create it)
+      kubernetes.core.helm:
+        name: consul
+        chart_ref: consul
+        chart_repo_url: https://helm.releases.hashicorp.com
+        release_namespace: "{{ hashi_nspace }}"
+        create_namespace: true
+        values_files:
+          - ./config/consul-values.yaml
+        wait: true
+
+    - name: Deploy latest version of cert-manager
+      kubernetes.core.helm:
+        name: cert-manager
+        chart_ref: cert-manager
+        chart_repo_url: https://charts.jetstack.io
+        release_namespace: default
+        values:
+          installCRDs: true
+        wait: true
+
+    - name: Deploy latest version of traefik chart inside default
+      kubernetes.core.helm:
+        name: traefik
+        chart_ref: traefik
+        chart_repo_url: https://helm.traefik.io/traefik
+        release_namespace: default
+        values_files:
+          - ./config/traefik-values.yaml
+
+    - name: Deploy latest version of vault chart inside hashicorp-system
+      kubernetes.core.helm:
+        name: vault
+        chart_ref: vault
+        chart_repo_url: https://helm.releases.hashicorp.com
+        release_namespace: hashicorp-system
+
+        values_files:
+          - ./config/vault-values.yaml
+
+    - name: Deploy latest version of elastic chart inside elastic-system (and created)
+      kubernetes.core.helm:
+        name: eck-operator
+
+        chart_ref: eck-operator
+        chart_repo_url: "https://helm.elastic.co"
+        release_namespace: "elastic-system"
+        create_namespace: true
+
+        values_files:
+          - ./config/elastic-operator-values.yaml
+
+    - name: Deploy latest version of mongo chart inside mongodb-system (and create it)
+      kubernetes.core.helm:
+        name: mongodb-operator
+
+        chart_ref: "mongodb/community-operator"
+        #chart_repo_url: https://mongodb.github.io/helm-charts
+        release_namespace: mongodb-system
+        create_namespace: true
+
+        values_files:
+          - ./config/mongodb-operator-values.yaml
+
+    - name: Deploy latest version of agones chart inside agones-system (and create it)
+      kubernetes.core.helm:
+        name: agones
+
+        chart_ref: agones
+        chart_repo_url: https://agones.dev/chart/stable
+        release_namespace: agones-system
+        create_namespace: true
+
+        values_files:
+          - ./config/agones-values.yaml
+
+    - name: Deploy latest version of rabbitmq chart inside rabbitmq-system (and create it)
+      kubernetes.core.helm:
+        name: rabbitmq-operator
+
+        chart_ref: rabbitmq-cluster-operator
+        chart_repo_url: https://charts.bitnami.com/bitnami
+        release_namespace: rabbitmq-system
+        create_namespace: true
+
+        values_files:
+          - ./config/rabbitmq-operator-values.yaml
+
+- name: Deploy and configure other resources
+  import_playbook: ./database.yaml

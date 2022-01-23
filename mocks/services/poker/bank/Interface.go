@@ -21,15 +21,15 @@ func (_m *Interface) AddPlayer(player *models.Player) {
 }
 
 // ConcludeRound provides a mock function with given fields: winners, publicPlayers
-func (_m *Interface) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []string {
+func (_m *Interface) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []*money.Money {
 	ret := _m.Called(winners, publicPlayers)
 
-	var r0 []string
-	if rf, ok := ret.Get(0).(func([]showdown.WinnerInfo, []models.PublicPlayer) []string); ok {
+	var r0 []*money.Money
+	if rf, ok := ret.Get(0).(func([]showdown.WinnerInfo, []models.PublicPlayer) []*money.Money); ok {
 		r0 = rf(winners, publicPlayers)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]string)
+			r0 = ret.Get(0).([]*money.Money)
 		}
 	}
 
@@ -37,56 +37,64 @@ func (_m *Interface) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers 
 }
 
 // GetMaxBet provides a mock function with given fields:
-func (_m *Interface) GetMaxBet() string {
+func (_m *Interface) GetMaxBet() *money.Money {
 	ret := _m.Called()
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
+	var r0 *money.Money
+	if rf, ok := ret.Get(0).(func() *money.Money); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*money.Money)
+		}
 	}
 
 	return r0
 }
 
 // GetPlayerBet provides a mock function with given fields: id
-func (_m *Interface) GetPlayerBet(id string) string {
+func (_m *Interface) GetPlayerBet(id string) *money.Money {
 	ret := _m.Called(id)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
+	var r0 *money.Money
+	if rf, ok := ret.Get(0).(func(string) *money.Money); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*money.Money)
+		}
 	}
 
 	return r0
 }
 
 // GetPlayerWallet provides a mock function with given fields: id
-func (_m *Interface) GetPlayerWallet(id string) string {
+func (_m *Interface) GetPlayerWallet(id string) *money.Money {
 	ret := _m.Called(id)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
+	var r0 *money.Money
+	if rf, ok := ret.Get(0).(func(string) *money.Money); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*money.Money)
+		}
 	}
 
 	return r0
 }
 
 // GetPot provides a mock function with given fields:
-func (_m *Interface) GetPot() string {
+func (_m *Interface) GetPot() *money.Money {
 	ret := _m.Called()
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
+	var r0 *money.Money
+	if rf, ok := ret.Get(0).(func() *money.Money); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*money.Money)
+		}
 	}
 
 	return r0
@@ -191,17 +199,24 @@ func (_m *Interface) PerformBlind(id string, amount *money.Money) error {
 }
 
 // PerformRaise provides a mock function with given fields: id, amount
-func (_m *Interface) PerformRaise(id string, amount *money.Money) error {
+func (_m *Interface) PerformRaise(id string, amount *money.Money) (int, error) {
 	ret := _m.Called(id, amount)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, *money.Money) error); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(string, *money.Money) int); ok {
 		r0 = rf(id, amount)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, *money.Money) error); ok {
+		r1 = rf(id, amount)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // RegisterLobby provides a mock function with given fields: _a0

@@ -83,7 +83,7 @@ const Login: FC = ({ csrf }: InferGetServerSidePropsType<typeof getServerSidePro
                             />
                             <span className="font-sans font-light text-sm mb-8">
                                 {t("Or") + " "}
-                                <a href="/register" className="font-sans text-blue-800">
+                                <a href="/auth/register" className="font-sans text-blue-800">
                                     {t("register")}
                                 </a>{" "}
                                 {t("a new account")}

@@ -12,7 +12,7 @@ go_library(
     deps = [
         "@com_github_gorilla_schema//:schema",
         "@com_github_kamva_mgm//:mgm",
-        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//:go_default_library",
         "@org_mongodb_go_mongo_driver//mongo",
         "@org_mongodb_go_mongo_driver//mongo/options",
         "@org_uber_go_zap//:zap",

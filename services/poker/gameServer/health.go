@@ -10,7 +10,7 @@ import (
 )
 
 func DoSignal() {
-	stop := signals.NewStopChannel()
+	stop := signals.NewSigKillContext().Done()
 	<-stop
 	log.Println("Exit signal received. Shutting down")
 	os.Exit(0)
