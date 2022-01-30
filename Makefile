@@ -5,10 +5,10 @@ swagger: check_swagger_install
 	swagger generate spec -o ./services/docs/swagger.yaml --scan-models
 
 update_go_deps: 
-	bazelisk run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
+	bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies
 
 update:
-	bazelisk run //:gazelle update
+	bazel run //:gazelle update
 
 protos:
 	cd ./pkg/protos && make protos

@@ -908,8 +908,6 @@ def go_dependencies():
         name = "com_github_golang_protobuf",
         build_file_proto_mode = "disable",
         importpath = "github.com/golang/protobuf",
-        patch_args = ["-p1"],
-        patches = ["@com_github_bazelbuild_rules_go//third_party:com_github_golang_protobuf-extras.patch"],
         sum = "h1:F768QJ1E9tib+q5Sc8MkdJi1RxLTbRcTf8LJV56aRls=",
         version = "v1.3.5",
     )

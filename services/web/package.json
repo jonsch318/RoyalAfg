@@ -69,21 +69,5 @@
     },
     "peerDependencies": {
         "postcss": "^8.0.0"
-    },
-    "devDependencies": {
-        "@bazel/ibazel": "^0.15.10",
-        "@tailwindcss/custom-forms": "^0.2.1",
-        "@types/node": "^14.14.31",
-        "@types/prop-types": "^15.7.3",
-        "@types/react": "^17.0.2",
-        "@typescript-eslint/eslint-plugin": "^5.8.1",
-        "@typescript-eslint/parser": "^5.8.1",
-        "autoprefixer": "^10.2.1",
-        "dinero": "^1.0.1",
-        "postcss-import": "^14.0.2",
-        "postcss-preset-env": "^6.7.0",
-        "purgecss": "^4.1.3",
-        "tailwindcss": "^3.0.8",
-        "typescript": "^4.5.4"
     }
 }
