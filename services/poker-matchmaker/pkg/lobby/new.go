@@ -51,7 +51,7 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 			Namespace: "default",
 		},
 		Spec: allocationv1.GameServerAllocationSpec{
-			Required:  allocationv1.GameServerSelector{LabelSelector: labelSelector},
+			Required:  labelSelector,
 			Preferred: nil,
 			MetaPatch: allocationv1.MetaPatch{
 				Labels:      serverLabels,

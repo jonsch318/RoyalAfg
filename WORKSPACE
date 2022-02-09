@@ -3,6 +3,21 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 
 #############################
+# Skylib
+#############################
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+    urls = ["https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz"],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+
+#############################
 # Proto
 #############################
 
@@ -25,10 +40,10 @@ core_deps()
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "2b1641428dff9018f9e85c0384f03ec6c10660d935b750e3fa1492a281a53b0f",
+    sha256 = "d6b2513456fe2229811da7eb67a444be7785f5323c6708b38d851d2b51e54d83",
     urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.29.0/rules_go-v0.29.0.zip",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.29.0/rules_go-v0.29.0.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.30.0/rules_go-v0.30.0.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.30.0/rules_go-v0.30.0.zip",
     ],
 )
 
@@ -41,6 +56,7 @@ http_archive(
     ],
 )
 
+
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
@@ -51,7 +67,7 @@ go_rules_dependencies()
 go_dependencies()
 
 
-go_register_toolchains(version = "1.17.5")
+go_register_toolchains(version = "1.17.6")
 
 gazelle_dependencies()
 
@@ -79,6 +95,27 @@ http_archive(
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 protobuf_deps()
+
+
+#########################################################################################################
+# Nodejs
+######################################################################################################
+
+
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "d63ecec7192394f5cc4ad95a115f8a6c9de55c60d56c1f08da79c306355e4654",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.1/rules_nodejs-4.6.1.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
+
+yarn_install(
+    name = "npm",
+    package_json = "//services/web:package.json",
+    quiet = False,
+    yarn_lock = "//services/web:yarn.lock",
+)
 
 
 ##################################
@@ -133,17 +170,7 @@ load(
 
 _go_image_repos()
 
-#########################################################################################################
-# Nodejs
-######################################################################################################
+load("@io_bazel_rules_docker//nodejs:image.bzl", nodejs_image_repos = "repositories")
 
+nodejs_image_repos()
 
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "d63ecec7192394f5cc4ad95a115f8a6c9de55c60d56c1f08da79c306355e4654",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.1/rules_nodejs-4.6.1.tar.gz"],
-)
-
-#load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories")
-
-#node_repositories(package_json = ["//services/web/:package.json"])

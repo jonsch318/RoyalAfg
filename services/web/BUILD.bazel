@@ -1,0 +1,156 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_binary")
+load("@npm//next:index.bzl", "next")
+load("@io_bazel_rules_docker//nodejs:image.bzl", "nodejs_image")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "source_files",
+    srcs = glob([
+        "public/**/*",
+        "pages/*",
+        "styles/*",
+    ]) + [
+        "tsconfig.json",
+        "next.config.js",
+        "next-env.d.ts",
+        "package.json",
+        "yarn.lock",
+        "postcss.config.js",
+        "tailwind.config.js",
+        ".env.development",
+        ".env.local",
+        ".env.production",
+        ".eslintignore",
+        ".eslintrc.js",
+    ],
+)
+
+copy_to_bin(
+    name = "copy_source_files",
+    srcs = ["source_files"],
+)
+
+NPM_DEPS = [
+  "@npm//@"
+  "@npm//@date-io/core",
+  "@npm//@date-io/date-fns",
+  "@npm//@date-io/dayjs",
+  "@npm//@date-io/moment",
+  "@npm//@fortawesome/fontawesome-svg-core",
+  "@npm//@fortawesome/free-solid-svg-icons",
+  "@npm//@fortawesome/react-fontawesome",
+  "@npm//@hookform/resolvers",
+  "@npm//@inlet/react-pixi",
+  "@npm//@material-ui/core",
+  "@npm//@material-ui/icons",
+  "@npm//@material-ui/pickers",
+  "@npm//@types/dinero.js",
+  "@npm//cookies",
+  "@npm//csrf",
+  "@npm//date-fns",
+  "@npm//dinero.js".
+  "@npm//easystarjs",
+  "@npm//framer-motion",
+  "@npm//i18next",
+  "@npm//moment",
+  "@npm//next",
+  "@npm//next-i18next",
+  "@npm//next-pwa",
+  "@npm//normalize.css",
+  "@npm//notistack",
+  "@npm//pixi.js",
+  "@npm//pixi.js-legacy",
+  "@npm//postcss",
+  "@npm//prop-types",
+  "@npm//react",
+  "@npm//react-currency-input-field",
+  "@npm//react-date-range",
+  "@npm//react-datepicker",
+  "@npm//react-digit-input",
+  "@npm//react-dom",
+  "@npm//react-hook-form",
+  "@npm//react-i18next",
+  "@npm//react-intl",
+  "@npm//react-redux",
+  "@npm//react-validation",
+  "@npm//redux",
+  "@npm//redux-devtools-extension",
+  "@npm//redux-thunk":,
+  "@npm//rxjs",
+  "@npm//shortid",
+  "@npm//sprintf-js",
+  "@npm//uuid",
+  "@npm//yup",
+  "@npm//@tailwindcss/custom-forms",
+  "@npm//@types/node",
+  "@npm//@types/prop-types",
+  "@npm//@types/react",
+  "@npm//autoprefixer",
+  "@npm//dinero",
+  "@npm//postcss-import",
+  "@npm//postcss-preset-env",
+  "@npm//purgecss",
+  "@npm//tailwindcss",
+  "@npm//typescript"
+]
+
+next(
+    name = "build",
+    outs = [
+        ".next",
+        "public/sw.js",
+        "public/workbox-030153e1.js",
+    ],
+    args = [
+        "build",
+        "$(RULEDIR)",
+    ],
+    data = ["copy_source_files"] + NPM_DEPENDENCIES,
+)
+
+next(
+    name = "dev",
+    args = [
+        "dev",
+
+        # Root of app is the directory in which this BUILD.bazel file is located in
+        package_name(),
+
+        # Set port of development server to 3001
+        "-p 8080",
+
+        # To prevent webpack from bundling multiple react versions
+        "--node_options=--preserve-symlinks-main",
+        "--bazel_run_from_execroot",
+    ],
+    data = ["copy_source_files"] + NPM_DEPENDENCIES,
+    env = {
+        "NODE_ENV": "development",
+    },
+    tags = ["ibazel_notify_changes"],
+)
+
+nodejs_binary(
+    name = "client",
+    args = ["start"],
+    data = [
+        "build",
+        "copy_source_files",
+        "@npm//:node_modules",
+    ],
+    entry_point = "@npm//:node_modules/next/dist/bin/next",
+    templated_args = ["--bazel_patch_module_resolver"],
+)
+
+nodejs_image(
+    name = "client_image",
+    args = ["start"],
+    data = [
+        "build",
+        "copy_source_files",
+        "@npm//:node_modules",
+    ],
+    entry_point = "@npm//:node_modules/next/dist/bin/next",
+    templated_args = ["--bazel_patch_module_resolver"],
+)
