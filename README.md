@@ -6,6 +6,8 @@
   <br>
 </p>
 
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+
 
 ***The submitted version of this project is found in the release_01 branch***
 
@@ -26,6 +28,8 @@ For a complete deployment see this.
  While this is a project for a special learning achievement (a NRW thing for the german abitur), it also serves as a full example of a Kubernetes and microservice oriented application because i did not see many of these.
 
 A online casino is a perfect example for a microservice architecture, because many services need to communicate with each other, which is the main problem of this pattern. In addition it is a complex enough system that meaningful real world examples can be created and shown. Furthermore do game servers show how different requirements can be managed in Kubernetes. 
+
+Though I have plans to keep this to a best of recommendet practices that seem like a good idea. I plan to develop a working devops process with Jenkins CI (or other CI) and ArgoCd that is quickly deployable with terraform and or Ansible.
 
 ## Installation
 ### Bazel
