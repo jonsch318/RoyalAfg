@@ -1,4 +1,6 @@
-import * as yup from "yup"
+import { STATIC_STATUS_PAGES } from "next/dist/shared/lib/constants";
+import { bool } from "prop-types";
+import * as yup from "yup";
 
 export const SlotGameDTOSchema = yup.object().shape({
     numbers: yup.array().of(yup.number().min(0)).length(4).required(),
@@ -7,12 +9,10 @@ export const SlotGameDTOSchema = yup.object().shape({
     proof: yup.string().required(),
     algorithms: yup.string(),
     timeOfGame: yup.number().required().min(1)
-})
+});
 
-export type SlotGameDTO = yup.InferType<typeof SlotGameDTOSchema>
+export type SlotGameDTO = yup.InferType<typeof SlotGameDTOSchema>;
 
-export const SlotGameOptionsDTOSchema = yup.object().shape({
-    doubleFactor: yup.boolean()
-})
-
-export type SlotGameOptionsDTO = yup.InferType<typeof SlotGameOptionsDTOSchema>
+export type SlotGameOptionsDTO = {
+    doubleFactor: boolean;
+};
