@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 
 type ActionMenuButtonProps = {
+    children: React.ReactNode;
     onClick: React.MouseEventHandler<HTMLButtonElement>;
 };
 

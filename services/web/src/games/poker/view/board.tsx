@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Container } from "@inlet/react-pixi";
+import { Container } from "@saitonakamura/react-pixi";
 import { Rectangle } from "./rectangle";
 import { ICard } from "../models/card";
 import { BoardPaddingX, BoardPaddingY, BorderRadius, CardHeight, CardWidth } from "./constants";

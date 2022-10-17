@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Text } from "@inlet/react-pixi";
+import { Text } from "@saitonakamura/react-pixi";
 import { useResize } from "../../../hooks/dimensions";
 import { StatusPadding } from "./constants";
 import { useTranslation } from "next-i18next";

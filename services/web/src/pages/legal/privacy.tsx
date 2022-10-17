@@ -5,7 +5,7 @@ const Privacy: FC = () => {
     return (
         <Layout>
             <div className="font-sans p-20">
-                <style jsx>{`
+                <style>{`
                     h1,
                     h2,
                     h3 {

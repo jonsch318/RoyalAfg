@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 type CardListItemProps = {
     header: string;
+    children: React.ReactNode;
 };
 
 const CardListItem: FC<CardListItemProps> = ({ children, header }) => {

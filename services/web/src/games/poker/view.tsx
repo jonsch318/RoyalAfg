@@ -1,5 +1,5 @@
 import React, { FC, useRef } from "react";
-import { Container, Stage } from "@inlet/react-pixi";
+import { Container, Stage } from "@saitonakamura/react-pixi";
 import Players from "./view/players";
 import useWindowDimensions from "../../hooks/windowSize";
 import { usePoker } from "./provider";

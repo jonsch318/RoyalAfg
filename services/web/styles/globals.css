@@ -2,6 +2,13 @@
 @import './components/search.css';
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind screens;
+
+
+
 html,
 body {
     padding: 0;
@@ -39,8 +46,9 @@ a {
     display: block !important;
 }
 
-@layer utilities {
+@layer components {
     .h-1px {
         height: 1px;
     }
 }
+

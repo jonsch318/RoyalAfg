@@ -1,7 +1,7 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-    purge: ["./src/**/*.html", "./src/**/*.jsx", "./src/**/*.js", "./src/**/*.tsx", "./src/**/*.ts"],
+    content: ["./src/**/*.html", "./src/**/*.jsx", "./src/**/*.js", "./src/**/*.tsx", "./src/**/*.ts"],
     future: {
         removeDeprecatedGapUtilities: true,
         purgeLayersByDefault: true
@@ -62,11 +62,7 @@ module.exports = {
             "focus-visible",
             "active",
             "disabled"
-        ],
-        extend: {
-            opacity: ["disabled"],
-            cursor: ["disabled"]
-        }
+        ]
     },
     plugins: [require("@tailwindcss/custom-forms")]
 };

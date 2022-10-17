@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { useDots } from "../../../hooks/dots";
 
 const NextGameStart: FC = () => {

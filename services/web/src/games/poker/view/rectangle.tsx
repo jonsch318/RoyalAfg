@@ -1,5 +1,5 @@
 import { Graphics } from "pixi.js";
-import { PixiComponent } from "@inlet/react-pixi";
+import { PixiComponent } from "@saitonakamura/react-pixi";
 
 interface RectangleProps {
     x: number;

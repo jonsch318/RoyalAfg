@@ -1,7 +1,7 @@
 import React, { FC, useContext, useEffect, useState } from "react";
-import { useApp } from "@inlet/react-pixi";
+import { useApp } from "@saitonakamura/react-pixi";
 import { URL } from "../view";
-import { Texture } from "pixi.js-legacy";
+import { Texture } from "pixi.js";
 
 export const TextureContext = React.createContext({});
 
@@ -9,7 +9,11 @@ export const useTexture = (name: string): Texture => {
     return useContext(TextureContext)[name];
 };
 
-const TextureProvider: FC = ({ children }) => {
+type TextureProviderProps = {
+    children: React.ReactNode;
+};
+
+const TextureProvider: FC<TextureProviderProps> = ({ children }) => {
     const [textures, setTexture] = useState({});
 
     const app = useApp();

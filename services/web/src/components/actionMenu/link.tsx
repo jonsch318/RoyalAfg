@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import Link from "next/link";
 
 type ActionMenuLinkProps = {
+    children: React.ReactNode;
     href: string;
 };
 

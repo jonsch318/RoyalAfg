@@ -4,6 +4,7 @@ import Link from "next/link";
 
 type HeaderNavItemProps = {
     href: string;
+    children: React.ReactNode;
 };
 
 const HeaderNavItem: FC<HeaderNavItemProps> = ({ href, children }) => {

@@ -179,6 +179,7 @@ export const signOut = async (): Promise<Response> => {
 
 type ProviderProps = {
     session?: Session;
+    children: React.ReactNode;
 };
 // eslint-disable-next-line react/prop-types
 export const Provider: FC<ProviderProps> = ({ children, session }) => {
@@ -187,7 +188,8 @@ export const Provider: FC<ProviderProps> = ({ children, session }) => {
 
 const _apiBaseUrl = (): string => {
     if (process.env.AUTH_HOST == undefined) {
-        if (typeof window !== undefined) {
+        console.log(typeof window);
+        if (typeof window != undefined && typeof window != "undefined") {
             return window.location.origin + "/api/auth";
         }
     }

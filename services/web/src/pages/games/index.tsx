@@ -9,6 +9,7 @@ import { useTranslation } from "next-i18next";
 
 type GameProps = {
     href: string;
+    children: React.ReactNode;
 };
 
 // eslint-disable-next-line react/prop-types

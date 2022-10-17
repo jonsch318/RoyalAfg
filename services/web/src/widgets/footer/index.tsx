@@ -19,7 +19,7 @@ const Footer: FC<FooterProps> = ({ absolute }) => {
 
     return (
         <div className={containerClass}>
-            <style jsx>{`
+            <style>{`
                 .footer-grid {
                     grid-template-columns: auto 1fr;
                 }

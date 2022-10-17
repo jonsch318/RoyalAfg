@@ -1,6 +1,10 @@
 import React, { FC } from "react";
 
-const ActionMenu: FC = ({ children }) => {
+type ActionmenuProps = {
+    children: React.ReactNode;
+};
+
+const ActionMenu: FC<ActionmenuProps> = ({ children }) => {
     return <div className="bg-white p-16 rounded-xl">{children}</div>;
 };
 

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 
 const getDots = (dots: number): string => {
     return ".".repeat(dots);

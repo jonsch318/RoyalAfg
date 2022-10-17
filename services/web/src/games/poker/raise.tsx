@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import CurrencyInput from "react-currency-input-field";
-import Tooltip from "@material-ui/core/Tooltip";
+import Tooltip from "@mui/material/Tooltip";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 

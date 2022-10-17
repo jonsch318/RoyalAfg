@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@mui/material";
 
 type WaitingForPlayerProps = {
     joined: number;

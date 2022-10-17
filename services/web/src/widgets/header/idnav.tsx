@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 
 type NavButtonProps = {
     onClick: React.MouseEventHandler<HTMLButtonElement>;
+    children?: React.ReactNode;
 };
 const NavButton: FC<NavButtonProps> = ({ children, onClick }) => {
     return (

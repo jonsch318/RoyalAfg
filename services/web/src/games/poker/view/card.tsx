@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Sprite } from "@inlet/react-pixi";
+import { Sprite } from "@saitonakamura/react-pixi";
 import { useTexture } from "./textures";
 import { ICard } from "../models/card";
 import { CardHeight, CardWidth } from "./constants";

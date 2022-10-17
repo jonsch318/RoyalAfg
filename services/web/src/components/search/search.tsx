@@ -1,4 +1,5 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "next-i18next";
 import React, { FC, useEffect, useRef, useState } from "react";
@@ -6,6 +7,8 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import useDebounce from "../../hooks/debounce";
 
 import SearchResultList from "./resultList";
+
+library.add(faSearch);
 
 function useOnClickOutside(ref, handler: (e: MouseEvent) => void) {
     useEffect(() => {
@@ -113,7 +116,7 @@ const SearchInput: FC = () => {
         <div className="relative h-full mx-4 font-sans">
             <div className="flex h-full bg-white rounded justify-center items-center">
                 <span className="pl-3 pr-2 text-black" style={{ opacity: query ? "100%" : "20%" }}>
-                    <FontAwesomeIcon icon={faSearch} />
+                    <FontAwesomeIcon icon={"search"} />
                 </span>
 
                 <input

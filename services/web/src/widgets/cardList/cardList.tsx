@@ -1,7 +1,11 @@
 import React, { FC, useEffect, useRef } from "react";
 import PropType from "prop-types";
 
-const CardList: FC = ({ children }) => {
+type CardListProps = {
+    children: React.ReactNode;
+};
+
+const CardList: FC<CardListProps> = ({ children }) => {
     const ref = useRef(null);
     useEffect(() => {
         console.log("Ref Current", ref.current);

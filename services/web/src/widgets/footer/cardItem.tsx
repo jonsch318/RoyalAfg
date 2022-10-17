@@ -4,6 +4,7 @@ import React, { FC } from "react";
 
 type FooterCardItemProps = {
     href?: string;
+    children?: React.ReactNode;
 };
 
 const FooterCardItem: FC<FooterCardItemProps> = ({ href, children }) => {

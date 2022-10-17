@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { useDots } from "./dots";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 import { useTranslation } from "next-i18next";
 
 const Connecting: FC = () => {

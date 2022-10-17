@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
-import { Container, PixiComponent, useTick, withFilters } from "@inlet/react-pixi";
-import { Graphics } from "pixi.js-legacy";
-import * as PIXI from "pixi.js-legacy";
+import { Container, PixiComponent, useTick, withFilters } from "@saitonakamura/react-pixi";
+import { Graphics } from "pixi.js";
+import * as PIXI from "pixi.js";
 import { LoadingRadius, LoadingStrokeWidth } from "./constants";
 
 interface SpinnerProps {

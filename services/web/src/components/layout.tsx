@@ -8,6 +8,7 @@ type LayoutProps = {
     disableFooter?: boolean;
     headerAbsolute?: boolean;
     alternativeNav?: React.ReactNode;
+    children: React.ReactNode;
 };
 
 const Layout: FC<LayoutProps> = (props) => {

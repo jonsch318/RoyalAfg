@@ -41,6 +41,7 @@ type PokerTicket = {
 type PokerConnectionProps = {
     ticket: PokerTicket;
     csrf: string;
+    children: React.ReactNode;
 };
 
 const PokerProvider: FC<PokerConnectionProps> = ({ children, ticket }) => {

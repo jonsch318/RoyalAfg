@@ -8,11 +8,15 @@ const Title: FC<TitleProps> = ({ title }) => {
     return <div className="font-sans text-base font-medium">{title.toUpperCase()}</div>;
 };
 
-const Content: FC = ({ children }) => {
+type ContentProps = {
+    children: React.ReactNode;
+};
+
+const Content: FC<ContentProps> = ({ children }) => {
     const listItems = React.Children.map(children, (child) => {
         return (
             <li key={shortid.generate()}>
-                <style jsx>{`
+                <style>{`
                 li:before {
                     content: "-";
                     margin-right: 0.5rem;
@@ -32,6 +36,7 @@ const Content: FC = ({ children }) => {
 
 type FooterCardProps = {
     title?: string;
+    children: React.ReactNode;
 };
 
 const FooterCard: FC<FooterCardProps> = ({ title, children }) => {

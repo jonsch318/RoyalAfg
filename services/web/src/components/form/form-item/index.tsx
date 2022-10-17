@@ -1,6 +1,10 @@
 import React, { FC } from "react";
 
-const FormItem: FC = ({ children }) => {
+type FormItemProps = {
+    children: React.ReactNode;
+};
+
+const FormItem: FC<FormItemProps> = ({ children }) => {
     return <div className="mb-6 font-sans text-lg font-medium">{children}</div>;
 };
 

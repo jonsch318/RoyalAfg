@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDots } from "./dots";
-import { CircularProgress, LinearProgress } from "@material-ui/core";
+import { CircularProgress, LinearProgress } from "@mui/material";
 import { usePoker } from "../provider";
 import { useTranslation } from "next-i18next";
 

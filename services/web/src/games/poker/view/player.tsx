@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useRef } from "react";
-import { Container, Text } from "@inlet/react-pixi";
+import { Container, Text } from "@saitonakamura/react-pixi";
 import { IPlayer } from "../models/player";
 import { Rectangle } from "./rectangle";
 import { useResize, useWidth } from "../../../hooks/dimensions";
 import Board from "./board";
 import { BorderRadius, CardHeight, CardWidth, LoadingRadius, PlayerPaddingX, PlayerPaddingY } from "./constants";
 import Loading from "./loading";
+import { Text as TXT } from "pixi.js";
 
 export const PlayerWidth = 300;
 export const PlayerHeight = 2 * LoadingRadius + 30 + CardHeight + 30;
@@ -25,7 +26,7 @@ type PlayerProps = {
 };
 
 const Player: FC<PlayerProps> = ({ x, y, player, dealer, oneSelf }) => {
-    const ref = useRef<PIXI.Text>();
+    const ref = useRef<TXT>();
     const { width } = useResize(ref);
 
     useEffect(() => {

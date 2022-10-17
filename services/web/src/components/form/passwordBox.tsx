@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "next-i18next";
 import React, { useState } from "react";
@@ -7,6 +8,8 @@ type PasswordBoxProps = {
     register: any;
     value?: string;
 };
+
+library.add(faEye, faEyeSlash);
 
 const PasswordBox: React.FC<PasswordBoxProps> = ({ register, value }: PasswordBoxProps) => {
     const { t } = useTranslation("auth");
@@ -34,7 +37,7 @@ const PasswordBox: React.FC<PasswordBoxProps> = ({ register, value }: PasswordBo
                     type="button"
                     onClick={() => setShowPassword((x) => !x)}
                     aria-label={showPassword ? "Show password in plain text. This will show your password on screen." : "Hide Password."}>
-                    {showPassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
+                    {showPassword ? <FontAwesomeIcon icon={"eye"} /> : <FontAwesomeIcon icon={"eye-slash"} />}
                 </button>
             </div>
         </>

@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { RegisterDto } from "../../pages/auth/register";
 import useDigitInput from "react-digit-input";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from "@mui/material/CircularProgress";
 import { verifyUser } from "../../hooks/auth";
 import { useDots } from "../../hooks/dots";
 

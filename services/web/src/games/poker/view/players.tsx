@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Container } from "@inlet/react-pixi";
+import { Container } from "@saitonakamura/react-pixi";
 import Player, { PlayerHeight, PlayerWidth } from "./player";
 import { IPoker } from "../models/poker";
 import { TableRadiusX, TableRadiusY } from "./constants";

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { useDots } from "./dots";
 import { usePoker } from "../provider";
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@mui/material";
 import { useTranslation } from "next-i18next";
 
 const PreLobby: FC = () => {
