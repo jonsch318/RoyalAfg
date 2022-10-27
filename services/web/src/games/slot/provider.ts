@@ -81,8 +81,13 @@ async function mockGetCryptoInfo(): Promise<string> {
 }
 
 async function mockRequestSlotSpin(): Promise<string> {
+    const numbers = [];
+    for (let i = 0; i < 4; i++) {
+        numbers.push(rand(0, 7));
+    }
+
     const mock = {
-        numbers: [1, 2, 3, 1],
+        numbers: [0, 0, 0, 5],
         alpha: 1,
         beta: 2,
         proof: "mockProof",
@@ -91,4 +96,8 @@ async function mockRequestSlotSpin(): Promise<string> {
     };
 
     return JSON.stringify(mock);
+}
+
+function rand(min, max): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }

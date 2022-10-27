@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { css, cx } from "@emotion/css";
 import shortid from "shortid";
 
 type TitleProps = {
@@ -15,14 +16,14 @@ type ContentProps = {
 const Content: FC<ContentProps> = ({ children }) => {
     const listItems = React.Children.map(children, (child) => {
         return (
-            <li key={shortid.generate()}>
-                <style>{`
-                li:before {
-                    content: "-";
-                    margin-right: 0.5rem;
-                }
-            .
-            `}</style>
+            <li
+                className={css`
+                    &:before {
+                        content: "-";
+                        margin-right: 0.5rem;
+                    }
+                `}
+                key={shortid.generate()}>
                 {child}
             </li>
         );

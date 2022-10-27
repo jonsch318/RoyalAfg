@@ -63,6 +63,5 @@ module.exports = {
             "active",
             "disabled"
         ]
-    },
-    plugins: [require("@tailwindcss/custom-forms")]
+    }
 };
