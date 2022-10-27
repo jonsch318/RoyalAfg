@@ -67,3 +67,5 @@ minikube
 .env.local
 /.env
 /.env.local
+
+.vscode
