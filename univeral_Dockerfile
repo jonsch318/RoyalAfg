@@ -20,7 +20,7 @@ COPY . .
 ARG service
 
 # Build the application
-RUN go build -o main ./services/auth/main.go
+RUN go build -o main $service
 
 ############################
 # STEP 2 build a small image
