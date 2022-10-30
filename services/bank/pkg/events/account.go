@@ -25,3 +25,13 @@ type Deposited struct {
 	RoundId string
 	Time    time.Time
 }
+
+type Backroll struct {
+	ID       string
+	Reason   string
+	Withdraw bool
+	Amount   *money.Money
+	GameId   string
+	RoundId  string
+	Time     time.Time
+}

@@ -8,3 +8,5 @@ const DatabaseName = "mongodb_db_name"
 const DatabaseTimeout = "mongodb_timeout"
 
 const UserServiceURL = "user_service_url"
+
+const BankURL = "bank_url"

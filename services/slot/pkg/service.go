@@ -3,6 +3,7 @@ package pkg
 import (
 	"net/http"
 
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
@@ -26,7 +27,70 @@ func Start(logger *zap.SugaredLogger) {
 
 	viper.SetEnvPrefix("slot")
 
-	// Game Database
+	buffer, gameDatabase := configGameBuffers(logger)
+
+	// ############### Bank Connection ################
+
+	bankService, err := bank.NewRabbitBankConnection(viper.GetString(localconfig.BankURL))
+
+	if err != nil {
+		logger.Fatalw("Could not connect to the bank", "error", err)
+		return
+	}
+
+	// ############### User Service Connection ################
+
+	conn, err := grpc.Dial(viper.GetString(localconfig.UserServiceURL), grpc.WithInsecure())
+
+	defer conn.Close()
+
+	if err != nil {
+		logger.Fatalw("Could not connect to user service", "error", err)
+	}
+
+	userServiceClient := protos.NewUserServiceClient(conn)
+
+	// ############### Crypto keys and rng ################
+
+	// Read crypto keys
+	privateKey, publicKey, err := crypto.ReadECDSAKeys(viper.GetString(localconfig.PublicKeyPath), viper.GetString(localconfig.PrivateKeyPath))
+
+	if err != nil {
+		logger.Fatalw("Error reading crypto keys", "error", err)
+	}
+
+	// Create the crypto logic
+	rng := crypto.NewVRFNumberGenerator(privateKey, publicKey)
+
+	// ############### Game Provider ################
+
+	gameProvider := logic.NewGameProvider(buffer, gameDatabase, rng)
+
+	slotHandler := handlers.NewSlotServer(logger, gameProvider, userServiceClient, bankService)
+
+	r := mux.NewRouter()
+
+	r.HandleFunc("/api/games/slot/spin", slotHandler.Spin).Methods("POST")
+
+	n := negroni.New(negroni.NewRecovery(), mw.NewLogger(logger.Desugar()))
+
+	n.UseHandler(r)
+
+	port := viper.GetString(config.HTTPPort)
+	logger.Warnf("HTTP Port set to %v", port)
+	srv := &http.Server{
+		Addr:              ":" + port,
+		WriteTimeout:      viper.GetDuration(config.WriteTimeout),
+		ReadHeaderTimeout: viper.GetDuration(config.ReadTimeout),
+		IdleTimeout:       viper.GetDuration(config.IdleTimeout),
+		Handler:           n,
+	}
+
+	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
+}
+
+func configGameBuffers(logger *zap.SugaredLogger) (*database.GameBuffer, *database.GameDatabase) {
+
 	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(localconfig.DatabaseTimeout)}
 	err := mgm.SetDefaultConfig(cfg, viper.GetString(localconfig.DatabaseName), options.Client().ApplyURI(viper.GetString(localconfig.DatabaseUrl)))
 
@@ -58,53 +122,5 @@ func Start(logger *zap.SugaredLogger) {
 		return err
 	})
 
-	// ############### User Service Connection ################
-
-	conn, err := grpc.Dial(viper.GetString(localconfig.UserServiceURL), grpc.WithInsecure())
-
-	defer conn.Close()
-
-	if err != nil {
-		logger.Fatalw("Could not connect to user service", "error", err)
-	}
-
-	userServiceClient := protos.NewUserServiceClient(conn)
-
-	// ############### Crypto keys and rng ################
-
-	// Read crypto keys
-	privateKey, publicKey, err := crypto.ReadECDSAKeys(viper.GetString(localconfig.PublicKeyPath), viper.GetString(localconfig.PrivateKeyPath))
-
-	if err != nil {
-		logger.Fatalw("Error reading crypto keys", "error", err)
-	}
-
-	// Create the crypto logic
-	rng := crypto.NewVRFNumberGenerator(privateKey, publicKey)
-
-	// ############### Game Provider ################
-
-	gameProvider := logic.NewGameProvider(buffer, gameDatabase, rng)
-
-	slotHandler := handlers.NewSlotServer(logger, gameProvider, userServiceClient)
-
-	r := mux.NewRouter()
-
-	r.HandleFunc("/api/games/slot/spin", slotHandler.Spin).Methods("POST")
-
-	n := negroni.New(negroni.NewRecovery(), mw.NewLogger(logger.Desugar()))
-
-	n.UseHandler(r)
-
-	port := viper.GetString(config.HTTPPort)
-	logger.Warnf("HTTP Port set to %v", port)
-	srv := &http.Server{
-		Addr:              ":" + port,
-		WriteTimeout:      viper.GetDuration(config.WriteTimeout),
-		ReadHeaderTimeout: viper.GetDuration(config.ReadTimeout),
-		IdleTimeout:       viper.GetDuration(config.IdleTimeout),
-		Handler:           n,
-	}
-
-	utils.StartGracefully(logger, srv, viper.GetDuration(config.GracefulShutdownTimeout))
+	return buffer, gameDatabase
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func (s *SlotServer) CryptoInfo(rw http.ResponseWriter, r *http.Request) {
-	pkKey := s.rng.GetPublicKey()
+	pkKey := s.gameProvider.GetPublicKey()
 	pkEncoded, err := crypto.ExportPublicKey(pkKey)
 
 	if err != nil {

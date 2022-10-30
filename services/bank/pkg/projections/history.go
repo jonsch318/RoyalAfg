@@ -16,7 +16,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 )
 
-//AccountHistoryQuery is the projection for the history
+// AccountHistoryQuery is the projection for the history
 type AccountHistoryQuery struct {
 	accounts map[string][]dtos.AccountHistoryEvent
 	repo     *repositories.Account
@@ -31,7 +31,7 @@ func NewAccountHistoryQuery(repo *repositories.Account, client *goes.Client) *Ac
 	}
 }
 
-//Handle projects the new events to the read model
+// Handle projects the new events to the read model
 func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 
 	switch ev := message.Event().(type) {
@@ -53,10 +53,36 @@ func (q *AccountHistoryQuery) Handle(message ycq.EventMessage) {
 			Game:    ev.GameId,
 			LobbyID: ev.RoundId,
 		})
+	case *events.Backroll:
+		q.accounts[message.AggregateID()] = append(q.accounts[message.AggregateID()], dtos.AccountHistoryEvent{
+			Amount:  dtos.FromMoney(ev.Amount),
+			Type:    "Backroll",
+			Time:    time.Now(),
+			Game:    ev.GameId,
+			LobbyID: ev.RoundId,
+		})
 	}
 }
 
-//GetAccountHistory queries the read model for the l recorded history from the given index, where 0 is newest and last is oldest.
+func (q *AccountHistoryQuery) GetPreviousEvent(id string) (dtos.AccountHistoryEvent, error) {
+	fullHistory, ok := q.accounts[id]
+	if !ok {
+		err := q.LoadAggregate(id)
+		if err != nil {
+			return dtos.AccountHistoryEvent{}, err
+		}
+		fullHistory = q.accounts[id]
+	}
+
+	if len(fullHistory) == 0 {
+		return dtos.AccountHistoryEvent{}, fmt.Errorf("no previous event found")
+	}
+
+	return fullHistory[len(fullHistory)-1], nil
+
+}
+
+// GetAccountHistory queries the read model for the l recorded history from the given index, where 0 is newest and last is oldest.
 func (q *AccountHistoryQuery) GetAccountHistory(id string, i int, l int) ([]dtos.AccountHistoryEvent, error) {
 	fullHistory, ok := q.accounts[id]
 	if !ok {
@@ -86,7 +112,7 @@ func (q *AccountHistoryQuery) GetAccountHistory(id string, i int, l int) ([]dtos
 	return fullHistory[i : i+l], nil
 }
 
-//Load Aggregate loads the aggregate from the event store. This would be unnecessary because you would save the commands to a separate database
+// Load Aggregate loads the aggregate from the event store. This would be unnecessary because you would save the commands to a separate database
 func (q *AccountHistoryQuery) LoadAggregate(id string) error {
 	aggregateType := reflect.TypeOf(&aggregates.Account{}).Elem().Name()
 	streamName, _ := q.repo.StreamNameDelegate.GetStreamName(aggregateType, id)
