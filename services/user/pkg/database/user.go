@@ -12,13 +12,11 @@ import (
 	"go.uber.org/zap"
 )
 
-
 type UserDatabase struct {
-	l    *zap.SugaredLogger
+	l         *zap.SugaredLogger
 	userCache *cache.Cache
-	coll *mgm.Collection
+	coll      *mgm.Collection
 }
-
 
 func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDatabase {
 	coll := mgm.Coll(&models.User{})
@@ -51,9 +49,9 @@ func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDat
 	}
 
 	return &UserDatabase{
-		l:    logger,
+		l:         logger,
 		userCache: userCache,
-		coll: coll,
+		coll:      coll,
 	}
 }
 func (db *UserDatabase) CreateUser(user *models.User) error {
@@ -106,11 +104,17 @@ func (db *UserDatabase) DeleteUser(user *models.User) error {
 	return db.coll.Delete(user)
 }
 
+// FindById returns the user, if found, with the given id. This is cached
 func (db *UserDatabase) FindById(id string) (*models.User, error) {
 
-	user, err := db.GetCache(id)
+	//check cache of id
+	user, cacheHit, err := db.GetCache(id)
 	if err != nil {
-		db.l.Debugf("Could not get cache %v", err)
+		db.l.Debugf("Could not get cache although cache hit %v", err)
+	}
+
+	if user != nil && cacheHit {
+		return user, nil
 	}
 
 	user = &models.User{}
@@ -128,6 +132,7 @@ func (db *UserDatabase) FindById(id string) (*models.User, error) {
 	return user, nil
 }
 
+// FindByEmail returns the user, if found, with the given email. This is NOT cached
 func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 
@@ -144,6 +149,7 @@ func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 	return user, nil
 }
 
+// FindByUsername returns the user, if found, with the given username. This is NOT cached
 func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
 	user := &models.User{}
 

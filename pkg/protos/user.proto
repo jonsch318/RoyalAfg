@@ -2,25 +2,41 @@ syntax = "proto3";
 option go_package = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos";
 
 service UserService {
-    rpc SaveUser(User) returns (User);
-    rpc GetUserById (GetUser) returns (User);
-    rpc GetUserByUsername (GetUser) returns (User);
-    rpc UpdateUser(User) returns (User);
+  rpc SaveUser(User) returns (User);
+  rpc GetUserById (GetUser) returns (User);
+  rpc GetUserByUsername (GetUser) returns (User);
+  rpc UpdateUser(User) returns (User);
+  rpc GetUserStatus(UserStatusRequest) returns  (UserStatusResponse);
 }
 
 message User {
-    string id = 1;
-    int64 created_at = 2;
-    int64 updated_at = 3;
-    string username = 4;
-    string hash = 5;
-    string email = 6;
-    string fullName = 7;
-    int64 birthdate = 8;
+  string id = 1;
+  int64 created_at = 2;
+  int64 updated_at = 3;
+  string username = 4;
+  string hash = 5;
+  string email = 6;
+  string full_name = 7;
+  int64 birthdate = 8;
 }
 
 
 message GetUser {
-    string api_key = 1;
-    string identifier = 2;
+  string api_key = 1;
+  string identifier = 2;
 }
+
+message UserStatusRequest {
+  string id = 1;
+}
+
+message UserStatusResponse {
+  message OnlineStatus {
+    int32 status = 1;
+    string game_id = 2;
+  }
+  uint32 banned = 1;
+  uint32 verified = 2;
+  OnlineStatus status = 3;
+}
+

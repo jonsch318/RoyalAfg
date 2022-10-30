@@ -49,6 +49,9 @@ func Start(logger *zap.SugaredLogger) {
 		Username: viper.GetString(config.RedisUsername),
 		Password: viper.GetString(config.RedisPassword),
 	})
+
+	defer red.Close()
+
 	userCache := cache.New(&cache.Options{
 		Redis:      red,
 		LocalCache: cache.NewTinyLFU(1000, time.Minute),
@@ -72,9 +75,22 @@ func Start(logger *zap.SugaredLogger) {
 
 	userDatabase := database.NewUserDatabase(logger, userCache)
 
+	//###################### STATUS REDIS DB ###########
+
+	//TODO: maybe a ring would be better
+	statusRed := redis.NewClient(&redis.Options{
+		Addr:     viper.GetString(config.StatusRedisAddress),
+		Username: viper.GetString(config.StatusRedisUsername),
+		Password: viper.GetString(config.StatusRedisPassword),
+	})
+
+	defer statusRed.Close()
+
+	statusDB := database.NewOnlineStatusDatabase(logger, statusRed)
+
 	//###################### GRPC ######################
 	//Configure GRPC server
-	userServer := servers.NewUserServer(logger, userDatabase, metrics.New())
+	userServer := servers.NewUserServer(logger, userDatabase, statusDB, metrics.New())
 	gs := grpc.NewServer(
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
@@ -95,7 +111,7 @@ func Start(logger *zap.SugaredLogger) {
 
 	//###################### HTTP ######################
 	//HTTP Handlers
-	userHandler := handlers.NewUserHandler(logger, userDatabase)
+	userHandler := handlers.NewUserHandler(logger, userDatabase, statusDB)
 
 	//Setup Routes
 	r := mux.NewRouter()

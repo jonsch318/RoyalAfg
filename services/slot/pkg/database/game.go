@@ -50,6 +50,11 @@ func NewGameDatabase(logger *zap.SugaredLogger) (*GameDatabase, error) {
 	}, nil
 }
 
+func (db *GameDatabase) CheckId(id string) bool {
+	res := db.coll.FindOne(mgm.Ctx(), bson.M{"id": id})
+	return res.Err() == nil
+}
+
 func (db *GameDatabase) SaveGameBuffer(games []*models.SlotGame) error {
 
 	db.l.Info("Saving Buffered Games  ")

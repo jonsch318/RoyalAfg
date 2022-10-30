@@ -8,19 +8,21 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/metrics"
 )
 
-//UserServer is a grpc server handler to save, update or retrieve a user from the database
+// UserServer is a grpc server handler to save, update or retrieve a user from the database
 type UserServer struct {
 	protos.UnimplementedUserServiceServer
-	l       *zap.SugaredLogger
-	db      database.IUserDB
-	metrics *metrics.User
+	l        *zap.SugaredLogger
+	db       database.IUserDB
+	statusDb database.IOnlineStatusDB
+	metrics  *metrics.User
 }
 
-//NewUserServer create a new grpc user server
-func NewUserServer(logger *zap.SugaredLogger, database database.IUserDB, metrics *metrics.User) *UserServer {
+// NewUserServer create a new grpc user server
+func NewUserServer(logger *zap.SugaredLogger, database database.IUserDB, statusDb database.IOnlineStatusDB, metrics *metrics.User) *UserServer {
 	return &UserServer{
-		l:       logger,
-		db:      database,
-		metrics: metrics,
+		l:        logger,
+		db:       database,
+		statusDb: statusDb,
+		metrics:  metrics,
 	}
 }

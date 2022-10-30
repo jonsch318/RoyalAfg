@@ -13,12 +13,11 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 )
 
-//UpdateUserResponse is the response of a update user command.
+// UpdateUserResponse is the response of a update user command.
 type UpdateUserResponse struct {
-	Token string    `json:"session"`
+	Token string     `json:"session"`
 	User  *dtos.User `json:"user"`
 }
-
 
 func (h *UserHandler) UpdateUser(rw http.ResponseWriter, r *http.Request) {
 	//state whether the session token has to be regenerated with the new information
@@ -58,7 +57,7 @@ func (h *UserHandler) UpdateUser(rw http.ResponseWriter, r *http.Request) {
 	if err = validation.Validate(dto.FullName, validation.Required, validation.Length(1, 100)); err == nil {
 		user.FullName = dto.FullName
 		reGenToken = true
-	}
+	}	
 
 	//Check if the username should be changed
 	if err = validation.Validate(dto.Username, validation.Required, validation.Length(4, 100)); err == nil {
@@ -100,8 +99,6 @@ func (h *UserHandler) UpdateUser(rw http.ResponseWriter, r *http.Request) {
 	//Send response
 	_ = utils.ToJSON(&UpdateUserResponse{
 		Token: token,
-		User: res,
+		User:  res,
 	}, rw)
-
-	return
 }

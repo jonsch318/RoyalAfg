@@ -23,8 +23,11 @@ const RedisAddress = "redis_address"
 const RedisUsername = "redis_username"
 const RedisPassword = "redis_password"
 
-const MatchMakerJWTKey =  "matchmaker_signing_key"
+const StatusRedisAddress = "status_redis_address"
+const StatusRedisUsername = "status_redis_username"
+const StatusRedisPassword = "status_redis_password"
 
+const MatchMakerJWTKey = "matchmaker_signing_key"
 
 func RegisterDefaults() {
 

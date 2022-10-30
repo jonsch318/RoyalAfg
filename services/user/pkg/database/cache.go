@@ -11,18 +11,21 @@ import (
 
 func (db *UserDatabase) SetCache(user *models.User) error {
 	return db.userCache.Set(&cache.Item{
-		Ctx:            context.TODO(),
-		Key:            user.ID.Hex(),
-		Value:          user,
-		TTL:            time.Minute * 5,
+		Ctx:   context.TODO(),
+		Key:   user.ID.Hex(),
+		Value: user,
+		TTL:   time.Minute * 10,
 	})
 }
 
-func (db *UserDatabase) GetCache(id string) (*models.User, error) {
+func (db *UserDatabase) GetCache(id string) (*models.User, bool, error) {
 	user := new(models.User)
+	if !db.userCache.Exists(context.TODO(), id) {
+		return nil, false, nil
+	}
 	err := db.userCache.Get(context.TODO(), id, user)
 	if err != nil {
-		return nil, err
+		return nil, true, err
 	}
-	return user, nil
+	return user, true, nil
 }

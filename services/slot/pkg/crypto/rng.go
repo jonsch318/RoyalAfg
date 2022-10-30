@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/binary"
+	"math/rand"
 	"time"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
@@ -26,12 +27,17 @@ func NewVRFNumberGenerator(sk *ecdsa.PrivateKey, pk *ecdsa.PublicKey) *VRFNumber
 	}
 }
 
+func (v *VRFNumberGenerator) GenerateNumber(max int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(max)
+}
+
 // Generate
-func (v *VRFNumberGenerator) Generate() (alpha, beta, pi []byte, err error) {
+func (v *VRFNumberGenerator) Generate() (now int64, alpha, beta, pi []byte, err error) {
 
 	//Generate the alpha value
 	nowBytes := make([]byte, 8)
-	now := time.Now().UnixNano()
+	now = time.Now().UnixNano()
 	binary.LittleEndian.PutUint64(nowBytes, uint64(now))
 	alpha = append(nowBytes, v.seed...)
 
@@ -39,7 +45,7 @@ func (v *VRFNumberGenerator) Generate() (alpha, beta, pi []byte, err error) {
 	_, err = h.Write(alpha)
 
 	if err != nil {
-		return nil, nil, nil, err
+		return 0, nil, nil, nil, err
 	}
 
 	alpha = h.Sum(nil)

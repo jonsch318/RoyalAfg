@@ -6,13 +6,15 @@ import (
 )
 
 type UserHandler struct {
-	l  *zap.SugaredLogger
-	db database.IUserDB
+	l        *zap.SugaredLogger
+	db       database.IUserDB
+	statusDB database.IOnlineStatusDB
 }
 
-func NewUserHandler(logger *zap.SugaredLogger, database database.IUserDB) *UserHandler {
+func NewUserHandler(logger *zap.SugaredLogger, userDB database.IUserDB, statusDB database.IOnlineStatusDB) *UserHandler {
 	return &UserHandler{
-		l:  logger,
-		db: database,
+		l:        logger,
+		db:       userDB,
+		statusDB: statusDB,
 	}
 }

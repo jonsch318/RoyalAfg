@@ -6,17 +6,20 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	localconfig "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/crypto"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/database"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/handlers"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/logic"
 	"github.com/Kamva/mgm"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/urfave/negroni"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 func Start(logger *zap.SugaredLogger) {
@@ -55,6 +58,18 @@ func Start(logger *zap.SugaredLogger) {
 		return err
 	})
 
+	// ############### User Service Connection ################
+
+	conn, err := grpc.Dial(viper.GetString(localconfig.UserServiceURL), grpc.WithInsecure())
+
+	defer conn.Close()
+
+	if err != nil {
+		logger.Fatalw("Could not connect to user service", "error", err)
+	}
+
+	userServiceClient := protos.NewUserServiceClient(conn)
+
 	// ############### Crypto keys and rng ################
 
 	// Read crypto keys
@@ -67,7 +82,11 @@ func Start(logger *zap.SugaredLogger) {
 	// Create the crypto logic
 	rng := crypto.NewVRFNumberGenerator(privateKey, publicKey)
 
-	slotHandler := handlers.NewSlotServer(logger, rng)
+	// ############### Game Provider ################
+
+	gameProvider := logic.NewGameProvider(buffer, gameDatabase, rng)
+
+	slotHandler := handlers.NewSlotServer(logger, gameProvider, userServiceClient)
 
 	r := mux.NewRouter()
 
