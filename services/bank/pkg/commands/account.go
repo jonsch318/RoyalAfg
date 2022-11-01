@@ -26,11 +26,12 @@ type Withdraw struct {
 	Time    time.Time
 }
 
-type Backroll struct {
+type Rollback struct {
 	Amount  *money.Money
 	GameId  string //Identification of Game
 	RoundId string //Identification in which round
 	Time    time.Time
+	Reason  string
 }
 
 type DeleteBankAccount struct{}

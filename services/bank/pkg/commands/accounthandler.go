@@ -63,7 +63,7 @@ func (h *AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 		}
 
 		return h.repo.Save(item, ycq.Int(item.OriginalVersion()))
-	case *Backroll:
+	case *Rollback:
 		item, err := h.repo.Load(accountName, message.AggregateID())
 
 		if err != nil {
@@ -78,8 +78,14 @@ func (h *AccountCommandHandlers) Handle(message ycq.CommandMessage) error {
 		if prevEvents == nil {
 			//no local changes -> load from db
 			prev, err = h.LoadPrevCommand(item.AggregateID())
-
 		}
+		prev = helpers.ToGeneralTransactionParse(prevEvents[len(prevEvents)-1].(interface{}).(map[string]interface{}))
+
+		if err := item.Rollback(prev, cmd.Reason); err != nil {
+			return &ycq.ErrCommandExecution{Command: message, Reason: err.Error()}
+		}
+
+		return h.repo.Save(item, ycq.Int(item.OriginalVersion()))
 
 	default:
 		log.Printf("account command handler received a command that it cannot handle %v", cmd)
@@ -94,6 +100,7 @@ func (h *AccountCommandHandlers) LoadPrevCommand(aggregatId string) (*helpers.Ge
 	streamName, _ := h.accountRepo.StreamNameDelegate.GetStreamName(aggregateType, aggregatId)
 
 	stream := h.client.NewStreamReader(streamName)
+	lastEvent := make([]map[string]interface{}, 0)
 	for stream.Next() {
 		switch err := stream.Err().(type) {
 		case nil:
@@ -123,10 +130,12 @@ func (h *AccountCommandHandlers) LoadPrevCommand(aggregatId string) (*helpers.Ge
 			continue
 		}
 
-		event := helpers.ToGeneralTransactionParse(event)
-
-		return
-
+		lastEvent = append(lastEvent, event)
 	}
-	return nil, nil
+
+	if lastEvent == nil {
+		return nil, nil
+	}
+
+	return helpers.ToGeneralTransactionParse(lastEvent[len(lastEvent)-1]), nil
 }

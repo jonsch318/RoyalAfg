@@ -52,6 +52,10 @@ func (h *BankCommandHandler) Handle(d *amqp.Delivery) {
 			RoundId: cmd.Lobby,
 			Time:    cmd.Time,
 		}))
+	case bank.Rollback:
+		_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserId, &commands.Rollback{
+			Reason: cmd.Reason,
+		}))
 	}
 }
 
