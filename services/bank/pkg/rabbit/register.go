@@ -1,6 +1,8 @@
 package rabbit
 
 import (
+	"fmt"
+
 	ycq "github.com/jetbasrawi/go.cqrs"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
@@ -9,39 +11,31 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 )
 
-type Connections struct {
-	conn *amqp.Connection
-	ch   *amqp.Channel
+type RabbitMQBankClient struct {
+	conn      *amqp.Connection
+	consumers []*EventConsumer
+	ch        *amqp.Channel
 }
 
-func RegisterRabbitMqConsumers(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher ycq.Dispatcher, url string) (*Connections, error) {
-	logger.Infof("Connecting to rabbitmq url: %s", url)
+func NewRabbitMQBankClient(bus ycq.EventBus, dispatcher ycq.Dispatcher, url string) (*RabbitMQBankClient, error) {
+	client := &RabbitMQBankClient{}
 
 	conn, err := amqp.Dial(url)
 	if err != nil {
-		logger.Fatalw("Could not connect to RabbitMQ message broker", "error", err)
-		return nil, err
+		return nil, fmt.Errorf("could not connect to RabbitMQ message broker: %w", err)
 	}
 
 	ch, err := conn.Channel()
 	if err != nil {
-		logger.Fatalw("Could not connect to RabbitMQ channel", "error", err)
-		return nil, err
+		return nil, fmt.Errorf("could not connect to RabbitMQ channel: %w", err)
 	}
 
-	bankCommandHandler := NewBankCommandHandler(logger, bus, dispatcher)
-	bankConsumer, err := NewEventConsumer(logger, bus, dispatcher, conn, ch, viper.GetString(config.RabbitBankQueue), bankCommandHandler)
-
+	bankConsumer, err := NewEventConsumer(bus, dispatcher, conn, ch, viper.GetString(config.RabbitBankQueue), NewBankCommandHandler(bus, dispatcher))
 	if err != nil {
-		logger.Fatalw("bank queue could not be consumed.", "error", err)
-		return nil, err
+		return nil, fmt.Errorf("bank queue could not be consumed: %w", err)
 	}
 
-	go func() {
-		if err = bankConsumer.Start(); err != nil {
-			logger.Fatalw("Error during bank consuming", "error", err)
-		}
-	}()
+	client.consumers = append(client.consumers, bankConsumer)
 
 	authCommandHandler := NewAuthCommandHandler(logger, bus, dispatcher)
 	authConsumer, err := NewEventConsumer(logger, bus, dispatcher, conn, ch, viper.GetString(config.RabbitAccountQueue), authCommandHandler)
@@ -57,10 +51,16 @@ func RegisterRabbitMqConsumers(logger *zap.SugaredLogger, bus ycq.EventBus, disp
 		}
 	}()
 
-	return &Connections{
-		conn: conn,
-		ch:   ch,
-	}, nil
+}
+
+func (c *Connections) StartListening() {
+	for _, consumer := range c.consumers {
+	go func() {
+		if err = consumer.Start(); err != nil {
+			logger.Fatalw("error during consumption", "error", err)
+		}
+	}()
+
 }
 
 func (c *Connections) Close() {
