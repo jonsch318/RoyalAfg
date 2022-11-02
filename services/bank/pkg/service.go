@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	goes "github.com/jetbasrawi/go.geteventstore"
+	"github.com/EventStore/EventStore-Client-Go/esdb"
 	"github.com/slok/go-http-metrics/metrics/prometheus"
 	metricsMW "github.com/slok/go-http-metrics/middleware"
 	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
@@ -12,18 +12,12 @@ import (
 	"github.com/urfave/negroni"
 
 	"github.com/gorilla/mux"
-	ycq "github.com/jetbasrawi/go.cqrs"
 	"go.uber.org/zap"
 
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/serviceconfig"
 )
 
@@ -34,52 +28,26 @@ func Start(logger *zap.SugaredLogger) {
 	_ = viper.BindEnv(config.RabbitMQUsername)
 	_ = viper.BindEnv(config.RabbitMQPassword)
 
-	//Eventstore client config
-	eventStore, err := goes.NewClient(nil, viper.GetString(serviceconfig.EventstoreDbUrl))
+	//################ EventStore ################
+
+	eventStore, err := configEventStore()
 	if err != nil {
-		logger.Fatalw("Eventstore connection error", "error", err)
+		logger.Fatalw("Could not connect to eventstore", "error", err)
 	}
+	defer eventStore.Close()
 
-	//TODO: mongo
+	//################ RabbitMQ ################
 
-	//This service uses an internal event bus that is only accessible in only this instance of the bank service.
-	//this is acceptable because both the events (our single source of truth) are persisted in the eventstore db.
-	//So only a single instance receives the command and publishes the resulting event internally and handles the event internally.
-	//the result is then saved into the shared db.
-	eventBus := ycq.NewInternalEventBus()
-
-	//Repositories
-	repo, err := repositories.NewAccount(eventStore, eventBus)
-	if err != nil {
-		logger.Fatalw("account repo err", "error", err)
-	}
-
-	//Setup Read Model
-	accountBalanceQuery := projections.NewAccountBalanceQuery(repo)
-	accountHistoryQuery := projections.NewAccountHistoryQuery(repo, eventStore)
-
-	//Register Read Models with event bus
-	eventBus.AddHandler(accountBalanceQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
-	eventBus.AddHandler(accountHistoryQuery, &events.AccountCreated{}, &events.Deposited{}, &events.Withdrawn{})
-
-	//Command Handlers
-	accountCommandHandler := commands.NewAccountCommandHandlers(repo)
-	dispatcher := ycq.NewInMemoryDispatcher()
-	err = dispatcher.RegisterHandler(accountCommandHandler, &commands.CreateBankAccount{}, &commands.Deposit{}, &commands.Withdraw{})
-	if err != nil {
-		logger.Fatalw("Could not register handlers", "error", err)
-	}
-
-	//Configure RabbitMq Message Broker
-	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
-	rabbitConnections, err := rabbit.RegisterRabbitMqConsumers(logger, eventBus, dispatcher, rabbitURL)
-	if err != nil {
-		logger.Fatalw("Could not establish rabbitmq connection", "error", err)
-	}
 	defer rabbitConnections.Close()
 
+	//################ EventSourcing ################
+
+	//################ GRPC ################
+
+	//################ HTTP ################
+
 	//Create HTTP Handlers
-	accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
+	//accountHandler := handlers.NewAccountHandler(dispatcher, eventBus, accountBalanceQuery, accountHistoryQuery)
 
 	//Setup Routes
 	r := mux.NewRouter()
@@ -110,4 +78,22 @@ func Start(logger *zap.SugaredLogger) {
 
 	//Start
 	utils.StartGracefully(logger, server, viper.GetDuration(config.GracefulShutdownTimeout))
+}
+
+func configEventStore() (*esdb.Client, error) {
+	settings, err := esdb.ParseConnectionString(viper.GetString(serviceconfig.EventstoreDbUrl))
+
+	if err != nil {
+		return nil, err
+	}
+
+	settings.GossipTimeout = 5
+
+	return esdb.NewClient(settings)
+}
+
+func configRabbitMQ() (*rabbit.RabbitMQBankClient, error) {
+	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
+	return rabbit.RegisterRabbitMqConsumers(logger, eventBus, dispatcher, rabbitURL)
+
 }

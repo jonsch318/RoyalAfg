@@ -1,4 +1,4 @@
-package log
+package logging
 
 import (
 	"os"
@@ -9,7 +9,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-//NewLogger creates a new zap Logger using the standard encoders
+// NewLogger creates a new zap Logger using the standard encoders
 func NewLogger() *zap.SugaredLogger {
 	encodingConfig := zap.NewProductionEncoderConfig()
 

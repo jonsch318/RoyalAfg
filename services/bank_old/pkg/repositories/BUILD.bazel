@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "repositories",
+    srcs = [
+        "account.go",
+        "interfaces.go",
+        "memory.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/bank/pkg/aggregates",
+        "//services/bank/pkg/events",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_jetbasrawi_go_geteventstore//:go_geteventstore",
+    ],
+)

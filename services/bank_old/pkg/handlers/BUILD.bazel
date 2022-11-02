@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "handlers",
+    srcs = [
+        "account.go",
+        "balanceQuery.go",
+        "historyQuery.go",
+        "transactions.go",
+        "verify.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/currency",
+        "//pkg/dtos",
+        "//pkg/log",
+        "//pkg/mw",
+        "//pkg/responses",
+        "//services/bank/pkg/commands",
+        "//services/bank/pkg/projections",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)

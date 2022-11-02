@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "rabbit",
+    srcs = [
+        "auth.go",
+        "bank.go",
+        "rabbit.go",
+        "register.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/auth",
+        "//pkg/bank",
+        "//pkg/config",
+        "//pkg/currency",
+        "//pkg/dtos",
+        "//services/bank/pkg/commands",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_rhymond_go_money//:go-money",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_streadway_amqp//:amqp",
+        "@org_uber_go_zap//:zap",
+    ],
+)

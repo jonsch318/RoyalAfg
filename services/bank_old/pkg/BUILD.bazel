@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pkg",
+    srcs = ["service.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/config",
+        "//pkg/mw",
+        "//pkg/utils",
+        "//services/bank/pkg/commands",
+        "//services/bank/pkg/events",
+        "//services/bank/pkg/handlers",
+        "//services/bank/pkg/projections",
+        "//services/bank/pkg/rabbit",
+        "//services/bank/pkg/repositories",
+        "//services/bank/pkg/serviceconfig",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_jetbasrawi_go_geteventstore//:go_geteventstore",
+        "@com_github_slok_go_http_metrics//metrics/prometheus",
+        "@com_github_slok_go_http_metrics//middleware",
+        "@com_github_slok_go_http_metrics//middleware/negroni",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_urfave_negroni//:negroni",
+        "@org_uber_go_zap//:zap",
+    ],
+)

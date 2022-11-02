@@ -1,0 +1,44 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "dtos",
+    srcs = [
+        "balance.go",
+        "errors.go",
+        "history.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/currency",
+        "//pkg/dtos",
+        "//pkg/log",
+        "//services/bank/pkg/domain/aggregates",
+        "//services/bank/pkg/events",
+        "//services/bank/pkg/repositories",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_jetbasrawi_go_geteventstore//:go_geteventstore",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)
+
+go_library(
+    name = "projections",
+    srcs = [
+        "balance.go",
+        "history.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/currency",
+        "//pkg/dtos",
+        "//pkg/log",
+        "//services/bank/pkg/aggregates",
+        "//services/bank/pkg/events",
+        "//services/bank/pkg/repositories",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_jetbasrawi_go_geteventstore//:go_geteventstore",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)

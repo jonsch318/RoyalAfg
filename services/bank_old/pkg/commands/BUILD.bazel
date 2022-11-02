@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "commands",
+    srcs = [
+        "account.go",
+        "accounthandler.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/bank/pkg/aggregates",
+        "//services/bank/pkg/repositories",
+        "@com_github_jetbasrawi_go_cqrs//:go_cqrs",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)
