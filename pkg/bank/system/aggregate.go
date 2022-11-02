@@ -5,5 +5,14 @@ type IAggregate interface {
 	GetVersion() int
 	Apply(event IEvent[any], isNew bool)
 	GetChanges() []IEvent[any]
-	CleearChanges()
+	ClearChanges()
+}
+
+type ICreatableAggregate interface {
+	GetId() string
+	GetVersion() int
+	Apply(event IEvent[any], isNew bool)
+	GetChanges() []IEvent[any]
+	ClearChanges()
+	CreateFromEvents(events []IEvent[any])
 }

@@ -1,7 +1,11 @@
 package system
 
+type IEventParser[E any] interface {
+	Parse(*E) (IEvent[any], error)
+}
+
 type IEvent[T any] interface {
-	GetDat() T
+	GetData() T
 	GetAggregatId() string
 }
 
@@ -10,7 +14,7 @@ type Event[T any] struct {
 	Data       T
 }
 
-func (e *Event[T]) GetDat() T {
+func (e *Event[T]) GetData() T {
 	return e.Data
 }
 

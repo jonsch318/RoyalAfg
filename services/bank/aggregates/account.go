@@ -28,6 +28,12 @@ func NewAccountFromEvents(events []system.IEvent[any]) *Account {
 	return a
 }
 
+func (a *Account) InitAggregate(events []system.IEvent[any]) {
+	for _, e := range events {
+		a.Apply(e, false)
+	}
+}
+
 func (a *Account) GetId() string {
 	return a.id
 }
@@ -49,8 +55,8 @@ func (a *Account) InitAccount() {
 	a.version = 1
 }
 
-func (a *Account) Apply(event system.Event[any], isNew bool) {
-	switch e := event.GetDat().(type) {
+func (a *Account) Apply(event system.IEvent[any], isNew bool) {
+	switch e := event.GetData().(type) {
 	//account creation
 	case events.AccountCreated:
 		a.holderId = e.HolderId
