@@ -2,6 +2,7 @@ package system
 
 type IAggregate interface {
 	GetId() string
+	GetType() string
 	GetVersion() int
 	Apply(event IEvent[any], isNew bool)
 	GetChanges() []IEvent[any]
@@ -10,6 +11,7 @@ type IAggregate interface {
 
 type ICreatableAggregate interface {
 	GetId() string
+	GetType() string
 	GetVersion() int
 	Apply(event IEvent[any], isNew bool)
 	GetChanges() []IEvent[any]
