@@ -33,7 +33,7 @@ const PlaySlot: React.FC<PlaySlotProps> = ({ game, onError }) => {
                     return <SlotWheel number={num} key={i} order={i} started={tr} />;
                 })*/}
             </motion.div>
-            <PlayButton onClick={play}></PlayButton>
+            <PlayButton disabled={false} onClick={play}></PlayButton>
         </div>
     );
 };
