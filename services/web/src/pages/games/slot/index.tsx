@@ -13,7 +13,7 @@ const Slot: FC = () => {
     return (
         <Layout disableFooter>
             <motion.h1 initial={{ scale: 0.5 }} animate={{ scale: 1 }} exit={{ scale: 0 }} className="font-bold text-5xl text-center my-8 mx-4">
-                Slot Machine
+                Slot Machine (Not yet ready)
             </motion.h1>
             <motion.div
                 initial={{ scale: 0.35 }}
