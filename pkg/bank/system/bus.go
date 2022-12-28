@@ -2,71 +2,60 @@ package system
 
 import "github.com/JohnnyS318/RoyalAfgInGo/pkg/logging"
 
-//CommandBus is the central command bus
-type ICommandBus interface {
-	Dispatch(command ICommand) error
-	Subscribe(commandType string, handler ICommandHandler)
+type IHandler interface {
+	Handle(any)
 }
 
-type ICommandHandler interface {
-	Handle(command ICommand) error
+type ISubcribable interface {
+	SubscriptionName() comparable
 }
 
-type IEventBus interface {
-	Publish(event IEvent[any])
-	Subscribe(handler IEventHandler[any]) error
+type Bus[I comparable] struct {
+	handlers map[I][]IHandler
 }
 
-type IEventHandler[T any] interface {
-	Handle(event IEvent[T])
-	HandleEventType(string) bool
-}
-
-type CommandBus struct {
-	handlers map[string][]ICommandHandler
-}
-
-func NewCommandBus() *CommandBus {
-	return &CommandBus{
-		handlers: make(map[string][]ICommandHandler),
+func NewBus[I comparable]() *Bus[I] {
+	return &Bus[I]{
+		handlers: make(map[I][]IHandler),
 	}
 }
 
-//Dispatch a command to the command bus
-func (cmdBus *CommandBus) Dispatch(command ICommand) {
-	handlers, ok := cmdBus.handlers[command.GetType()]
+func (b *Bus[I]) Sub(to I, handler IHandler) {
+	handlers, ok := b.handlers[to]
 	if !ok {
-		logging.Logger.Debugf("No handler for command %s found", command.GetType())
-	}
-	for _, h := range handlers {
-		if err := h.Handle(command); err != nil {
-			logging.Logger.Errorf("Error handling command %s: %s", command.GetType(), err.Error())
+		handlers = []IHandler{
+			handler,
 		}
-	}
-}
-
-//Subscribe a command handler to a command type
-func (cmdBus *CommandBus) Subscribe(commandType string, handler ICommandHandler) {
-	handlers, ok := cmdBus.handlers[commandType]
-	if !ok {
-		handlers = []ICommandHandler{}
+		b.handlers[to] = handlers
 	}
 	handlers = append(handlers, handler)
-	cmdBus.handlers[commandType] = handlers
+	b.handlers[to] = handlers
 }
 
-type EventBus struct {
+func (b *Bus[I]) Pub(to I, event any) {
+	handlers, ok := b.handlers[to]
+	if !ok {
+		logging.Logger.Debugf("No handler for event %s found", to)
+	}
+	for _, h := range handlers {
+		h.Handle(to)
+	}
+}
+
+}
+
+type InternalEventBus struct {
 	handlers []IEventHandler[any]
 }
 
-func NewEventBus() *EventBus {
-	return &EventBus{
+func NewInternalEventBus() *InternalEventBus {
+	return &InternalEventBus{
 		handlers: make([]IEventHandler[any], 0),
 	}
 }
 
 //Publish an event to the event bus
-func (evBus *EventBus) Publish(event IEvent[any]) {
+func (evBus *InternalEventBus) Publish(event IEvent[any]) {
 	if evBus.handlers == nil {
 		logging.Logger.Debugf("No handler for event %s found", event.GetType())
 	}
@@ -80,7 +69,7 @@ func (evBus *EventBus) Publish(event IEvent[any]) {
 	}
 }
 
-func (evBus *EventBus) Subscribe(handler IEventHandler[any]) error {
+func (evBus *InternalEventBus) Subscribe(handler IEventHandler[any]) error {
 	evBus.handlers = append(evBus.handlers, handler)
 	return nil
 }

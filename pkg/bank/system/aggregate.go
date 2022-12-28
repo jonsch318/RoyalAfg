@@ -9,12 +9,6 @@ type IAggregate interface {
 	ClearChanges()
 }
 
-type ICreatableAggregate interface {
-	GetId() string
-	GetType() string
-	GetVersion() int
-	Apply(event IEvent[any], isNew bool)
-	GetChanges() []IEvent[any]
-	ClearChanges()
-	CreateFromEvents(events []IEvent[any])
+type IAggregateFactory[T IAggregate] interface {
+	Create([]IEvent[any]) (T, error)
 }

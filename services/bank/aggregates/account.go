@@ -7,6 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type AccountFactory struct{}
+
+func (af *AccountFactory) Create(events []system.IEvent[any]) (*Account, error) {
+	a := NewAccountFromEvents(events)
+	return a, nil
+}
+
 type Account struct {
 	//aggregate fields
 	id      string
@@ -23,31 +30,29 @@ type Account struct {
 func NewAccountFromEvents(events []system.IEvent[any]) *Account {
 	a := &Account{}
 	for _, e := range events {
-		a.Apply(e)
+		a.Apply(e, false)
 	}
 	return a
 }
 
-func (a *Account) InitAggregate(events []system.IEvent[any]) {
-	for _, e := range events {
-		a.Apply(e, false)
-	}
-}
-
-func (a *Account) GetId() string {
+func (a Account) GetId() string {
 	return a.id
 }
 
-func (a *Account) GetVersion() int {
+func (a Account) GetVersion() int {
 	return a.version
 }
 
-func (a *Account) GetChanges() []system.IEvent[any] {
+func (a Account) GetChanges() []system.IEvent[any] {
 	return a.changes
 }
 
 func (a *Account) ClearChanges() {
 	a.changes = []system.IEvent[any]{}
+}
+
+func (a *Account) GetType() string {
+	return "Account"
 }
 
 func (a *Account) InitAccount() {
@@ -72,8 +77,12 @@ func (a *Account) Apply(event system.IEvent[any], isNew bool) {
 	case events.Withdrawn:
 		a.balance, _ = a.balance.Subtract(e.Amount)
 
-	case events.Backroll:
-		a.balance
+	case events.RolledBack:
+		if e.Withdraw {
+			a.balance, _ = a.balance.Subtract(e.Amount)
+		} else {
+			a.balance, _ = a.balance.Add(e.Amount)
+		}
 	}
 	if isNew {
 		a.version++

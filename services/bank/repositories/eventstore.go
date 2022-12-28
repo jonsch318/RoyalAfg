@@ -12,20 +12,23 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type EventStoreRepository[T system.ICreatableAggregate] struct {
+// Repository for Aggregate T with eventstore as it's backend
+type EventStoreRepository[T system.IAggregate] struct {
 	client      *esdb.Client
-	eventParser system.IEventParser[esdb.RecordedEvent]
+	eventParser system.IEventParser[*esdb.RecordedEvent]
+	factory     system.IAggregateFactory[T]
 }
 
-func NewEventStoreRepository[T system.ICreatableAggregate](client *esdb.Client, eventParser system.IEventParser[esdb.RecordedEvent]) *EventStoreRepository[T] {
+func NewEventStoreRepository[T system.IAggregate](client *esdb.Client, eventParser system.IEventParser[*esdb.RecordedEvent], factory system.IAggregateFactory[T]) *EventStoreRepository[T] {
 	esr := &EventStoreRepository[T]{
 		client:      client,
 		eventParser: eventParser,
+		factory:     factory,
 	}
 	return esr
 }
 
-func (esr *EventStoreRepository[T]) Load(ctx context.Context, id string) (*T, error) {
+func (esr *EventStoreRepository[T]) Load(ctx context.Context, id string) (T, error) {
 	ropt := esdb.ReadStreamOptions{
 		From:      esdb.Start{},
 		Direction: esdb.Forwards,
@@ -38,8 +41,6 @@ func (esr *EventStoreRepository[T]) Load(ctx context.Context, id string) (*T, er
 	}
 
 	defer stream.Close()
-
-	var aggregate T
 
 	events := make([]system.IEvent[any], 0)
 
@@ -55,11 +56,16 @@ func (esr *EventStoreRepository[T]) Load(ctx context.Context, id string) (*T, er
 		}
 
 		event, err := esr.eventParser.Parse(rawEvent.Event)
-		events = append(events, event)
+		events = append(events, *event)
 	}
-	aggregate.CreateFromEvents(events)
 
-	return &aggregate, nil
+	aggregate, err := esr.factory.Create(events)
+
+	if err != nil {
+		return nil, fmt.Errorf("error creating aggregate (SHOULD NEVER HAPPEN): %w", err)
+	}
+
+	return aggregate, nil
 }
 
 func (esr *EventStoreRepository[T]) Save(ctx context.Context, aggregate T) error {
@@ -96,7 +102,7 @@ func (esr *EventStoreRepository[T]) Delete(ctx context.Context, id string) error
 	return err
 }
 
-func generateMetadata[T system.ICreatableAggregate](aggregate T) []byte {
+func generateMetadata[T system.IAggregate](aggregate T) []byte {
 	metadata := make(map[string]interface{})
 	metadata["aggregateType"] = aggregate.GetType()
 	metadata["aggregateId"] = aggregate.GetId()

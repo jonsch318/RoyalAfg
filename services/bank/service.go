@@ -1,14 +1,17 @@
-package bank
+package main
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank/system"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/logging"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/aggregates"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/events"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/serviceconfig"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/repositories"
 	"github.com/gorilla/mux"
@@ -23,22 +26,41 @@ func StartService() {
 	_ = viper.BindEnv(config.RabbitMQUsername)
 	_ = viper.BindEnv(config.RabbitMQPassword)
 
+	//init eventsourcing framework
+
+	// Write models
+	//- Add eventbus
+	//- Add commandbus
+	//- Add commandbus handlers
+
+	// Read models
+	//- Add eventbus handlers
+	//- Add queryprocessor
+	//- Add 
+
 	//################ EventStore ################
 
 	eventStore, err := configEventStore()
 	if err != nil {
-		logger.Fatalw("Could not connect to eventstore", "error", err)
+		logging.Logger.Fatalw("Could not connect to eventstore", "error", err)
 	}
 	defer eventStore.Close()
 
 	//################ RabbitMQ ################
 
-	defer rabbitConnections.Close()
+	rabbitConn, err := configRabbitMQ()
+
+	defer rabbitConn.Close()
 
 	//################ EventSourcing ################
 
 	//Repositories
-	repo, err := repositories.NewEventStoreRepository[aggregates.Account](eventStore)
+	eventParser := events.AccountEventParser{}
+	factory := &aggregates.AccountFactory{}
+	repo := repositories.NewEventStoreRepository[*aggregates.Account](eventStore, &eventParser, factory)
+
+	//Eventbus
+	eventBus := system.NewInternalEventBus()
 
 	//################ GRPC ################
 
@@ -94,4 +116,18 @@ func configRabbitMQ() (*rabbit.RabbitMQBankClient, error) {
 	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s", viper.GetString(config.RabbitMQUsername), viper.GetString(config.RabbitMQPassword), viper.GetString(config.RabbitMQUrl))
 	return rabbit.RegisterRabbitMqConsumers(logger, eventBus, dispatcher, rabbitURL)
 
+}
+
+func configureCQRS() (system.InternalCommandBus, system.InternalEventBus, error) {
+	//CQRS
+	eventBus := system.NewInternalEventBus()
+	commandBus := system.NewInternalCommandBus()
+
+	//Register Commands
+	commandBus.Subscribe(&commands.CreateAccount{}, accountHandler.CreateAccount)
+	dispatcher.RegisterHandler(&commands.CreateAccount{}, accountHandler.CreateAccount)
+	dispatcher.RegisterHandler(&commands.Deposit{}, accountHandler.Deposit)
+	dispatcher.RegisterHandler(&commands.Withdraw{}, accountHandler.Withdraw)
+
+	return dispatcher, eventBus, nil
 }

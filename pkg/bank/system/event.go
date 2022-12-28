@@ -2,8 +2,8 @@ package system
 
 import "encoding/json"
 
-type IEventParser[E any] interface {
-	Parse(*E) (IEvent[any], error)
+type IEventParser[T any] interface {
+	Parse(event T) (*IEvent[any], error)
 }
 
 type IEvent[T any] interface {

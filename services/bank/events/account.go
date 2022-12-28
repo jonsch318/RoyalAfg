@@ -3,9 +3,17 @@ package events
 import (
 	"time"
 
+	"github.com/EventStore/EventStore-Client-Go/esdb"
+	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank/system"
 	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/payment"
 	"github.com/Rhymond/go-money"
 )
+
+type AccountEventParser struct{}
+
+func (a *AccountEventParser) Parse(event *esdb.RecordedEvent) (*system.IEvent[any], error) {
+	return nil, nil
+}
 
 type AccountCreated struct {
 	HolderId   string
@@ -38,7 +46,7 @@ type RolledBack struct {
 	GameId                  string       // The game that the rollback is for if any
 	RoundId                 string       // The round that was rolled back if any
 	Time                    time.Time    // Time of the rollback
-	Type                    bool         // true = rollback, false = refund
+	Withdraw                bool         // true = rollback (withdraw), false = refund (deposit)
 	Reason                  string       //Reason for the rollback
 	RolledBackTransactionId string       // The transaction id of the transaction that was rolled back
 	PaymentInfo             payment.PaymentInfo
