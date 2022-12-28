@@ -10,6 +10,7 @@
         "format": "prettier --write . --config ./.prettierrc"
     },
     "dependencies": {
+        "@babel/core": "7.0.0",
         "@date-io/core": "^2.10.7",
         "@date-io/date-fns": "1.x",
         "@date-io/dayjs": "^2.16.0",
