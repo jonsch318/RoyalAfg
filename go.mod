@@ -32,6 +32,7 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/negroni v1.0.0
+	github.com/vechain/go-ecvrf v0.0.0-20220525125849-96fa0442e765
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
@@ -97,7 +98,6 @@ require (
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tidwall/pretty v1.0.1 // indirect
-	github.com/vechain/go-ecvrf v0.0.0-20220525125849-96fa0442e765 // indirect
 	github.com/vmihailenco/bufpool v0.1.11 // indirect
 	github.com/vmihailenco/go-tinylfu v0.2.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.1.0 // indirect
@@ -111,7 +111,7 @@ require (
 	golang.org/x/exp v0.0.0-20201221025956-e89b829e73ea // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210816183151-1e6c022a8912 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
