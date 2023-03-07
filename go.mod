@@ -32,6 +32,7 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/urfave/negroni v1.0.0
+	github.com/vechain/go-ecvrf v0.0.0-20220525125849-96fa0442e765
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
@@ -63,7 +64,7 @@ require (
 	github.com/go-openapi/swag v0.19.13 // indirect
 	github.com/go-openapi/validate v0.20.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -97,7 +98,6 @@ require (
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tidwall/pretty v1.0.1 // indirect
-	github.com/vechain/go-ecvrf v0.0.0-20220525125849-96fa0442e765 // indirect
 	github.com/vmihailenco/bufpool v0.1.11 // indirect
 	github.com/vmihailenco/go-tinylfu v0.2.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.1.0 // indirect
