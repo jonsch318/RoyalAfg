@@ -2,10 +2,14 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "models",
-    srcs = ["user.go"],
+    srcs = [
+        "slotGame.go",
+        "user.go",
+    ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/models",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/user",
         "@com_github_go_ozzo_ozzo_validation//:ozzo-validation",
         "@com_github_go_ozzo_ozzo_validation//is",
         "@com_github_kamva_mgm//:mgm",

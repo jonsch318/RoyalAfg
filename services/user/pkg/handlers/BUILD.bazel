@@ -7,6 +7,7 @@ go_library(
         "get_user.go",
         "handler.go",
         "update_user.go",
+        "user_status.go",
     ],
     importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers",
     visibility = ["//visibility:public"],

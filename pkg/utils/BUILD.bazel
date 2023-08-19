@@ -4,6 +4,7 @@ go_library(
     name = "utils",
     srcs = [
         "grpc.go",
+        "httpUtils.go",
         "httpserver.go",
         "mongo.go",
     ],

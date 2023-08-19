@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "logic",
+    srcs = [
+        "bank.go",
+        "game_provider.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/logic",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/models",
+        "//services/slot/pkg/crypto",
+        "//services/slot/pkg/database",
+        "//services/slot/pkg/statistics",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)

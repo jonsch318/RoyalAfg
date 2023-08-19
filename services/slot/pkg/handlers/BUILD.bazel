@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "handlers",
+    srcs = [
+        "crypto.go",
+        "slot.go",
+        "spin.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/handlers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/bank",
+        "//pkg/dtos",
+        "//pkg/models",
+        "//pkg/mw",
+        "//pkg/protos",
+        "//pkg/responses",
+        "//pkg/user",
+        "//pkg/utils",
+        "//services/slot/pkg/crypto",
+        "//services/slot/pkg/logic",
+        "@org_uber_go_zap//:zap",
+    ],
+)

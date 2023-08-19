@@ -4,6 +4,7 @@ go_library(
     name = "servers",
     srcs = [
         "get_user.go",
+        "get_user_status.go",
         "save_user.go",
         "update_user.go",
         "user.go",

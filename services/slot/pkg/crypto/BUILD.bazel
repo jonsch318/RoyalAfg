@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "crypto",
+    srcs = [
+        "constants.go",
+        "keys.go",
+        "rng.go",
+    ],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/crypto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/errors",
+        "@com_github_vechain_go_ecvrf//:go-ecvrf",
+    ],
+)

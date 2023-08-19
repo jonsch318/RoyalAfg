@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "helpers",
+    srcs = ["events.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/helpers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/bank/pkg/events",
+        "@com_github_rhymond_go_money//:go-money",
+    ],
+)

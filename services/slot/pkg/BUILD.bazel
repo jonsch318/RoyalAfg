@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "pkg",
+    srcs = ["service.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/bank",
+        "//pkg/config",
+        "//pkg/models",
+        "//pkg/mw",
+        "//pkg/protos",
+        "//pkg/utils",
+        "//services/slot/pkg/config",
+        "//services/slot/pkg/crypto",
+        "//services/slot/pkg/database",
+        "//services/slot/pkg/handlers",
+        "//services/slot/pkg/logic",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_kamva_mgm//:mgm",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_urfave_negroni//:negroni",
+        "@org_golang_google_grpc//:grpc",
+        "@org_mongodb_go_mongo_driver//mongo/options",
+        "@org_uber_go_zap//:zap",
+    ],
+)

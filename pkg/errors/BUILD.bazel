@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "auth.go",
         "bank.go",
+        "crypto.go",
         "poker.go",
         "pokerMatchmaker.go",
         "rabbit.go",

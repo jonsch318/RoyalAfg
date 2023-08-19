@@ -33,5 +33,5 @@ container_push(
     image = ":royalafg_auth",
     registry = "index.docker.io",
     repository = "johnnys318/royalafg_auth",
-    tag = "latest",
+    tag = "dev",
 )
