@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/dto"
+	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/dto"
 )
 
 type GameSearch interface {
