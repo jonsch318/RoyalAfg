@@ -53,8 +53,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_andybalholm_brotli",
         importpath = "github.com/andybalholm/brotli",
-        sum = "h1:JKnhI/XQ75uFBTiuzXpzFrUriDPiZjlOSzh6wXogP0E=",
-        version = "v1.0.2",
+        sum = "h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=",
+        version = "v1.0.5",
     )
 
     go_repository(
@@ -883,6 +883,13 @@ def go_dependencies():
         version = "v0.0.0-20210331224755-41bb18bfe9da",
     )
     go_repository(
+        name = "com_github_golang_jwt_jwt_v4",
+        importpath = "github.com/golang-jwt/jwt/v4",
+        sum = "h1:7cYmW1XlMY7h7ii7UhUyChSgS5wUJEnm9uZVTGqOWzg=",
+        version = "v4.5.0",
+    )
+
+    go_repository(
         name = "com_github_golang_mock",
         importpath = "github.com/golang/mock",
         sum = "h1:ErTB+efbowRARo13NNdxyJji2egdxLGQhRaY+DUumQc=",
@@ -909,12 +916,14 @@ def go_dependencies():
     )
     go_repository(
         name = "com_github_google_gnostic",
+        build_file_proto_mode = "disable",
         importpath = "github.com/google/gnostic",
         sum = "h1:FhTMOKj2VhjpouxvWJAV1TL304uMlb9zcDqkl6cEI54=",
         version = "v0.5.7-v3refs",
     )
     go_repository(
         name = "com_github_google_gnostic_models",
+        build_file_proto_mode = "disable",
         importpath = "github.com/google/gnostic-models",
         sum = "h1:yo/ABAfM5IMRsS1VnXjTBvUb61tFIHozhlYvRgGre9I=",
         version = "v0.6.8",
@@ -967,8 +976,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_google_uuid",
         importpath = "github.com/google/uuid",
-        sum = "h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=",
-        version = "v1.3.0",
+        sum = "h1:KjJaJ9iWZ3jOFZIf1Lqf4laDRCasjl0BCmnEGxkdLb4=",
+        version = "v1.3.1",
     )
     go_repository(
         name = "com_github_googleapis_enterprise_certificate_proxy",
@@ -1523,6 +1532,13 @@ def go_dependencies():
         sum = "h1:mmDVorXM7PCGKw94cs5zkfA9PSy5pEvNWRP0ET0TIVo=",
         version = "v1.0.4",
     )
+    go_repository(
+        name = "com_github_meilisearch_meilisearch_go",
+        importpath = "github.com/meilisearch/meilisearch-go",
+        sum = "h1:xIp+8YWterHuDvpdYlwQ4Qp7im3JlRHmSKiP0NvjyXs=",
+        version = "v0.25.0",
+    )
+
     go_repository(
         name = "com_github_mennanov_fmutils",
         importpath = "github.com/mennanov/fmutils",
@@ -2145,8 +2161,8 @@ def go_dependencies():
     go_repository(
         name = "com_github_valyala_fasthttp",
         importpath = "github.com/valyala/fasthttp",
-        sum = "h1:lrauRLII19afgCs2fnWRJ4M5IkV0lo2FqA61uGkNBfE=",
-        version = "v1.31.0",
+        sum = "h1:oJWvHb9BIZToTQS3MuQ2R3bJZiNSa2KiNdeI8A+79Tc=",
+        version = "v1.48.0",
     )
 
     go_repository(
@@ -2155,6 +2171,13 @@ def go_dependencies():
         sum = "h1:TVEnxayobAdVkhQfrfes2IzOB6o+z4roRkPF52WA1u4=",
         version = "v1.2.1",
     )
+    go_repository(
+        name = "com_github_valyala_tcplisten",
+        importpath = "github.com/valyala/tcplisten",
+        sum = "h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVSA8=",
+        version = "v1.0.0",
+    )
+
     go_repository(
         name = "com_github_vechain_go_ecvrf",
         importpath = "github.com/vechain/go-ecvrf",
@@ -3394,20 +3417,20 @@ def go_dependencies():
     go_repository(
         name = "org_golang_google_genproto",
         importpath = "google.golang.org/genproto",
-        sum = "h1:Iveh6tGCJkHAjJgEqUQYGDGgbwmhjoAOz8kO/ajxefY=",
-        version = "v0.0.0-20230815205213-6bfd019c3878",
+        sum = "h1:zv6ieVm8jNcN33At1+APsRISkRgynuWUxUhv6G123jY=",
+        version = "v0.0.0-20230821184602-ccc8af3d0e93",
     )
     go_repository(
         name = "org_golang_google_genproto_googleapis_api",
         importpath = "google.golang.org/genproto/googleapis/api",
-        sum = "h1:WGq4lvB/mlicysM/dUT3SBvijH4D3sm/Ny1A4wmt2CI=",
-        version = "v0.0.0-20230815205213-6bfd019c3878",
+        sum = "h1:v4jF/cZj3rPjpsS7a+TEb8RofwMmPnfn+QiPkDyduDA=",
+        version = "v0.0.0-20230821184602-ccc8af3d0e93",
     )
     go_repository(
         name = "org_golang_google_genproto_googleapis_rpc",
         importpath = "google.golang.org/genproto/googleapis/rpc",
-        sum = "h1:lv6/DhyiFFGsmzxbsUUTOkN29II+zeWHxvT8Lpdxsv0=",
-        version = "v0.0.0-20230815205213-6bfd019c3878",
+        sum = "h1:OpqhBqmDJdwQbcZeN2G+wAjNq6xnmZHrmS+//OOUxT8=",
+        version = "v0.0.0-20230821184602-ccc8af3d0e93",
     )
 
     go_repository(

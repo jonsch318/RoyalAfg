@@ -6,10 +6,10 @@ go_library(
         "examples.go",
         "gameSearch.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search/pkg/services",
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/services",
     visibility = ["//visibility:public"],
     deps = [
-        "//services/search/pkg/dto",
+        "//services/search-elastic/pkg/dto",
         "@com_github_elastic_go_elasticsearch_v8//:go-elasticsearch",
         "@org_uber_go_zap//:zap",
     ],

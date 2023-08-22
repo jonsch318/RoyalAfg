@@ -10,14 +10,14 @@ import (
 )
 
 func DoSignal() {
-	stop := signals.NewStopChannel()
-	<-stop
-	log.Println("Exit signal received. Shutting down")
-	os.Exit(0)
+	signals.NewSigTermHandler(func() {
+		log.Println("Exit signal received. Shutting down")
+		os.Exit(0)
+	})
 }
 
 func DoHealthPing(sdk *sdk.SDK, stop <-chan struct{}) {
-	tick := time.Tick(15 * time.Second)
+	ticker := time.NewTicker(15 * time.Second)
 	for {
 		log.Print("Health Ping")
 		err := sdk.Health()
@@ -26,9 +26,10 @@ func DoHealthPing(sdk *sdk.SDK, stop <-chan struct{}) {
 		}
 		select {
 		case <-stop:
+			ticker.Stop()
 			log.Println("Stop health ping")
 			return
-		case <-tick:
+		case <-ticker.C:
 		}
 	}
 }

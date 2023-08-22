@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sort"
@@ -22,12 +23,12 @@ func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {
 		return nil, errors.New("no registered buy in classes")
 	}
 
-	gameserver, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+	gameserver, err := m.agonesClient.AgonesV1().GameServers("default").List(context.Background(), metav1.ListOptions{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
 		},
-		LabelSelector:       fmt.Sprintf("game=poker, class-index=%v", class),
+		LabelSelector: fmt.Sprintf("game=poker, class-index=%v", class),
 	})
 
 	if err != nil {
@@ -64,7 +65,6 @@ func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {
 	return lobbies, nil
 }
 
-//
 func biasForX(i, x int) int {
 	if i > x {
 		return 2*x - i

@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -17,7 +18,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
 )
 
-//NewLobby allocates a new GameServer for a new RoundId
+// NewLobby allocates a new GameServer for a new RoundId
 func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 
 	if classIndex < 0 || classIndex >= len(m.classes) {
@@ -44,11 +45,13 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 			Namespace: "default",
 		},
 		Spec: allocationv1.GameServerAllocationSpec{
-			Required: v1.LabelSelector{
-				MatchLabels: map[string]string{
-					"game": "poker",
+			Required: allocationv1.GameServerSelector{
+				LabelSelector: v1.LabelSelector{
+					MatchLabels: map[string]string{
+						"game": "poker",
+					},
+					MatchExpressions: nil,
 				},
-				MatchExpressions: nil,
 			},
 			Preferred: nil,
 			MetaPatch: allocationv1.MetaPatch{
@@ -57,7 +60,7 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 			},
 		}}
 
-	allocationResponse, err := gsa.GameServerAllocations("default").Create(alloc)
+	allocationResponse, err := gsa.GameServerAllocations("default").Create(context.Background(), alloc, v1.CreateOptions{})
 
 	m.logger.Warnw("Allocation", "error", err, "lobbyId", id)
 
@@ -68,8 +71,6 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	if allocationResponse.Status.GameServerName == "" || len(allocationResponse.Status.Ports) <= 0 {
 		return nil, errors.New("no new server can be allocated")
 	}
-
-
 
 	m.lobbies[classIndex] = append(m.lobbies[classIndex], models.LobbyBase{
 		LobbyID:     id,
@@ -82,14 +83,13 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 	addr := allocationResponse.Status.Address
 
 	for _, address := range addresses {
-		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, allocationResponse.Status.Ports[0].Port)) ; err2 == nil {
+		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, allocationResponse.Status.Ports[0].Port)); err2 == nil {
 			log.Logger.Debugf("Poker Address found of addresses %v => %v", addresses, address)
 			addr = address
 			break
 		}
 		log.Logger.Warnf("Poker Address was not valid %v => %v", addresses, address)
 	}
-
 
 	return &TicketRequestResult{
 		Address: fmt.Sprintf("%s:%v", addr, allocationResponse.Status.Ports[0].Port),
@@ -100,7 +100,7 @@ func (m *Manager) NewLobby(classIndex int) (*TicketRequestResult, error) {
 const idLength = 7
 const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-//newID generates a new ID for a new RoundId. RoundId ID are composed of letters for easy share.
+// newID generates a new ID for a new RoundId. RoundId ID are composed of letters for easy share.
 func newID() string {
 	rand.Seed(time.Now().UnixNano())
 	sb := strings.Builder{}

@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "search_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/config",
+        "//pkg/log",
+        "//services/search/config",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_meilisearch_meilisearch_go//:meilisearch-go",
+        "@com_github_spf13_viper//:viper",
+    ],
+)
+
+go_binary(
+    name = "search",
+    embed = [":search_lib"],
+    visibility = ["//visibility:public"],
+)

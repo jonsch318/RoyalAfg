@@ -22,6 +22,26 @@ go_library(
 
 go_binary(
     name = "search",
-    embed = [":search_lib"],
+    embed = [":search-elastic_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "search-elastic_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//pkg/config",
+        "//pkg/log",
+        "//pkg/mw",
+        "//pkg/utils",
+        "//services/search-elastic/pkg/handlers",
+        "//services/search-elastic/pkg/serviceconfig",
+        "//services/search-elastic/pkg/services",
+        "@com_github_elastic_go_elasticsearch_v8//:go-elasticsearch",
+        "@com_github_gorilla_mux//:mux",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_urfave_negroni//:negroni",
+    ],
 )

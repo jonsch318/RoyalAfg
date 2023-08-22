@@ -15,13 +15,14 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/cache/v8 v8.4.4
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/jetbasrawi/go.cqrs v0.0.0-20190206233932-e4d812d57f09
 	github.com/jetbasrawi/go.geteventstore v1.0.0
+	github.com/meilisearch/meilisearch-go v0.25.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/prometheus/client_golang v1.16.0
@@ -83,7 +84,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattbaird/jsonpatch v0.0.0-20230413205102-771768614e91 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/meilisearch/meilisearch-go v0.25.0 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -121,9 +121,9 @@ require (
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20230815205213-6bfd019c3878 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20230815205213-6bfd019c3878 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230815205213-6bfd019c3878 // indirect
+	google.golang.org/genproto v0.0.0-20230821184602-ccc8af3d0e93 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20230821184602-ccc8af3d0e93 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230821184602-ccc8af3d0e93 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

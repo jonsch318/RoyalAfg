@@ -1,6 +1,7 @@
 package lobby
 
 import (
+	"context"
 	"encoding/json"
 	fmt "fmt"
 	"io/ioutil"
@@ -14,7 +15,7 @@ import (
 )
 
 func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
-	list, err := m.agonesClient.AgonesV1().GameServers("default").List(metav1.ListOptions{
+	list, err := m.agonesClient.AgonesV1().GameServers("default").List(context.Background(), metav1.ListOptions{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "agones.dev/v1",
 			APIVersion: "GameServer",
