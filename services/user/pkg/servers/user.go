@@ -12,13 +12,13 @@ import (
 type UserServer struct {
 	protos.UnimplementedUserServiceServer
 	l        *zap.SugaredLogger
-	db       database.IUserDB
+	db       database.UserDB
 	statusDb database.IOnlineStatusDB
 	metrics  *metrics.User
 }
 
 // NewUserServer create a new grpc user server
-func NewUserServer(logger *zap.SugaredLogger, database database.IUserDB, statusDb database.IOnlineStatusDB, metrics *metrics.User) *UserServer {
+func NewUserServer(logger *zap.SugaredLogger, database database.UserDB, statusDb database.IOnlineStatusDB, metrics *metrics.User) *UserServer {
 	return &UserServer{
 		l:        logger,
 		db:       database,

@@ -4,7 +4,6 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	serviceconfig "github.com/JohnnyS318/RoyalAfgInGo/services/search/config"
-	"github.com/gorilla/mux"
 	"github.com/meilisearch/meilisearch-go"
 	"github.com/spf13/viper"
 )
@@ -19,7 +18,7 @@ func main() {
 
 	viper.SetEnvPrefix(serviceconfig.ENV_PREFIX)
 
-	r := mux.NewRouter()
+	//r := mux.NewRouter()
 
 	//register meilisearch
 

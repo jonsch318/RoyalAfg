@@ -9,7 +9,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 )
 
-func (db *UserDatabase) SetCache(user *models.User) error {
+func (db *MongoUserDB) SetCache(user *models.User) error {
 	return db.userCache.Set(&cache.Item{
 		Ctx:   context.TODO(),
 		Key:   user.ID.Hex(),
@@ -18,7 +18,7 @@ func (db *UserDatabase) SetCache(user *models.User) error {
 	})
 }
 
-func (db *UserDatabase) GetCache(id string) (*models.User, bool, error) {
+func (db *MongoUserDB) GetCache(id string) (*models.User, bool, error) {
 	user := new(models.User)
 	if !db.userCache.Exists(context.TODO(), id) {
 		return nil, false, nil

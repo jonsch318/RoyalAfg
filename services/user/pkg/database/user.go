@@ -12,13 +12,13 @@ import (
 	"go.uber.org/zap"
 )
 
-type UserDatabase struct {
+type MongoUserDB struct {
 	l         *zap.SugaredLogger
 	userCache *cache.Cache
 	coll      *mgm.Collection
 }
 
-func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDatabase {
+func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *MongoUserDB {
 	coll := mgm.Coll(&models.User{})
 
 	logger.Infof("Connected to Collection %v", coll.Name())
@@ -48,13 +48,13 @@ func NewUserDatabase(logger *zap.SugaredLogger, userCache *cache.Cache) *UserDat
 		return nil
 	}
 
-	return &UserDatabase{
+	return &MongoUserDB{
 		l:         logger,
 		userCache: userCache,
 		coll:      coll,
 	}
 }
-func (db *UserDatabase) CreateUser(user *models.User) error {
+func (db *MongoUserDB) CreateUser(user *models.User) error {
 
 	err := user.Validate()
 
@@ -80,7 +80,7 @@ func (db *UserDatabase) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (db *UserDatabase) UpdateUser(user *models.User) error {
+func (db *MongoUserDB) UpdateUser(user *models.User) error {
 	db.l.Debugf("Succeeded validation")
 
 	err := db.coll.Update(user)
@@ -100,12 +100,12 @@ func (db *UserDatabase) UpdateUser(user *models.User) error {
 	return nil
 }
 
-func (db *UserDatabase) DeleteUser(user *models.User) error {
+func (db *MongoUserDB) DeleteUser(user *models.User) error {
 	return db.coll.Delete(user)
 }
 
 // FindById returns the user, if found, with the given id. This is cached
-func (db *UserDatabase) FindById(id string) (*models.User, error) {
+func (db *MongoUserDB) FindById(id string) (*models.User, error) {
 
 	//check cache of id
 	user, cacheHit, err := db.GetCache(id)
@@ -133,7 +133,7 @@ func (db *UserDatabase) FindById(id string) (*models.User, error) {
 }
 
 // FindByEmail returns the user, if found, with the given email. This is NOT cached
-func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
+func (db *MongoUserDB) FindByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 
 	err := db.coll.FindOne(mgm.Ctx(), bson.M{"email": email}).Decode(user)
@@ -150,7 +150,7 @@ func (db *UserDatabase) FindByEmail(email string) (*models.User, error) {
 }
 
 // FindByUsername returns the user, if found, with the given username. This is NOT cached
-func (db *UserDatabase) FindByUsername(username string) (*models.User, error) {
+func (db *MongoUserDB) FindByUsername(username string) (*models.User, error) {
 	user := &models.User{}
 
 	err := db.coll.FindOne(mgm.Ctx(), bson.M{"username": username}).Decode(user)

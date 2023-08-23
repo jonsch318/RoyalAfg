@@ -4,8 +4,8 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 )
 
-// IUserDB is the interface for the user database.
-type IUserDB interface {
+// UserDB is the interface for the user database.
+type UserDB interface {
 	//CreateUser saves the new user to the database. If a user with the same id exists already, a error will be returned.
 	CreateUser(user *models.User) error
 	//UpdateUser updates the existing user.
