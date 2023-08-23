@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "bank",
+    srcs = ["Interface.go"],
+    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/poker/bank",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/poker/models",
+        "//services/poker/showdown",
+        "@com_github_rhymond_go_money//:go-money",
+        "@com_github_stretchr_testify//mock",
+    ],
+)

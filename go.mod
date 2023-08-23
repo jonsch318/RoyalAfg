@@ -76,7 +76,7 @@ require (
 	github.com/hashicorp/hcl v1.0.1-vault-5 // indirect
 	github.com/jetbasrawi/go.geteventstore.testfeed v0.0.0-20160808110805-4e3be493c211 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/joonix/log v0.0.0-20230221083239-7988383bab32 // indirect
+	github.com/joonix/log v0.0.0-20180502111528-d2d3f2f4a806 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect

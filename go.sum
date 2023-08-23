@@ -707,6 +707,8 @@ github.com/jetbasrawi/go.geteventstore.testfeed v0.0.0-20160808110805-4e3be493c2
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
+github.com/joonix/log v0.0.0-20180502111528-d2d3f2f4a806 h1:wsKuVfz+KNbe4mfcFENCzWjXbSfrz49LlL/B4cIR0XU=
+github.com/joonix/log v0.0.0-20180502111528-d2d3f2f4a806/go.mod h1:9alna084PKap49x3Dl7QTGUXiS37acLi8ryAexT1SJc=
 github.com/joonix/log v0.0.0-20230221083239-7988383bab32 h1:GxIQqf2YqcBY7m0psVNLFCzT5LxtwMk9C2Jim9SJFXY=
 github.com/joonix/log v0.0.0-20230221083239-7988383bab32/go.mod h1:mrkUt/UvBG3A43gw7uJGd7brC6pGNRrk9pugsOVWVGQ=
 github.com/josharian/intern v1.0.0 h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=

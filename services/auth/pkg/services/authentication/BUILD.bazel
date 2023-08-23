@@ -29,11 +29,11 @@ go_test(
     srcs = ["login_test.go"],
     embed = [":authentication"],
     deps = [
+        "//mocks/services/auth/pkg/services/user",
         "//pkg/config",
         "//pkg/models",
         "//services/auth/pkg/security",
         "//services/auth/pkg/serviceconfig",
-        "@com_github_johnnys318_royalafgingo//mocks/services/auth/pkg/services/user:go_default_library",
         "@com_github_kamva_mgm//:mgm",
         "@com_github_spf13_viper//:viper",
         "@com_github_stretchr_testify//assert",

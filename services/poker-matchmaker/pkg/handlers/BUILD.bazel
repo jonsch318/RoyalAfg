@@ -21,7 +21,6 @@ go_library(
         "//services/poker-matchmaker/pkg/validation",
         "@com_github_gorilla_mux//:mux",
         "@com_github_spf13_viper//:viper",
-        "@dev_agones_agones//pkg/client/clientset/versioned",
         "@org_uber_go_zap//:zap",
     ],
 )

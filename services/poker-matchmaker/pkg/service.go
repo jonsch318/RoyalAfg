@@ -24,7 +24,7 @@ import (
 	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
 )
 
-//Start the poker matchmaker service
+// Start the poker matchmaker service
 func Start(logger *zap.SugaredLogger) {
 
 	//################## Setup ####################
@@ -35,7 +35,6 @@ func Start(logger *zap.SugaredLogger) {
 		*models.NewClass(50000, 1000000, 20),
 	}
 
-
 	logger.Debugf("Node Addresses %v", viper.GetStringSlice(serviceconfig.NodeIPAddresses))
 
 	//Connect to Kubernetes and Agones API
@@ -44,17 +43,17 @@ func Start(logger *zap.SugaredLogger) {
 		logger.Fatalw("Could not get cluster configuration")
 	}
 
-	agonesClient, _ := versioned.NewForConfig(kubeConfig)
+	agonesClientset, _ := versioned.NewForConfig(kubeConfig)
 	if err != nil {
 		logger.Fatalw("Could not connect to agones api")
 	}
 
 	//Create poker gameserver manager
-	manager := lobby.NewManager(logger, agonesClient, classes)
+	manager := lobby.NewManager(logger, agonesClientset, classes)
 
 	//############# HTTP ################
 	//Create HTTP handler
-	ticketHandler := handlers.NewTicket(logger, agonesClient, manager)
+	ticketHandler := handlers.NewTicket(logger, manager)
 
 	//Setup routes
 	r := mux.NewRouter()
