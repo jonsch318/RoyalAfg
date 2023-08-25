@@ -34,7 +34,7 @@ func (s *UserServer) GetUserStatus(ctx context.Context, m *protos.UserStatusRequ
 
 	status := <-statusChan
 
-	protoStatus := &protos.UserStatusResponse_OnlineStatus{
+	protoStatus := &protos.OnlineStatus{
 		Status: int32(status.Status),
 		GameId: status.GameId,
 	}

@@ -20,7 +20,7 @@ type UserDB interface {
 	FindByUsername(username string) (*models.User, error)
 }
 
-type IOnlineStatusDB interface {
+type OnlineStatusDB interface {
 	//SetOnlineStatus sets the online status of the user
 	SetOnlineStatus(id string, status *OnlineStatus) error
 

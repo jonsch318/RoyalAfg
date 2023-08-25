@@ -9,31 +9,38 @@ import (
 	"go.uber.org/zap"
 )
 
+const Online = 1
+const Offline = 0
+
 type OnlineStatus struct {
 	Status byte   `json:"status"`
 	GameId string `json:"gameId"`
 }
 
-type OnlineStatusDatabase struct {
+type RedisStatusDatabase struct {
 	l      *zap.SugaredLogger
 	client *redis.Client
 }
 
-func NewOnlineStatusDatabase(logger *zap.SugaredLogger, client *redis.Client) *OnlineStatusDatabase {
-	return &OnlineStatusDatabase{
+func NewOnlineStatusDatabase(logger *zap.SugaredLogger, client *redis.Client) *RedisStatusDatabase {
+	return &RedisStatusDatabase{
 		l:      logger,
 		client: client,
 	}
 }
 
-func (db *OnlineStatusDatabase) SetOnlineStatus(id string, status *OnlineStatus) error {
+func (db *RedisStatusDatabase) SetOnlineStatus(id string, status *OnlineStatus) error {
 
-	raw, _ := json.Marshal(status)
+	raw, err := json.Marshal(status)
+
+	if err != nil {
+		return err
+	}
 
 	return db.client.Set(context.TODO(), id, raw, 2*time.Hour).Err()
 }
 
-func (db *OnlineStatusDatabase) GetOnlineStatus(id string) (*OnlineStatus, error) {
+func (db *RedisStatusDatabase) GetOnlineStatus(id string) (*OnlineStatus, error) {
 
 	status := new(OnlineStatus)
 	raw, err := db.client.Get(context.TODO(), id).Result()

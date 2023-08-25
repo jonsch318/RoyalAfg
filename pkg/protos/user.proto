@@ -7,6 +7,7 @@ service UserService {
   rpc GetUserByUsername (GetUser) returns (User);
   rpc UpdateUser(User) returns (User);
   rpc GetUserStatus(UserStatusRequest) returns  (UserStatusResponse);
+  rpc RegisterGame(RegisterGameRequest) returns (OnlineStatus);
 }
 
 message User {
@@ -30,13 +31,19 @@ message UserStatusRequest {
   string id = 1;
 }
 
-message UserStatusResponse {
-  message OnlineStatus {
-    int32 status = 1;
-    string game_id = 2;
-  }
+message UserStatusResponse {  
   uint32 banned = 1;
   uint32 verified = 2;
   OnlineStatus status = 3;
+}
+
+message OnlineStatus {
+  int32 status = 1;
+  string game_id = 2;
+}
+
+message RegisterGameRequest {
+  string id = 1;
+  string game_id = 2;
 }
 

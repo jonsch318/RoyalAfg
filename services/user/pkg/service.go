@@ -42,7 +42,7 @@ import (
 // Start starts the user service
 func Start(logger *zap.SugaredLogger) {
 
-	//###################### Configuration ######################
+	//###################### Redis ######################
 	//Connect to Redis and setup cache
 	red := redis.NewClient(&redis.Options{
 		Addr:     viper.GetString(config.RedisAddress),
@@ -57,6 +57,8 @@ func Start(logger *zap.SugaredLogger) {
 		LocalCache: cache.NewTinyLFU(1000, time.Minute),
 	})
 	logger.Debugf("Redis configured to %v", viper.GetString(config.RedisAddress))
+
+	//###################### MONGO DB ######################
 
 	// Mongodb configuration
 	cfg := &mgm.Config{CtxTimeout: viper.GetDuration(serviceconfig.DatabaseTimeout)}
