@@ -7,32 +7,32 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	moneyUtils "github.com/jonsch318/royalafg/services/poker/money"
 )
 
-//FOLD describes the action of a player quiting this hand
+// FOLD describes the action of a player quiting this hand
 const FOLD = 1
 
-//BET describes the action of a player betting the same amount as the highest bet and therefore go along or calling the hand
+// BET describes the action of a player betting the same amount as the highest bet and therefore go along or calling the hand
 const BET = 2
 
-//RAISE raises sets the highest bet a certain amount
+// RAISE raises sets the highest bet a certain amount
 const RAISE = 3
 
-//CHECK action pushes the action requirement to the next player
+// CHECK action pushes the action requirement to the next player
 const CHECK = 4
 
-//ALL_IN action bets the entire wallet of the user in this round
+// ALL_IN action bets the entire wallet of the user in this round
 const ALL_IN = 5
 
-//Action describes a action a player can make one a normal hand stage
+// Action describes a action a player can make one a normal hand stage
 type Action struct {
 	Action  int          `json:"action" mapstructure:"action"`
 	Payload *money.Money `json:"payload" mapstructure:"payload"`
 }
 
-//Action describes a action a player can make one a normal hand stage
+// Action describes a action a player can make one a normal hand stage
 type ActionDTO struct {
 	Action  int `json:"action" mapstructure:"action"`
 	Payload int `json:"payload" mapstructure:"payload"`
@@ -60,7 +60,7 @@ func ToAction(raw *models.Event) (*Action, error) {
 	}, nil
 }
 
-//WaitForActionEvent encodes all possible actions the user can perform.
+// WaitForActionEvent encodes all possible actions the user can perform.
 type WaitForActionEvent struct {
 	Player          *models.PublicPlayer `json:"player"`
 	Position        int                  `json:"position" mapstructure:"position"`

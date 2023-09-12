@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/config"
 )
 
 type Connections struct {

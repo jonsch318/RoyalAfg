@@ -6,20 +6,20 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/validation"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/poker/ticket"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/validation"
 )
 
-//TicketResponse is the successful response of a ticket request
+// TicketResponse is the successful response of a ticket request
 type TicketResponse struct {
 	Address string `json:"address"`
 	Token   string `json:"token"`
 }
 
-//GetTicketWithParams requests a ticket with lobby params
+// GetTicketWithParams requests a ticket with lobby params
 func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 
 	//CSRF Validation could not be accomplished because the frontend requests tickets server side.
@@ -73,6 +73,3 @@ func (h *Ticket) GetTicketWithParams(rw http.ResponseWriter, r *http.Request) {
 		Token:   token,
 	}, rw)
 }
-
-
-

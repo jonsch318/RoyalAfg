@@ -6,7 +6,7 @@ go_library(
         "logger.go",
         "register.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/log",
+    importpath = "github.com/jonsch318/royalafg/pkg/log",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_mitchellh_go_homedir//:go-homedir",

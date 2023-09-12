@@ -11,7 +11,7 @@ definitions:
         type: string
         x-go-name: Error
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses
+    x-go-package: github.com/jonsch318/royalafg/shared/pkg/responses
   LoginUser:
     description: LoginUser defines the object for the api login request
     properties:
@@ -25,7 +25,7 @@ definitions:
         type: string
         x-go-name: Username
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/jonsch318/royalafg/auth/pkg/auth/handlers
   RegisterUser:
     description: RegisterUser defines the dto for the user account registration
     properties:
@@ -49,7 +49,7 @@ definitions:
         type: string
         x-go-name: Username
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/jonsch318/royalafg/auth/pkg/auth/handlers
   UserDTO:
     description: UserDTO is the data transfer object of the internal user object
     properties:
@@ -92,7 +92,7 @@ definitions:
     - email
     - fullName
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/auth/pkg/auth/handlers
+    x-go-package: github.com/jonsch318/royalafg/auth/pkg/auth/handlers
   ValidationError:
     description: Each form property that has missing requirements is listet under Errors (validationErrors)
     properties:
@@ -102,7 +102,7 @@ definitions:
         x-go-name: Errors
     title: ValidationError shows the failed validation requirements.
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/shared/pkg/responses
+    x-go-package: github.com/jonsch318/royalafg/shared/pkg/responses
 host: royalafg.games
 info:
   contact:

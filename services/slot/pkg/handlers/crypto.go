@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/crypto"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/slot/pkg/crypto"
 )
 
 func (s *SlotServer) CryptoInfo(rw http.ResponseWriter, r *http.Request) {

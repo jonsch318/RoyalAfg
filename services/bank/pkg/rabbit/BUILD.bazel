@@ -8,7 +8,7 @@ go_library(
         "rabbit.go",
         "register.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/rabbit",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/auth",

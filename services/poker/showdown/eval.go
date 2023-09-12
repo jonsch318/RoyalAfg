@@ -1,12 +1,12 @@
 package showdown
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
-type WinnerInfo struct{
-	Player models.Player
+type WinnerInfo struct {
+	Player   models.Player
 	Position int
 }
 
@@ -14,16 +14,16 @@ func (i *WinnerInfo) String() string {
 	return i.Player.String()
 }
 
-//Evaluate evaluates the given poker scenario and determines the winners based on a rank given to each player.
+// Evaluate evaluates the given poker scenario and determines the winners based on a rank given to each player.
 func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5]models.Card, inCount byte) []WinnerInfo {
 
-	if len(players) < 1 || inCount < 1{
+	if len(players) < 1 || inCount < 1 {
 		log.Logger.Info("No players. Nobody wins")
 		return nil
 	}
 
 	if len(players) == 1 {
-		if players[0].Active{
+		if players[0].Active {
 			log.Logger.Debugf("Player 0 wins. One player remaining")
 			//player wins
 			return []WinnerInfo{
@@ -32,7 +32,7 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 					Position: 0,
 				},
 			}
-		}else {
+		} else {
 			return nil
 		}
 	}
@@ -51,7 +51,7 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 				Position: i,
 			}
 			ranks[info] = rank
-		}else {
+		} else {
 			log.Logger.Debugf("Skipped player %v", players[i].Username)
 		}
 	}
@@ -77,8 +77,8 @@ func Evaluate(players []models.Player, cards map[string][2]models.Card, board [5
 	return winners
 }
 
-//evaluatePlayer generates a number as an identification of the players hole cards + the boards cards rank. it selects the best card section and return the rank.
-//this probably could be better optimised with technics like tree shaking, etc. but it works.
+// evaluatePlayer generates a number as an identification of the players hole cards + the boards cards rank. it selects the best card section and return the rank.
+// this probably could be better optimised with technics like tree shaking, etc. but it works.
 func evaluatePlayer(cards []models.Card) int {
 
 	maxRank := rankSpecificHand(cards[2:])

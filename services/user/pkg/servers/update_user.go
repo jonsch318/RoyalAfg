@@ -8,11 +8,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/jonsch318/royalafg/pkg/protos"
 )
 
-
-//Update user updates a user with the given id.
+// Update user updates a user with the given id.
 func (s *UserServer) UpdateUser(ctx context.Context, m *protos.User) (*protos.User, error) {
 
 	//Find user
@@ -38,7 +37,6 @@ func (s *UserServer) UpdateUser(ctx context.Context, m *protos.User) (*protos.Us
 		s.l.Errorw("Error during user update", "error", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-
 
 	return protos.ToMessageUser(user), nil
 }

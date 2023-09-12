@@ -3,6 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "classification",
     srcs = ["docs.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/docs/classification",
+    importpath = "github.com/jonsch318/royalafg/services/docs/classification",
     visibility = ["//visibility:public"],
 )

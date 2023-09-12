@@ -4,29 +4,29 @@ import (
 	"runtime/debug"
 	"sync"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/models"
 
 	"github.com/gorilla/websocket"
 )
 
 type PlayerConn struct {
 	Status byte
-	Out     chan []byte
-	In      chan *models.Event
-	Close   chan bool
-	conn    *websocket.Conn
-	lock sync.Mutex
+	Out    chan []byte
+	In     chan *models.Event
+	Close  chan bool
+	conn   *websocket.Conn
+	lock   sync.Mutex
 	Closed bool
 }
 
 func NewPlayerConn(conn *websocket.Conn) *PlayerConn {
 	return &PlayerConn{
 		Status: 0b0,
-		conn:  conn,
-		Out:   make(chan []byte),
-		In:    make(chan *models.Event),
-		Close: make(chan bool),
+		conn:   conn,
+		Out:    make(chan []byte),
+		In:     make(chan *models.Event),
+		Close:  make(chan bool),
 		Closed: false,
 	}
 }
@@ -40,7 +40,7 @@ func (p *PlayerConn) reader() {
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
 				//Close was *unexpected* (abnormal)
-				log.Logger.Errorw("WS Message Error", "error",  err)
+				log.Logger.Errorw("WS Message Error", "error", err)
 				p.CloseConnection(true)
 				break
 			}
@@ -102,7 +102,7 @@ func (p *PlayerConn) writer() {
 	}
 }
 
-func (p *PlayerConn) CloseConnection(unexpected bool){
+func (p *PlayerConn) CloseConnection(unexpected bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Logger.Debugf("recovering in round start from %v Stack: \n %v", r, string(debug.Stack()))
@@ -114,7 +114,6 @@ func (p *PlayerConn) CloseConnection(unexpected bool){
 	}
 
 	log.Logger.Warnw("Closing Connection", "unexpected", unexpected)
-
 
 	err := p.conn.WriteMessage(websocket.CloseMessage, make([]byte, 0))
 	if err != nil {
@@ -137,6 +136,4 @@ func (p *PlayerConn) CloseConnection(unexpected bool){
 		close(p.Close)
 	}
 
-
 }
-

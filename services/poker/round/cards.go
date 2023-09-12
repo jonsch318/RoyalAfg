@@ -1,13 +1,13 @@
 package round
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
-//holeCards randomly pics 2 cards for each player
+// holeCards randomly pics 2 cards for each player
 func (r *Round) holeCards(cards []models.Card) {
 	j := 0
 	for i := range r.Players {

@@ -3,15 +3,14 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
 )
 
 type GetUserResponse struct {
 	User *dtos.User `json:"user"`
-
 }
 
 // ErrorResponse is a generic error response
@@ -32,6 +31,7 @@ type userResponseWrapper struct {
 
 // GetUser returns the authenticated user object
 // swagger:route GET /api/user account getUser
+//
 //	return the authenticated user based on the api key
 //	Consumes:
 //
@@ -45,11 +45,9 @@ type userResponseWrapper struct {
 //	Responses:
 //	default: ErrorResponse
 //	401: ErrorResponse
-// 	404: ErrorResponse
+//	404: ErrorResponse
 //	500: ErrorResponse
 //	200: UserResponse
-//
-//
 func (h *UserHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

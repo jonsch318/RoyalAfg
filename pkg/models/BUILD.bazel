@@ -6,7 +6,7 @@ go_library(
         "slotGame.go",
         "user.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/models",
+    importpath = "github.com/jonsch318/royalafg/pkg/models",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/user",

@@ -5,10 +5,10 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/rabbit"
+	"github.com/jonsch318/royalafg/services/poker/showdown"
 )
 
 type Interface interface {
@@ -30,7 +30,7 @@ type Interface interface {
 	ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []*money.Money
 }
 
-//Bank  handles the bets and wallets of players.
+// Bank  handles the bets and wallets of players.
 type Bank struct {
 	lock         sync.RWMutex
 	PlayerWallet map[string]*money.Money
@@ -41,7 +41,7 @@ type Bank struct {
 	LobbyId      string
 }
 
-//NewBank creates a new bank to handle the bets and wallets of players.
+// NewBank creates a new bank to handle the bets and wallets of players.
 func NewBank(eventBus *rabbit.RabbitMessageBroker) *Bank {
 	return &Bank{
 		PlayerWallet: make(map[string]*money.Money),
@@ -57,14 +57,14 @@ func (b *Bank) RegisterLobby(lobbyId string) {
 	b.LobbyId = lobbyId
 }
 
-//GetMaxBet returns the highest bet in the current round
+// GetMaxBet returns the highest bet in the current round
 func (b *Bank) GetMaxBet() *money.Money {
 	//A sync lock is not required because max bet is only be designed to be changed by the game routine and not the lobbies. So concurrent read and writes are not a concern.
 	//convert arbitrary precision money value (stored in int64) to int
 	return b.MaxBet
 }
 
-//GetPlayerBet gets the bet of a given player
+// GetPlayerBet gets the bet of a given player
 func (b *Bank) GetPlayerBet(id string) *money.Money {
 	//Have to lock because concurrent read and write are not possible with maps.
 	b.lock.RLock()
@@ -76,7 +76,7 @@ func (b *Bank) GetPlayerBet(id string) *money.Money {
 	return t
 }
 
-//GetPlayerWallet gets the current wallet for the given player
+// GetPlayerWallet gets the current wallet for the given player
 func (b *Bank) GetPlayerWallet(id string) *money.Money {
 	//Have to lock because concurrent read and write are not possible with maps.
 	b.lock.RLock()
@@ -88,7 +88,7 @@ func (b *Bank) GetPlayerWallet(id string) *money.Money {
 	return t
 }
 
-//GetPot returns the current pot value.
+// GetPot returns the current pot value.
 func (b *Bank) GetPot() *money.Money {
 	//Have to lock to remove concurrent read and writes.
 	b.lock.RLock()
@@ -96,7 +96,7 @@ func (b *Bank) GetPot() *money.Money {
 	return b.Pot
 }
 
-//HasZeroWallet returns true if the player has zero money left in his wallet or no bank wallet could be found with this id.
+// HasZeroWallet returns true if the player has zero money left in his wallet or no bank wallet could be found with this id.
 func (b *Bank) HasZeroWallet(id string) bool {
 	b.lock.RLock()
 	defer b.lock.RUnlock()

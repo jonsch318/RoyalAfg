@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/models"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"

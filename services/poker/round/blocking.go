@@ -3,9 +3,9 @@ package round
 import (
 	"sort"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/bank"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 type BlockingList struct {

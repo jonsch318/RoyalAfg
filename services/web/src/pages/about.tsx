@@ -39,7 +39,7 @@ const About: FC = () => {
                                 </span>
                                 <span className="block">{t("Name")}: Jonas Schneider</span>
                                 <span className="block">
-                                    {t("Github")}: <a href="github.com/JohnnyS318/RoyalAfg">JohnnyS318/RoyalAfg</a>
+                                    {t("Github")}: <a href="github.com/jonsch318/RoyalAfg">JohnnyS318/RoyalAfg</a>
                                 </span>
                             </CardListItem>
                             <CardListItem header={t("Privacy")}>

@@ -3,8 +3,9 @@ package showdown
 import (
 	"github.com/stretchr/testify/assert"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"testing"
+
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 var result int
@@ -12,14 +13,14 @@ var result int
 func benchmarkRankSpecificHand(hand []models.Card, b *testing.B) {
 	var r int
 	for i := 0; i < b.N; i++ {
-		r =rankSpecificHand(hand)
+		r = rankSpecificHand(hand)
 	}
 	result = r //To disable the compiler removing the function call
 }
 
-func BenchmarkRoyalFlushRank(b *testing.B) {benchmarkRankSpecificHand(getRoyalFlush(),b)}
-func BenchmarkRoyalPair(b *testing.B) {benchmarkRankSpecificHand(getLowPair(),b)}
-func BenchmarkRoyalQuad(b *testing.B) {benchmarkRankSpecificHand(getQuad(),b)}
+func BenchmarkRoyalFlushRank(b *testing.B) { benchmarkRankSpecificHand(getRoyalFlush(), b) }
+func BenchmarkRoyalPair(b *testing.B)      { benchmarkRankSpecificHand(getLowPair(), b) }
+func BenchmarkRoyalQuad(b *testing.B)      { benchmarkRankSpecificHand(getQuad(), b) }
 
 func TestRankSpecificHand(t *testing.T) {
 	t.Run("TripleVsPair", func(t *testing.T) {
@@ -31,7 +32,7 @@ func TestRankSpecificHand(t *testing.T) {
 
 	t.Run("HighHighCardVsLowHighCard", func(t *testing.T) {
 		rankLowHighCard := rankSpecificHand(getLowHighCard())
-		rankHighHighCard :=  rankSpecificHand(getHighHighCard())
+		rankHighHighCard := rankSpecificHand(getHighHighCard())
 		assert.Greater(t, rankHighHighCard, rankLowHighCard)
 	})
 	t.Run("FlushVsPair", func(t *testing.T) {
@@ -82,11 +83,11 @@ func TestRankSpecificHand(t *testing.T) {
 	})
 	t.Run("TwoPairVsTwoPair", func(t *testing.T) {
 		twoPairHigh := []models.Card{
-			c(0,5),
-			c(1,5),
-			c(0,3),
-			c(0,3),
-			c(2,8),
+			c(0, 5),
+			c(1, 5),
+			c(0, 3),
+			c(0, 3),
+			c(2, 8),
 		}
 		rankTwoPairLow := rankSpecificHand(getTwoPair())
 		rankTwoPairHigh := rankSpecificHand(twoPairHigh)
@@ -96,112 +97,111 @@ func TestRankSpecificHand(t *testing.T) {
 
 func getTwoPair() []models.Card {
 	return []models.Card{
-		c(0,5),
-		c(1,5),
-		c(0,3),
-		c(0,3),
-		c(2,2),
+		c(0, 5),
+		c(1, 5),
+		c(0, 3),
+		c(0, 3),
+		c(2, 2),
 	}
 }
 
-//Used for lower pairs (33)
+// Used for lower pairs (33)
 func getLowPair() []models.Card {
 	return []models.Card{
-		c(0,0),
-		c(1,5),
-		c(0,1),
-		c(0,2),
-		c(2,1),
+		c(0, 0),
+		c(1, 5),
+		c(0, 1),
+		c(0, 2),
+		c(2, 1),
 	}
 }
 
 func getTriple() []models.Card {
 	return []models.Card{
-		c(0,1),
-		c(1,3),
-		c(0,3),
-		c(2,4),
-		c(0,3),
+		c(0, 1),
+		c(1, 3),
+		c(0, 3),
+		c(2, 4),
+		c(0, 3),
 	}
 }
 
 func getHighHighCard() []models.Card {
 	return []models.Card{
-		c(0,1),
-		c(1,10),
-		c(0,3),
-		c(2,4),
-		c(0,7),
+		c(0, 1),
+		c(1, 10),
+		c(0, 3),
+		c(2, 4),
+		c(0, 7),
 	}
 }
 
 func getLowHighCard() []models.Card {
 	return []models.Card{
-		c(0,1),
-		c(1,4),
-		c(0,3),
-		c(2,6),
-		c(0,0),
+		c(0, 1),
+		c(1, 4),
+		c(0, 3),
+		c(2, 6),
+		c(0, 0),
 	}
 }
 
 func getFlush() []models.Card {
 	return []models.Card{
-		c(0,1),
-		c(0,4),
-		c(0,3),
-		c(0,6),
-		c(0,0),
+		c(0, 1),
+		c(0, 4),
+		c(0, 3),
+		c(0, 6),
+		c(0, 0),
 	}
 }
 
 func getStraight() []models.Card {
 	return []models.Card{
-		c(0,5),
-		c(1,10),
-		c(0,6),
-		c(2,9),
-		c(3,8),
+		c(0, 5),
+		c(1, 10),
+		c(0, 6),
+		c(2, 9),
+		c(3, 8),
 	}
 }
 
 func getFullHouse() []models.Card {
 	return []models.Card{
-		c(0,8),
-		c(1,8),
-		c(0,0),
-		c(2,8),
-		c(3,0),
+		c(0, 8),
+		c(1, 8),
+		c(0, 0),
+		c(2, 8),
+		c(3, 0),
 	}
 }
 
-
 func getQuad() []models.Card {
 	return []models.Card{
-		c(0,8),
-		c(1,8),
-		c(0,2),
-		c(2,8),
-		c(3,8),
+		c(0, 8),
+		c(1, 8),
+		c(0, 2),
+		c(2, 8),
+		c(3, 8),
 	}
 }
 
 func getStraightFlush() []models.Card {
 	return []models.Card{
-		c(1,2),
-		c(1,6),
-		c(1,3),
-		c(1,5),
-		c(1,4),
+		c(1, 2),
+		c(1, 6),
+		c(1, 3),
+		c(1, 5),
+		c(1, 4),
 	}
 }
 
-func getRoyalFlush() []models.Card{
+func getRoyalFlush() []models.Card {
 	return []models.Card{
-		c(0,12),
-		c(0,8),
-		c(0,9),
-		c(0,11),
-		c(0,10),
+		c(0, 12),
+		c(0, 8),
+		c(0, 9),
+		c(0, 11),
+		c(0, 10),
 	}
 }

@@ -32,7 +32,7 @@ func ReadStandardConfig(serviceName string, logger *zap.SugaredLogger) {
 			logger.Fatalw("Error when finding home directory", "error", err)
 		}
 
-		viper.AddConfigPath(home + "/.RoyalAfgInGo.d/")
+		viper.AddConfigPath(home + "/.royalafg.d/")
 		viper.AddConfigPath(".")
 		viper.SetConfigFile(fmt.Sprintf("/etc/royalafg-%v/config.yaml", serviceName))
 	}

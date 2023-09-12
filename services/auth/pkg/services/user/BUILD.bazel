@@ -8,7 +8,7 @@ go_library(
         "userService.go",
         "utils.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user",
+    importpath = "github.com/jonsch318/royalafg/services/auth/pkg/services/user",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/log",

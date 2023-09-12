@@ -1,9 +1,9 @@
 package documentation
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/services/auth/pkg/handlers"
 )
 
 // UserResponse represents a user

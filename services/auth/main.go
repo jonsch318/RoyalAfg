@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/auth/pkg"
+	"github.com/jonsch318/royalafg/services/auth/pkg/serviceconfig"
 )
 
 func main() {

@@ -3,11 +3,13 @@ package showdown
 import (
 	"github.com/stretchr/testify/assert"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"testing"
+
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 var winnerResult []WinnerInfo
+
 func TestEvaluate(t *testing.T) {
 	//setup
 	players := []models.Player{{ID: "a", Active: true}, {ID: "b", Active: true}}

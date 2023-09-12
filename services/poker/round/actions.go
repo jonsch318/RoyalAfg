@@ -3,13 +3,13 @@ package round
 import (
 	"errors"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	moneyUtils "github.com/jonsch318/royalafg/services/poker/money"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
-//actions is the starter for one round of actions (til all players have equal bets or folded)
+// actions is the starter for one round of actions (til all players have equal bets or folded)
 func (r *Round) actions(preFlop bool) {
 
 	//actions are quite complicated to pull of right.
@@ -67,7 +67,7 @@ func (r *Round) actions(preFlop bool) {
 	r.recursiveAction(roundState)
 }
 
-//fold removes the player with the given id from the active player list
+// fold removes the player with the given id from the active player list
 func (r *Round) fold(id string) error {
 	i, err := r.searchByActiveID(id)
 	if err != nil {

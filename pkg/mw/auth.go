@@ -12,8 +12,8 @@ import (
 	"github.com/urfave/negroni"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/responses"
 )
 
 const IdentityCookieKey = "RYL_Session"
@@ -38,17 +38,17 @@ func (err InvalidTokenError) Error() string {
 
 type UserClaims struct {
 	Username string
-	ID string
-	Name string
+	ID       string
+	Name     string
 }
 
-//FromUserTokenContext creates a claims list of a user from a given jwt token given by the mw.
-//We trust the user parameter to be a valid jwt token with the claims username and id.
+// FromUserTokenContext creates a claims list of a user from a given jwt token given by the mw.
+// We trust the user parameter to be a valid jwt token with the claims username and id.
 func FromUserTokenContext(user interface{}) *UserClaims {
 	return &UserClaims{
 		Username: user.(*jwt.Token).Claims.(jwt.MapClaims)["username"].(string),
 		ID:       user.(*jwt.Token).Claims.(jwt.MapClaims)["sub"].(string),
-		Name: user.(*jwt.Token).Claims.(jwt.MapClaims)["name"].(string),
+		Name:     user.(*jwt.Token).Claims.(jwt.MapClaims)["name"].(string),
 	}
 }
 
@@ -59,7 +59,7 @@ func RequireAuth(f func(http.ResponseWriter, *http.Request)) http.Handler {
 	return nAuth
 }
 
-func OptionalAuth(f func(w http.ResponseWriter, r *http.Request)) http.Handler{
+func OptionalAuth(f func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	mw := GetJWTMW()
 	mw.Options.CredentialsOptional = true
 	nAuth := negroni.New(negroni.HandlerFunc(mw.HandlerWithNext))
@@ -78,7 +78,7 @@ func GetJWTMW() *jwtMW.JWTMiddleware {
 	})
 }
 
-//ExtractFromCookie extracts a jwt from the session Cookie
+// ExtractFromCookie extracts a jwt from the session Cookie
 func ExtractFromCookie(r *http.Request) (string, error) {
 	cookie, err := r.Cookie(viper.GetString(config.SessionCookieName))
 	if err != nil {
@@ -100,18 +100,12 @@ func GetKeyGetter(key string) jwt.Keyfunc {
 	}
 }
 
-
-
-
-
-
-
 type AuthMWHandler struct {
 	l   *zap.SugaredLogger
 	key string
 }
 
-//NewAuthMWHandler creates a new AuthMWR Handler
+// NewAuthMWHandler creates a new AuthMWR Handler
 func NewAuthMWHandler(logger *zap.SugaredLogger, key string) *AuthMWHandler {
 	return &AuthMWHandler{
 		l:   logger,
@@ -119,7 +113,7 @@ func NewAuthMWHandler(logger *zap.SugaredLogger, key string) *AuthMWHandler {
 	}
 }
 
-//AuthMWR is the auth middleware for a required authenticated request.
+// AuthMWR is the auth middleware for a required authenticated request.
 func (h *AuthMWHandler) AuthMWR(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
@@ -145,7 +139,7 @@ func (h *AuthMWHandler) AuthMWR(next http.Handler) http.Handler {
 	})
 }
 
-//AuthMWO is the auth middleware for a optional authenticated request.
+// AuthMWO is the auth middleware for a optional authenticated request.
 func (h *AuthMWHandler) AuthMWO(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
@@ -220,4 +214,3 @@ func ValidateJwt(bearer, key string) (jwt.MapClaims, error) {
 	}
 	return nil, fmt.Errorf("The token validation failed")
 }
-

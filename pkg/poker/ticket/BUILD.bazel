@@ -6,7 +6,7 @@ go_library(
         "deserialize.go",
         "generate.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket",
+    importpath = "github.com/jonsch318/royalafg/pkg/poker/ticket",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/poker/models",

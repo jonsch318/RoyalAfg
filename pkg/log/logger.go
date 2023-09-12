@@ -9,7 +9,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-//NewLogger creates a new zap Logger using the standard encoders
+// NewLogger creates a new zap Logger using the standard encoders
 func NewLogger() *zap.SugaredLogger {
 	encodingConfig := zap.NewProductionEncoderConfig()
 
@@ -30,7 +30,7 @@ func NewLogger() *zap.SugaredLogger {
 	}
 
 	logSync := &lumberjack.Logger{
-		Filename:   homeDirectory + "/logs/github.com/JohnnyS318/RoyalAfgInGoInGo/log.log",
+		Filename:   homeDirectory + "/logs/github.com/jonsch318/royalafgInGo/log.log",
 		MaxSize:    50,
 		MaxBackups: 5,
 		MaxAge:     14,

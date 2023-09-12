@@ -5,11 +5,12 @@ go_library(
     srcs = [
         "get_user.go",
         "get_user_status.go",
+        "register_game.go",
         "save_user.go",
         "update_user.go",
         "user.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/servers",
+    importpath = "github.com/jonsch318/royalafg/services/user/pkg/servers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/protos",

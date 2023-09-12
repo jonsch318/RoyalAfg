@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
 )
 
 type BalanceQueryDto struct {
@@ -37,11 +37,11 @@ type validationErrorWrapper struct {
 //
 // Query the users balance
 //
-// 	The balance of a user
+//	The balance of a user
 //
 //	Consumes:
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Security:
@@ -49,7 +49,7 @@ type validationErrorWrapper struct {
 //
 //	Schemes: http, https
 //
-// 	Responses:
+//	Responses:
 //	default: ErrorResponse
 //	400: ErrorResponse
 //	422: ValidationErrorResponse
@@ -58,7 +58,6 @@ type validationErrorWrapper struct {
 //	403: ErrorResponse
 //	500: ErrorResponse
 //	200: BalanceQueryResponse
-//
 func (h Account) QueryBalance(rw http.ResponseWriter, r *http.Request) {
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

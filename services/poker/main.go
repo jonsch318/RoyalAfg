@@ -14,20 +14,20 @@ import (
 	"github.com/urfave/negroni"
 	"golang.org/x/net/context"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/gameServer"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	pokerModels "github.com/jonsch318/royalafg/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/poker/bank"
+	"github.com/jonsch318/royalafg/services/poker/gameServer"
+	"github.com/jonsch318/royalafg/services/poker/handlers"
+	"github.com/jonsch318/royalafg/services/poker/lobby"
+	"github.com/jonsch318/royalafg/services/poker/rabbit"
+	"github.com/jonsch318/royalafg/services/poker/serviceconfig"
 )
 
-//main method is the entry point of the game server
+// main method is the entry point of the game server
 func main() {
 	//Register Logger
 	logger := log.RegisterService()
@@ -173,7 +173,7 @@ func GetFromLabels(key string, labels map[string]string) (int, error) {
 	return val, nil
 }
 
-//StartShutdownTimer sets the status shutdown after 10 minutes.
+// StartShutdownTimer sets the status shutdown after 10 minutes.
 func StartShutdownTimer(stop chan interface{}, s *sdk.SDK) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(10*time.Minute))
 	select {

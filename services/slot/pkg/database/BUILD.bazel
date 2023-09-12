@@ -6,7 +6,7 @@ go_library(
         "buffer.go",
         "game.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/database",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/database",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",

@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "rabbit",
     srcs = ["CommandHandler.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/bank/pkg/rabbit",
+    importpath = "github.com/jonsch318/royalafg/mocks/services/bank/pkg/rabbit",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_streadway_amqp//:amqp",

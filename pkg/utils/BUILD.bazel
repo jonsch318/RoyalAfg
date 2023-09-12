@@ -8,7 +8,7 @@ go_library(
         "httpserver.go",
         "mongo.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/utils",
+    importpath = "github.com/jonsch318/royalafg/pkg/utils",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gorilla_schema//:schema",

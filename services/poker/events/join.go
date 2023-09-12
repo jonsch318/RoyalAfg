@@ -3,8 +3,8 @@ package events
 import (
 	"errors"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/Rhymond/go-money"
+	"github.com/jonsch318/royalafg/services/poker/models"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -35,7 +35,7 @@ type LobbyInfo struct {
 	GameStarted      bool   `json:"gameStarted"`
 }
 
-//NewLobbyInfoEvent
+// NewLobbyInfoEvent
 func NewLobbyInfoEvent(lobbyId string, players, minToStart, maxBuyIn, minBuyIn, blind, gameStartTimeout int, gameStarted bool) *models.Event {
 	return models.NewEvent(LOBBY_INFO, &LobbyInfo{
 		LobbyID:          lobbyId,
@@ -68,7 +68,7 @@ func NewJoinSuccessEvent(players []models.PublicPlayer, position int, buyIn *mon
 	})
 }
 
-//PlayerLeavesEvent messages that a player left
+// PlayerLeavesEvent messages that a player left
 type PlayerLeavesEvent struct {
 	Player      *models.PublicPlayer `json:"player"`
 	Index       int                  `json:"index"`
@@ -85,7 +85,7 @@ func NewPlayerLeavesEvent(player *models.PublicPlayer, i, playerCount int, gameS
 	})
 }
 
-//NewPlayerJoinEvent is the event for all other players to receive when another player joins. The joining player receives a join success message
+// NewPlayerJoinEvent is the event for all other players to receive when another player joins. The joining player receives a join success message
 type PlayerJoinEvent struct {
 	Player      *models.PublicPlayer `json:"player"`
 	Index       int                  `json:"index"`
@@ -93,7 +93,7 @@ type PlayerJoinEvent struct {
 	GameStarted bool                 `json:"gameStarted"`
 }
 
-//NewPlayerJoinEvent creates a player join event for all other players to receive. The joining player receives a join success message
+// NewPlayerJoinEvent creates a player join event for all other players to receive. The joining player receives a join success message
 func NewPlayerJoinEvent(player *models.PublicPlayer, index, playerCount int, gameStarted bool) *models.Event {
 	return models.NewEvent(PLAYER_JOIN, &PlayerJoinEvent{
 		Player:      player,

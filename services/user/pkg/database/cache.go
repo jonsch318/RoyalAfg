@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-redis/cache/v8"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/models"
 )
 
 func (db *MongoUserDB) SetCache(user *models.User) error {

@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos";
+option go_package = "github.com/jonsch318/royalafg/pkg/protos";
 
 service UserService {
   rpc SaveUser(User) returns (User);

@@ -3,9 +3,9 @@ package servers
 import (
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/metrics"
+	"github.com/jonsch318/royalafg/pkg/protos"
+	"github.com/jonsch318/royalafg/services/user/pkg/database"
+	"github.com/jonsch318/royalafg/services/user/pkg/metrics"
 )
 
 // UserServer is a grpc server handler to save, update or retrieve a user from the database

@@ -4,7 +4,7 @@ import (
 	"agones.dev/agones/pkg/client/clientset/versioned"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/poker/models"
 )
 
 type Manager struct {

@@ -5,7 +5,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 go_library(
     name = "poker_lib",
     srcs = ["main.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker",
+    importpath = "github.com/jonsch318/royalafg/services/poker",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/config",

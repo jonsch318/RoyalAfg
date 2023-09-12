@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/user/pkg/database"
 )
 
 type UserStatusResponse struct {

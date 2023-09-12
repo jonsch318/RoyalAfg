@@ -7,9 +7,9 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
+	"github.com/jonsch318/royalafg/pkg/bank"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/services/bank/pkg/commands"
 )
 
 type BankCommandHandler struct {

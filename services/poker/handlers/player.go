@@ -3,7 +3,7 @@ package handlers
 import (
 	sdk "agones.dev/agones/sdks/go"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/lobby"
+	"github.com/jonsch318/royalafg/services/poker/lobby"
 )
 
 type Game struct {

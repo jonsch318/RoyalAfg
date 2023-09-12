@@ -60,7 +60,7 @@ yarn-error.log*
 
 bazel-bin
 bazel-out
-bazel-RoyalAfgInGo
+bazel-royalafg
 bazel-testlogs
 minikube
 .env

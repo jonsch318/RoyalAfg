@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/crypto"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/database"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/statistics"
 	"github.com/google/uuid"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/services/slot/pkg/crypto"
+	"github.com/jonsch318/royalafg/services/slot/pkg/database"
+	"github.com/jonsch318/royalafg/services/slot/pkg/statistics"
 )
 
 type GameProvider struct {

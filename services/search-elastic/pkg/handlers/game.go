@@ -3,7 +3,7 @@ package handlers
 import (
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/interfaces"
+	"github.com/jonsch318/royalafg/services/search-elastic/pkg/interfaces"
 )
 
 type Game struct {

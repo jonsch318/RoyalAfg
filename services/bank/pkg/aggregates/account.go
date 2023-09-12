@@ -8,10 +8,10 @@ import (
 	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/helpers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/bank/helpers"
+	"github.com/jonsch318/royalafg/services/bank/pkg/events"
 )
 
 // Accoun is the domain aggregat for a bank account

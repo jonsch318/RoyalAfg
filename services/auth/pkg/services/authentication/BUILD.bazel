@@ -9,7 +9,7 @@ go_library(
         "register.go",
         "verify.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication",
+    importpath = "github.com/jonsch318/royalafg/services/auth/pkg/services/authentication",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/auth",

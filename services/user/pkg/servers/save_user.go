@@ -7,11 +7,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
+	"github.com/jonsch318/royalafg/pkg/protos"
+	"github.com/jonsch318/royalafg/services/user/pkg/database"
 )
 
-//SaveUser saves a user to the database
+// SaveUser saves a user to the database
 func (s *UserServer) SaveUser(ctx context.Context, m *protos.User) (*protos.User, error) {
 	//Decode user
 	user := protos.FromMessageUser(m)

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
 type RemovalRequest struct {
@@ -14,7 +14,7 @@ type RemovalRequest struct {
 	ID  string
 }
 
-//RemovePlayerByID removes the given player identified by his id. (LOCKS)
+// RemovePlayerByID removes the given player identified by his id. (LOCKS)
 func (l *Lobby) RemovePlayerByID(id string) error {
 	l.lock.RLock()
 	i := l.FindPlayerByID(id)
@@ -43,7 +43,7 @@ func (l *Lobby) RemovePlayer(index int) error {
 	return nil
 }
 
-//RemoveLeftPlayers starts the recursive removal of hanging players
+// RemoveLeftPlayers starts the recursive removal of hanging players
 func (l *Lobby) RemoveLeftPlayers() {
 
 	log.Logger.Debugf("Starting Removal of players after round.")
@@ -74,7 +74,7 @@ func (l *Lobby) RemoveLeftPlayers() {
 
 }
 
-//PlayerRemoval removes all players in the removal queue.
+// PlayerRemoval removes all players in the removal queue.
 func (l *Lobby) removePlayer() {
 
 	r := l.RemovalQueue.Dequeue()

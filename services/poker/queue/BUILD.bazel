@@ -7,7 +7,7 @@ go_library(
         "queue.go",
         "remove.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/queue",
+    importpath = "github.com/jonsch318/royalafg/services/poker/queue",
     visibility = ["//visibility:public"],
     deps = ["//services/poker/models"],
 )

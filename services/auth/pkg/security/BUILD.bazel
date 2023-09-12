@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "security",
     srcs = ["hash.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security",
+    importpath = "github.com/jonsch318/royalafg/services/auth/pkg/security",
     visibility = ["//visibility:public"],
     deps = ["@com_github_elithrar_simple_scrypt//:simple-scrypt"],
 )

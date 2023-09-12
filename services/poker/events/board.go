@@ -1,6 +1,6 @@
 package events
 
-import "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+import "github.com/jonsch318/royalafg/services/poker/models"
 
 type BoardEvent struct {
 	Cards []models.Card `json:"cards" mapstructure:"cards"`

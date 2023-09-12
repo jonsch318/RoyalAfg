@@ -22,7 +22,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+    x-go-package: github.com/jonsch318/royalafg/pkg/dtos
   CurrencyDto:
     description: CurrencyDto is the data transfer object for a monetary value
     properties:
@@ -34,7 +34,7 @@ definitions:
         type: integer
         x-go-name: Value
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+    x-go-package: github.com/jonsch318/royalafg/pkg/dtos
   ErrorResponse:
     description: ErrorResponse is a generic response containing an error
     properties:
@@ -43,13 +43,13 @@ definitions:
         type: string
         x-go-name: Error
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/responses
+    x-go-package: github.com/jonsch318/royalafg/pkg/responses
   GetUserResponse:
     properties:
       user:
         $ref: '#/definitions/User'
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers
+    x-go-package: github.com/jonsch318/royalafg/services/user/pkg/handlers
   HistoryQueryDto:
     properties:
       history:
@@ -61,7 +61,7 @@ definitions:
         type: string
         x-go-name: UserID
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers
+    x-go-package: github.com/jonsch318/royalafg/services/bank/pkg/handlers
   User:
     description: User is the data transfer object of the internal user object
     properties:
@@ -110,7 +110,7 @@ definitions:
     - fullName
     - birthdate
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+    x-go-package: github.com/jonsch318/royalafg/pkg/dtos
   ValidationError:
     description: Each form property that has missing requirements is listet under
       Errors (validationErrors)
@@ -121,7 +121,7 @@ definitions:
         x-go-name: Errors
     title: ValidationError shows the failed validation requirements.
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/responses
+    x-go-package: github.com/jonsch318/royalafg/pkg/responses
   VerifyAmount:
     description: VeriyAmount is a result of a verification
     properties:
@@ -129,16 +129,16 @@ definitions:
         type: boolean
         x-go-name: VerificationResult
     type: object
-    x-go-package: github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos
+    x-go-package: github.com/jonsch318/royalafg/pkg/dtos
 host: royalafg.games
 info:
   contact:
     email: jonas.max.schneider@gmail.com
-  description: Documentation for github.com/JohnnyS318/RoyalAfgInGo API
+  description: Documentation for github.com/jonsch318/royalafg API
   license:
     name: MIT
     url: http://opensource.org/license/MIT
-  title: github.com/JohnnyS318/RoyalAfgInGo API
+  title: github.com/jonsch318/royalafg API
   version: 0.0.1
 paths:
   /account/logout:

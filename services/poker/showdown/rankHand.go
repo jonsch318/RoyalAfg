@@ -1,10 +1,10 @@
 package showdown
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
-//rankSpecificHand generates a rank identification number for 5 card array out of the 7 cards.
+// rankSpecificHand generates a rank identification number for 5 card array out of the 7 cards.
 func rankSpecificHand(cards []models.Card) int {
 
 	// 1 Byte Number:
@@ -19,14 +19,13 @@ func rankSpecificHand(cards []models.Card) int {
 	lowPair2 := -1
 	overflow := -1
 
-	y := 0 // Y - Method
+	y := 0                  // Y - Method
 	firstCard := identifier // Value of the first card
 
 	mostSignificantValue := -1 //relevant for pairs. if set
 	secondSignificantValue := -1
 
 	minValue := identifier
-
 
 	validStates := 0b111111111 // Initially all card states are valid.
 	for i := 1; i < 5; i++ {
@@ -49,8 +48,6 @@ func rankSpecificHand(cards []models.Card) int {
 			y--
 		}
 
-
-
 		if currentValue == identifier || currentValue == lowPair1 || currentValue == lowPair2 || currentValue == overflow {
 
 			//Current was previously visited (is already in hand) (pair)
@@ -61,7 +58,6 @@ func rankSpecificHand(cards []models.Card) int {
 				secondSignificantValue = mostSignificantValue
 				mostSignificantValue = currentValue
 			}
-
 
 		} else {
 			//Current was not seen before (not a pair)
@@ -97,7 +93,7 @@ func rankSpecificHand(cards []models.Card) int {
 	if lowPair2 == -1 {
 		//only 2 different cards... full house or 4 pair
 		validStates &= 0b011000000
-	}else if overflow == -1 {
+	} else if overflow == -1 {
 		//only 3 different cards => only 2 pair and 3 pair
 		validStates &= 0b000001100
 	}
@@ -105,7 +101,7 @@ func rankSpecificHand(cards []models.Card) int {
 	if y == 0 || y == -2 {
 		//no full house
 		validStates &= 0b101111111
-	}else if y == 2 || y == 4{
+	} else if y == 2 || y == 4 {
 		//no 4 pair
 		validStates &= 0b110111111
 	}

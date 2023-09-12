@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "metrics",
     srcs = ["metrics.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/metrics",
+    importpath = "github.com/jonsch318/royalafg/services/user/pkg/metrics",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_prometheus_client_golang//prometheus",

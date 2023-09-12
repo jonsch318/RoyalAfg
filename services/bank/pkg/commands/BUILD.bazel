@@ -6,7 +6,7 @@ go_library(
         "account.go",
         "accounthandler.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/commands",
     visibility = ["//visibility:public"],
     deps = [
         "//services/bank/helpers",

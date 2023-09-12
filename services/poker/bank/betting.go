@@ -6,10 +6,10 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/log"
 )
 
-//bet handles the betting process for a given player and Amount
+// bet handles the betting process for a given player and Amount
 func (b *Bank) bet(id string, amount *money.Money) error {
 
 	if b.IsAllIn(id) {

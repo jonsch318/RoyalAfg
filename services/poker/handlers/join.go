@@ -8,13 +8,13 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	pokerModels "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	pokerModels "github.com/jonsch318/royalafg/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/poker/ticket"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/serviceconfig"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 
 	"github.com/gorilla/websocket"
 )

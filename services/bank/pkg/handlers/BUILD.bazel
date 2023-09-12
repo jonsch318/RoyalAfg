@@ -9,7 +9,7 @@ go_library(
         "transactions.go",
         "verify.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/currency",

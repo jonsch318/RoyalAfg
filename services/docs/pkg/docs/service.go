@@ -3,10 +3,10 @@ package docs
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/docs/pkg/docs/serviceconfig"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"

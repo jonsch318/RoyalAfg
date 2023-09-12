@@ -3,8 +3,8 @@ package bank
 import (
 	"encoding/json"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 )

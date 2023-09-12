@@ -5,11 +5,11 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
 )
 
 // Validate validates the LoginDto dto to conform to the api's expectation
@@ -23,7 +23,7 @@ func Validate(dto dtos.LoginDto) error {
 // Login authenticates the user and generates a cookie remember this .
 // swagger:route POST /api/auth/login authentication loginUser
 //
-// Login to a user account
+// # Login to a user account
 //
 // After matching credentials, this will generate a jwt and pass it on as a cookie
 //
@@ -31,7 +31,7 @@ func Validate(dto dtos.LoginDto) error {
 //	-	application/json
 //	-	application/x-www-form-urlencoded
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Security:
@@ -39,7 +39,7 @@ func Validate(dto dtos.LoginDto) error {
 //
 //	Schemes: http, https
 //
-// 	Responses:
+//	Responses:
 //	default: ErrorResponse
 //	400: ErrorResponse
 //	422: ValidationErrorResponse
@@ -48,7 +48,6 @@ func Validate(dto dtos.LoginDto) error {
 //	403: ErrorResponse
 //	500: ErrorResponse
 //	200: UserResponse
-//
 func (h *Auth) Login(rw http.ResponseWriter, r *http.Request) {
 
 	h.l.Infof("Origin %v", r.RemoteAddr)

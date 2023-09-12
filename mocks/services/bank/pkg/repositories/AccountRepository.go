@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	aggregates "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
+	aggregates "github.com/jonsch318/royalafg/services/bank/pkg/aggregates"
 	mock "github.com/stretchr/testify/mock"
 
 	ycq "github.com/jetbasrawi/go.cqrs"

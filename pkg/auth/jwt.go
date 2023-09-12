@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/mw"
 )
 
 func GenerateCookie(token string, persistent bool) *http.Cookie {

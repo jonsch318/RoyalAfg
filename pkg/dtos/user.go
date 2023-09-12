@@ -3,7 +3,7 @@ package dtos
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/models"
 )
 
 // User is the data transfer object of the internal user object
@@ -39,7 +39,7 @@ type User struct {
 }
 
 type UpdateUserDto struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	FullName string `json:"fullName"`
 }
 

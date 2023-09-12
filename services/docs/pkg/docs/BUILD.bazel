@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "docs",
     srcs = ["service.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/docs/pkg/docs",
+    importpath = "github.com/jonsch318/royalafg/services/docs/pkg/docs",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",

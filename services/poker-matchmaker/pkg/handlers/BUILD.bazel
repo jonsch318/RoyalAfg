@@ -9,7 +9,7 @@ go_library(
         "lobbies.go",
         "params.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",

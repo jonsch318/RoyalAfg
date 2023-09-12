@@ -1,25 +1,26 @@
 package utils
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"log"
 	"math/rand"
+
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
-//CardGenerator is a utility for randomly choose a multiple cards out of a 52 card deck
+// CardGenerator is a utility for randomly choose a multiple cards out of a 52 card deck
 type CardGenerator struct {
 	Cards         [52]models.Card
 	SelectedCards int
 }
 
-//NewCardSelector creates a new card select
+// NewCardSelector creates a new card select
 func NewCardSelector() *CardGenerator {
 	s := &CardGenerator{SelectedCards: 0}
 	s.Reset()
 	return s
 }
 
-//Reset resets the card stack and therefore the probabilities
+// Reset resets the card stack and therefore the probabilities
 func (s *CardGenerator) Reset() {
 	for i := 0; i < 48; i += 4 {
 		for j := 0; j < 4; j++ {
@@ -39,13 +40,13 @@ func (s *CardGenerator) Reset() {
 	s.SelectedCards = 0
 }
 
-//SelectRandom randomly selects a card from the stack and returns a copy of it
+// SelectRandom randomly selects a card from the stack and returns a copy of it
 func (s *CardGenerator) SelectRandom() (c models.Card) {
 	c, s.SelectedCards = SelectRandom(s.Cards, s.SelectedCards)
 	return c
 }
 
-//SelectRandom randomly selects a card from the stack and returns a copy of it
+// SelectRandom randomly selects a card from the stack and returns a copy of it
 func SelectRandom(cards [52]models.Card, selected int) (models.Card, int) {
 	i := rand.Intn(51 - selected)
 	c := cards[i]

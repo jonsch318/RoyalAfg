@@ -6,7 +6,7 @@ go_library(
         "game.go",
         "gameSearch.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/search-elastic/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//services/search-elastic/pkg/interfaces",

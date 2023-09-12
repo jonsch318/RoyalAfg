@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "round",
     srcs = ["Interface.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/poker/round",
+    importpath = "github.com/jonsch318/royalafg/mocks/services/poker/round",
     visibility = ["//visibility:public"],
     deps = [
         "//services/poker/models",

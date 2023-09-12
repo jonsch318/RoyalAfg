@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/bank"
+	"github.com/jonsch318/royalafg/pkg/log"
 )
 
 func (b *Bank) publishCommand(command *bank.Command) error {
@@ -29,7 +29,7 @@ func (b *Bank) publishCommand(command *bank.Command) error {
 	return nil
 }
 
-//executeQueue Publishes all commands queued. Usually at the end of the game
+// executeQueue Publishes all commands queued. Usually at the end of the game
 func (b *Bank) executeQueue() {
 	//This could be done via a command queue, that everything adds to. (Could include more information about games. But this is simpler.
 	for k, val := range b.PlayerBets {

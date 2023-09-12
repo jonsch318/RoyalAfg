@@ -3,7 +3,7 @@ package protos
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

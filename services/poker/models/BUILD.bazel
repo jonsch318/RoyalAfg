@@ -9,7 +9,7 @@ go_library(
         "player.go",
         "publicPlayer.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/models",
+    importpath = "github.com/jonsch318/royalafg/services/poker/models",
     visibility = ["//visibility:public"],
     deps = [
         "//services/poker/money",

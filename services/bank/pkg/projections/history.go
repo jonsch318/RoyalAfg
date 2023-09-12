@@ -9,11 +9,11 @@ import (
 	ycq "github.com/jetbasrawi/go.cqrs"
 	goes "github.com/jetbasrawi/go.geteventstore"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/bank/pkg/aggregates"
+	"github.com/jonsch318/royalafg/services/bank/pkg/events"
+	"github.com/jonsch318/royalafg/services/bank/pkg/repositories"
 )
 
 // AccountHistoryQuery is the projection for the history

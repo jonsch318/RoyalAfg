@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "search_lib",
     srcs = ["main.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search",
+    importpath = "github.com/jonsch318/royalafg/services/search",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/config",
@@ -29,7 +29,7 @@ go_binary(
 go_library(
     name = "search-elastic_lib",
     srcs = ["main.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic",
+    importpath = "github.com/jonsch318/royalafg/services/search-elastic",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/config",

@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
 	"github.com/Rhymond/go-money"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 type GameStartEvent struct {

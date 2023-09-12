@@ -9,13 +9,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/serviceconfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/services"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/search-elastic/pkg/handlers"
+	"github.com/jonsch318/royalafg/services/search-elastic/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/services/search-elastic/pkg/services"
 )
 
 func main() {

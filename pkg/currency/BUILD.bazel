@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "currency",
     srcs = ["utils.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/currency",
+    importpath = "github.com/jonsch318/royalafg/pkg/currency",
     visibility = ["//visibility:public"],
     deps = ["@com_github_rhymond_go_money//:go-money"],
 )

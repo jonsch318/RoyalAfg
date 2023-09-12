@@ -3,11 +3,11 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
 )
 
-func (h *UserHandler) DeleteUser(rw http.ResponseWriter, r *http.Request)  {
+func (h *UserHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 
 	claims := mw.FromUserTokenContext(r.Context().Value("user"))
 

@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "serviceconfig",
     srcs = ["config.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig",
+    importpath = "github.com/jonsch318/royalafg/services/auth/pkg/serviceconfig",
     visibility = ["//visibility:public"],
     deps = ["@com_github_spf13_viper//:viper"],
 )

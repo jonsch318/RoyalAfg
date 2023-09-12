@@ -3,16 +3,16 @@ package bank
 import (
 	"fmt"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
 	"github.com/Rhymond/go-money"
+	"github.com/jonsch318/royalafg/pkg/log"
 )
 
-//PerformBet performs a check action. This equals the players bet to the current maximum bet.
+// PerformBet performs a check action. This equals the players bet to the current maximum bet.
 func (b *Bank) PerformBet(id string) error {
 	return b.bet(id, b.MaxBet)
 }
 
-//PerformRaise checks if it
+// PerformRaise checks if it
 func (b *Bank) PerformRaise(id string, amount *money.Money) (int, error) {
 
 	//Check for regular call
@@ -34,7 +34,7 @@ func (b *Bank) PerformRaise(id string, amount *money.Money) (int, error) {
 	return 3, fmt.Errorf("the specified amount is not higher than the highest bet or something else was wrong")
 }
 
-//PerformAllIn
+// PerformAllIn
 func (b *Bank) PerformAllIn(id string) (bool, error) {
 	raise, err := b.MustAllIn(id)
 	if err != nil {
@@ -45,7 +45,7 @@ func (b *Bank) PerformAllIn(id string) (bool, error) {
 	return raise, b.bet(id, b.allIn(id))
 }
 
-//PerformBlind is a wrapper around the core bet() function
+// PerformBlind is a wrapper around the core bet() function
 func (b *Bank) PerformBlind(id string, blind *money.Money) error {
 	return b.bet(id, blind)
 }

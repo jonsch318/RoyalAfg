@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "repositories",
     srcs = ["AccountRepository.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/bank/pkg/repositories",
+    importpath = "github.com/jonsch318/royalafg/mocks/services/bank/pkg/repositories",
     visibility = ["//visibility:public"],
     deps = [
         "//services/bank/pkg/aggregates",

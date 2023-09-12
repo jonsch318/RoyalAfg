@@ -7,6 +7,6 @@ go_library(
         "lobby.go",
         "token.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models",
+    importpath = "github.com/jonsch318/royalafg/pkg/poker/models",
     visibility = ["//visibility:public"],
 )

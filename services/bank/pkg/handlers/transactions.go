@@ -8,11 +8,11 @@ import (
 	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/services/bank/pkg/commands"
 )
 
 type TransactionDto struct {
@@ -32,7 +32,7 @@ type noContentResponseWrapper struct {
 //	Consumes:
 //	-	application/json
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Security:
@@ -40,7 +40,7 @@ type noContentResponseWrapper struct {
 //
 //	Schemes: http, https
 //
-// 	Responses:
+//	Responses:
 //	default: ErrorResponse
 //	400: ErrorResponse
 //	404: ErrorResponse
@@ -48,7 +48,6 @@ type noContentResponseWrapper struct {
 //	403: ErrorResponse
 //	500: ErrorResponse
 //	200: NoContentResponse
-//
 func (h Account) Deposit(rw http.ResponseWriter, r *http.Request) {
 
 	if err := mw.ValidateCSRF(r); err != nil {

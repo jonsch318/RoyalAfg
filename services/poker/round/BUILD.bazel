@@ -13,7 +13,7 @@ go_library(
         "round.go",
         "start.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/round",
+    importpath = "github.com/jonsch318/royalafg/services/poker/round",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/errors",

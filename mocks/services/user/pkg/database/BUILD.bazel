@@ -6,7 +6,7 @@ go_library(
         "IOnlineStatusDB.go",
         "IUserDB.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/user/pkg/database",
+    importpath = "github.com/jonsch318/royalafg/mocks/services/user/pkg/database",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",

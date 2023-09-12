@@ -5,10 +5,10 @@ import (
 
 	ycq "github.com/jetbasrawi/go.cqrs"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
+	"github.com/jonsch318/royalafg/services/bank/pkg/aggregates"
 )
 
-//InMemoryAccount is a in memory repository for bank accounts used for testing
+// InMemoryAccount is a in memory repository for bank accounts used for testing
 type InMemoryAccount struct {
 	current   map[string][]ycq.EventMessage
 	publisher ycq.EventBus

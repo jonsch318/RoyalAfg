@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "slot_lib",
     srcs = ["main.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot",
+    importpath = "github.com/jonsch318/royalafg/services/slot",
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/config",

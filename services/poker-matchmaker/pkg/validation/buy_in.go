@@ -10,12 +10,12 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/errors"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/serviceconfig"
 )
 
-//VerifyBuyIn verifies the buy in amount against the user wallet using the bank service
+// VerifyBuyIn verifies the buy in amount against the user wallet using the bank service
 func VerifyBuyIn(userId string, buyIn int) error {
 	client := &http.Client{
 		Timeout: 25 * time.Second,

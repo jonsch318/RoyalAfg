@@ -6,10 +6,10 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	pAuth "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
+	pAuth "github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/services/auth/pkg/security"
 )
 
 func (auth *Authentication) Register(dto *dtos.RegisterDto) (*models.User, string, error) {

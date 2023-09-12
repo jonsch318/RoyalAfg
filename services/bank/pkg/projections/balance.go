@@ -7,20 +7,20 @@ import (
 	"github.com/Rhymond/go-money"
 	ycq "github.com/jetbasrawi/go.cqrs"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/bank/pkg/aggregates"
+	"github.com/jonsch318/royalafg/services/bank/pkg/events"
+	"github.com/jonsch318/royalafg/services/bank/pkg/repositories"
 )
 
-//AccountBalance Query is the projection containing a accounts current balance
+// AccountBalance Query is the projection containing a accounts current balance
 type AccountBalanceQuery struct {
 	accounts map[string]*money.Money
 	repo     *repositories.Account
 }
 
-//NewAccountBalanceQuery creates a new balance projection. You have to register it separately to a event bus
+// NewAccountBalanceQuery creates a new balance projection. You have to register it separately to a event bus
 func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery {
 	return &AccountBalanceQuery{
 		accounts: make(map[string]*money.Money),
@@ -28,7 +28,7 @@ func NewAccountBalanceQuery(repo *repositories.Account) *AccountBalanceQuery {
 	}
 }
 
-//Handle projects the new event to the balance read model.
+// Handle projects the new event to the balance read model.
 func (q *AccountBalanceQuery) Handle(message ycq.EventMessage) {
 
 	log.Logger.Debugf("Balance Read Model handle invoked")
@@ -69,7 +69,7 @@ func (q *AccountBalanceQuery) Handle(message ycq.EventMessage) {
 
 }
 
-//GetAccountBalance is used to query the current account balance.
+// GetAccountBalance is used to query the current account balance.
 func (q *AccountBalanceQuery) GetAccountBalance(id string) (*money.Money, error) {
 	res, ok := q.accounts[id]
 	if !ok {

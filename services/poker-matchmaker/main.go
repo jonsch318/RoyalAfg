@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 func main() {
@@ -20,4 +20,3 @@ func main() {
 	//Start
 	pkg.Start(logger)
 }
-

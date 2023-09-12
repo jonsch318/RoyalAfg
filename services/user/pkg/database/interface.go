@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/models"
 )
 
 // UserDB is the interface for the user database.

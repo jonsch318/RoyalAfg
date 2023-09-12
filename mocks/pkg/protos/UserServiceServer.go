@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	protos "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	protos "github.com/jonsch318/royalafg/pkg/protos"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -84,6 +84,32 @@ func (_m *UserServiceServer) GetUserStatus(_a0 context.Context, _a1 *protos.User
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *protos.UserStatusRequest) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RegisterGame provides a mock function with given fields: _a0, _a1
+func (_m *UserServiceServer) RegisterGame(_a0 context.Context, _a1 *protos.RegisterGameRequest) (*protos.OnlineStatus, error) {
+	ret := _m.Called(_a0, _a1)
+
+	var r0 *protos.OnlineStatus
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *protos.RegisterGameRequest) (*protos.OnlineStatus, error)); ok {
+		return rf(_a0, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *protos.RegisterGameRequest) *protos.OnlineStatus); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*protos.OnlineStatus)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *protos.RegisterGameRequest) error); ok {
 		r1 = rf(_a0, _a1)
 	} else {
 		r1 = ret.Error(1)

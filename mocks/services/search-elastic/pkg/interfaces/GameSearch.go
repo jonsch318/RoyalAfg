@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	dto "github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/dto"
+	dto "github.com/jonsch318/royalafg/services/search-elastic/pkg/dto"
 
 	mock "github.com/stretchr/testify/mock"
 )

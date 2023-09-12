@@ -9,8 +9,8 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/poker/models"
 )
 
 func (m *Manager) SearchWithClass(class int) ([]models.LobbyBase, error) {

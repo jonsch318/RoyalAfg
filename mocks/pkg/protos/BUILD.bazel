@@ -7,7 +7,7 @@ go_library(
         "UserServiceClient.go",
         "UserServiceServer.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/pkg/protos",
+    importpath = "github.com/jonsch318/royalafg/mocks/pkg/protos",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/protos",

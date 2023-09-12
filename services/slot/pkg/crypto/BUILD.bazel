@@ -7,7 +7,7 @@ go_library(
         "keys.go",
         "rng.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/crypto",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/crypto",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/errors",

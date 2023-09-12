@@ -15,16 +15,16 @@ import (
 	ycq "github.com/jetbasrawi/go.cqrs"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/bank/pkg/commands"
+	"github.com/jonsch318/royalafg/services/bank/pkg/events"
+	"github.com/jonsch318/royalafg/services/bank/pkg/handlers"
+	"github.com/jonsch318/royalafg/services/bank/pkg/projections"
+	"github.com/jonsch318/royalafg/services/bank/pkg/rabbit"
+	"github.com/jonsch318/royalafg/services/bank/pkg/repositories"
+	"github.com/jonsch318/royalafg/services/bank/pkg/serviceconfig"
 )
 
 func Start(logger *zap.SugaredLogger) {

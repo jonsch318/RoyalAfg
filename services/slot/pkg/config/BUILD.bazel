@@ -3,6 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "config",
     srcs = ["constants.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/config",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/config",
     visibility = ["//visibility:public"],
 )

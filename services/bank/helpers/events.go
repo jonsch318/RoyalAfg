@@ -3,8 +3,8 @@ package helpers
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/events"
 	"github.com/Rhymond/go-money"
+	"github.com/jonsch318/royalafg/services/bank/pkg/events"
 )
 
 type GeneralTransaction struct {

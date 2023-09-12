@@ -5,8 +5,8 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/errors"
+	"github.com/jonsch318/royalafg/services/poker/serviceconfig"
 )
 
 type RabbitMessageBroker struct {
@@ -65,7 +65,7 @@ func (r *RabbitMessageBroker) PublishCommand(commandType string, body []byte) er
 	return nil
 }
 
-//Close closes the connection to rabbitmq.
+// Close closes the connection to rabbitmq.
 func (r *RabbitMessageBroker) Close() {
 	//Close Channel
 	r.ch.Close()

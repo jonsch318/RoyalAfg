@@ -8,7 +8,7 @@ go_library(
         "player.go",
         "playerConn.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/poker/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/log",

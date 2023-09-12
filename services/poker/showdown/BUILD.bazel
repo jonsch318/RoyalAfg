@@ -6,7 +6,7 @@ go_library(
         "eval.go",
         "rankHand.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown",
+    importpath = "github.com/jonsch318/royalafg/services/poker/showdown",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/log",

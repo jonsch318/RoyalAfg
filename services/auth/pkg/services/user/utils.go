@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/pkg/protos"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

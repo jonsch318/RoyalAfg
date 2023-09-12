@@ -3,10 +3,10 @@ package queue
 import (
 	"sync"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
-//A Player queue works like a queue structure in an thread safe way.
+// A Player queue works like a queue structure in an thread safe way.
 type PlayerQueue struct {
 	lock  sync.Mutex
 	queue []*models.Player
@@ -18,14 +18,14 @@ func NewPlayer() *PlayerQueue {
 	}
 }
 
-//Enqueue enqueues a player that is added to the lobby when a position is free
+// Enqueue enqueues a player that is added to the lobby when a position is free
 func (q *PlayerQueue) Enqueue(player *models.Player) {
 	q.lock.Lock()
 	defer q.lock.Unlock()
 	q.queue = append(q.queue, player)
 }
 
-//Dequeue dequeues one player from the waiting queue
+// Dequeue dequeues one player from the waiting queue
 func (q *PlayerQueue) Dequeue() *models.Player {
 	q.lock.Lock()
 	defer q.lock.Unlock()

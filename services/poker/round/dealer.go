@@ -3,9 +3,9 @@ package round
 import (
 	"errors"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
 func (r *Round) searchByActiveID(id string) (int, error) {

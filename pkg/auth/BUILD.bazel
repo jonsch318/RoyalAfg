@@ -6,7 +6,7 @@ go_library(
         "events.go",
         "jwt.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth",
+    importpath = "github.com/jonsch318/royalafg/pkg/auth",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",

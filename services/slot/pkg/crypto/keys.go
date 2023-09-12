@@ -8,7 +8,7 @@ import (
 	"encoding/pem"
 	"os"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
+	"github.com/jonsch318/royalafg/pkg/errors"
 )
 
 func ReadECDSAKeys(skPath string, pkPath string) (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {

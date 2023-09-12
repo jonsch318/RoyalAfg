@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/lobby"
 )
 
 func (h *Game) Health(rw http.ResponseWriter, r *http.Request) {

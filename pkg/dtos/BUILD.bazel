@@ -10,7 +10,7 @@ go_library(
         "slot.go",
         "user.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos",
+    importpath = "github.com/jonsch318/royalafg/pkg/dtos",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",

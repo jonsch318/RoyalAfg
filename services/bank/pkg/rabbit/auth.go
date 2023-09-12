@@ -9,12 +9,12 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/commands"
+	"github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/services/bank/pkg/commands"
 )
 
-//AuthCommandHandlers handles rabbitmq messages
+// AuthCommandHandlers handles rabbitmq messages
 type AuthCommandHandler struct {
 	logger     *zap.SugaredLogger
 	bus        ycq.EventBus
@@ -29,7 +29,7 @@ func NewAuthCommandHandler(logger *zap.SugaredLogger, bus ycq.EventBus, dispatch
 	}
 }
 
-//Handle handles the rabbitmq message
+// Handle handles the rabbitmq message
 func (h *AuthCommandHandler) Handle(d *amqp.Delivery) {
 	h.logger.Infof("Received Auth message")
 	cmd, err := readAuthCommand(d.Body)
@@ -51,8 +51,8 @@ func (h *AuthCommandHandler) Handle(d *amqp.Delivery) {
 		//Dispatch a default 200€ start Credit
 		h.logger.Infof("Account created with id %v", cmd.UserID)
 		_ = h.dispatcher.Dispatch(ycq.NewCommandMessage(cmd.UserID, &commands.Deposit{
-			Amount:  money.New(20000, currency.Code),
-			Time:    time.Now(),
+			Amount: money.New(20000, currency.Code),
+			Time:   time.Now(),
 		}))
 		h.logger.Infof("Account starting credit %v", cmd.UserID)
 	case auth.AccountDeletedEvent:

@@ -6,11 +6,11 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/errors"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	moneyUtils "github.com/jonsch318/royalafg/services/poker/money"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
 type ActionRoundOptions struct {
@@ -26,7 +26,7 @@ type ActionRoundOptions struct {
 	BlockingList     *BlockingList
 }
 
-//recursiveAction acquires actions from every player so that everybody folds, bets the same amount, or go all in
+// recursiveAction acquires actions from every player so that everybody folds, bets the same amount, or go all in
 func (r *Round) recursiveAction(options *ActionRoundOptions) {
 
 	//_____Preceding checks_____

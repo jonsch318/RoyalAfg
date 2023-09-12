@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/mw"
 )
 
 type HistoryQueryDto struct {
@@ -27,11 +27,11 @@ type historyQueryWrapper struct {
 //
 // Query the users history
 //
-// 	The transaction history of a user
+//	The transaction history of a user
 //
 //	Consumes:
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Security:
@@ -39,7 +39,7 @@ type historyQueryWrapper struct {
 //
 //	Schemes: http, https
 //
-// 	Responses:
+//	Responses:
 //	default: ErrorResponse
 //	400: ErrorResponse
 //	422: ValidationErrorResponse
@@ -48,7 +48,6 @@ type historyQueryWrapper struct {
 //	403: ErrorResponse
 //	500: ErrorResponse
 //	200: HistoryQueryResponse
-//
 func (h *Account) QueryHistory(rw http.ResponseWriter, r *http.Request) {
 	//vals := r.URL.Query()
 	//i, _ := strconv.Atoi(vals["i"][0])

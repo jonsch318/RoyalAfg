@@ -6,6 +6,6 @@ go_library(
         "permission.go",
         "verification.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/user",
+    importpath = "github.com/jonsch318/royalafg/pkg/user",
     visibility = ["//visibility:public"],
 )

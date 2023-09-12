@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
-//SelectCards is used to generate random cards that dont repeat
+// SelectCards is used to generate random cards that dont repeat
 func SelectCards(count int) ([]models.Card, error) {
 	if count > 52 {
 		return nil, errors.New("more requested cards than possible")
@@ -48,7 +48,7 @@ func SelectCards(count int) ([]models.Card, error) {
 	return selected, nil
 }
 
-//Reset resets the card stack and therefore the probabilities
+// Reset resets the card stack and therefore the probabilities
 func GetCards() [52]models.Card {
 	cards := [52]models.Card{}
 	for i := 0; i < 52; i += 4 {

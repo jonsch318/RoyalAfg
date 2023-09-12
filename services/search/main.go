@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	serviceconfig "github.com/JohnnyS318/RoyalAfgInGo/services/search/config"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	serviceconfig "github.com/jonsch318/royalafg/services/search/config"
 	"github.com/meilisearch/meilisearch-go"
 	"github.com/spf13/viper"
 )

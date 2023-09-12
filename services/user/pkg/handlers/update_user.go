@@ -6,11 +6,11 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
 )
 
 // UpdateUserResponse is the response of a update user command.
@@ -57,7 +57,7 @@ func (h *UserHandler) UpdateUser(rw http.ResponseWriter, r *http.Request) {
 	if err = validation.Validate(dto.FullName, validation.Required, validation.Length(1, 100)); err == nil {
 		user.FullName = dto.FullName
 		reGenToken = true
-	}	
+	}
 
 	//Check if the username should be changed
 	if err = validation.Validate(dto.Username, validation.Required, validation.Length(4, 100)); err == nil {

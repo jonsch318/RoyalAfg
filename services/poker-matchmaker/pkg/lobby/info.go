@@ -7,7 +7,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/poker/models"
 )
 
 func (m *Manager) GetRegisteredLobbiesOfClass(index, count, class int) []models.LobbyBase {

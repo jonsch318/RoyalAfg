@@ -9,22 +9,22 @@ import (
 	metricsMW "github.com/slok/go-http-metrics/middleware"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/rabbit"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/auth/pkg/handlers"
+	"github.com/jonsch318/royalafg/services/auth/pkg/rabbit"
+	"github.com/jonsch318/royalafg/services/auth/pkg/serviceconfig"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/authentication"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/services/user"
+	"github.com/jonsch318/royalafg/services/auth/pkg/services/authentication"
+	"github.com/jonsch318/royalafg/services/auth/pkg/services/user"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/negroni"
 
 	metricsNegroni "github.com/slok/go-http-metrics/middleware/negroni"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"

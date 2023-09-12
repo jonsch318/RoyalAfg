@@ -15,13 +15,13 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/handlers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/poker/models"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/handlers"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/lobby"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 // Start the poker matchmaker service

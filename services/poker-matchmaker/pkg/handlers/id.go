@@ -7,14 +7,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/ticket"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/validation"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/poker/ticket"
+	"github.com/jonsch318/royalafg/pkg/utils"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/validation"
 )
 
-//GetTicketWithID requests a ticket with lobby id
+// GetTicketWithID requests a ticket with lobby id
 func (h *Ticket) GetTicketWithID(rw http.ResponseWriter, r *http.Request) {
 	//CSRF Validation could not be accomplished because the frontend requests tickets server side.
 	if err := mw.ValidateCSRF(r); err != nil {

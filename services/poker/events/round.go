@@ -1,7 +1,7 @@
 package events
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 type DealerSetEvent struct {
@@ -9,7 +9,7 @@ type DealerSetEvent struct {
 	Index  int                  `json:"index"`
 }
 
-func NewDealerSetEvent(player *models.PublicPlayer, index int) *models.Event{
+func NewDealerSetEvent(player *models.PublicPlayer, index int) *models.Event {
 	return models.NewEvent(DEALER_SET, &DealerSetEvent{
 		Player: player,
 		Index:  index,

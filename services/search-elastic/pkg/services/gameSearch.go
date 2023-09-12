@@ -8,7 +8,7 @@ import (
 	elasticsearch "github.com/elastic/go-elasticsearch/v8"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/search-elastic/pkg/dto"
+	"github.com/jonsch318/royalafg/services/search-elastic/pkg/dto"
 )
 
 type GameSearch struct {

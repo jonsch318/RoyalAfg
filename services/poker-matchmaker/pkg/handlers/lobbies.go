@@ -3,11 +3,11 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/utils"
 )
 
-//PokerInfo returns 15 combined possible lobbies of all classes and the registered poker classes
+// PokerInfo returns 15 combined possible lobbies of all classes and the registered poker classes
 func (h *Ticket) PokerInfo(rw http.ResponseWriter, r *http.Request) {
 
 	//get lobbies

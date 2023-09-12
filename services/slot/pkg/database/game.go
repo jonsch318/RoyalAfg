@@ -1,8 +1,8 @@
 package database
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
 	"github.com/Kamva/mgm"
+	"github.com/jonsch318/royalafg/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

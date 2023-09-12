@@ -6,7 +6,7 @@ go_library(
         "distribute.go",
         "eval.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/statistics",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/statistics",
     visibility = ["//visibility:public"],
     deps = ["@com_github_rhymond_go_money//:go-money"],
 )

@@ -7,7 +7,7 @@ go_library(
         "errors.go",
         "history.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/dtos",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/dtos",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/currency",
@@ -28,7 +28,7 @@ go_library(
         "balance.go",
         "history.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/projections",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/projections",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/currency",

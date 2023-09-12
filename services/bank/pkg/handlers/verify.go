@@ -7,10 +7,10 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/currency"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/currency"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/responses"
 )
 
 // VerifyAmount validates.
@@ -38,7 +38,7 @@ type errorResponseWrapper struct {
 //
 //	Consumes:
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Security:
@@ -46,14 +46,13 @@ type errorResponseWrapper struct {
 //
 //	Schemes: http, https
 //
-// 	Responses:
+//	Responses:
 //	default: ErrorResponse
 //	400: ErrorResponse
 //	404: ErrorResponse
 //	401: ErrorResponse
 //	500: ErrorResponse
 //	200: VerifyAmountResponse
-//
 func (h *Account) VerifyAmount(rw http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 

@@ -6,11 +6,11 @@ import (
 	"net/url"
 	"reflect"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/helpers"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/aggregates"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories"
 	ycq "github.com/jetbasrawi/go.cqrs"
 	goes "github.com/jetbasrawi/go.geteventstore"
+	"github.com/jonsch318/royalafg/services/bank/helpers"
+	"github.com/jonsch318/royalafg/services/bank/pkg/aggregates"
+	"github.com/jonsch318/royalafg/services/bank/pkg/repositories"
 )
 
 // AccountCommandHandlers is the handler for incomming commands

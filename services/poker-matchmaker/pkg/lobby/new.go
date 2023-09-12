@@ -13,9 +13,9 @@ import (
 	"github.com/spf13/viper"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/pkg/poker/models"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 // NewLobby allocates a new GameServer for a new RoundId

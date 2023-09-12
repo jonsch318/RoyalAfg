@@ -7,7 +7,7 @@ go_library(
         "csrf.go",
         "zap.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/mw",
+    importpath = "github.com/jonsch318/royalafg/pkg/mw",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",

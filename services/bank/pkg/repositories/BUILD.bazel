@@ -7,7 +7,7 @@ go_library(
         "interfaces.go",
         "memory.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/bank/pkg/repositories",
+    importpath = "github.com/jonsch318/royalafg/services/bank/pkg/repositories",
     visibility = ["//visibility:public"],
     deps = [
         "//services/bank/pkg/aggregates",

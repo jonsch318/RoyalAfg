@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "rabbit",
     srcs = ["rabbit.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/rabbit",
+    importpath = "github.com/jonsch318/royalafg/services/poker/rabbit",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/errors",

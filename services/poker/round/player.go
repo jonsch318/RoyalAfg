@@ -4,10 +4,10 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
 func (r *Round) Leave(id string) error {
@@ -35,7 +35,7 @@ func (r *Round) playerError(i int, message string) {
 	_ = utils.SendToPlayerInListTimeout(r.Players, i, models.NewEvent("INVALID_ACTION", message))
 }
 
-//waitForAction sends the player all action possibilities in a decoded form and awaits an response.
+// waitForAction sends the player all action possibilities in a decoded form and awaits an response.
 func (r *Round) waitForAction(i int, preFlop, check bool) (*events.Action, error) {
 
 	var possibilities byte

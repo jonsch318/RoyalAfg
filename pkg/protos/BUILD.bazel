@@ -7,7 +7,7 @@ go_library(
         "user.pb.go",
         "user_grpc.pb.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/protos",
+    importpath = "github.com/jonsch318/royalafg/pkg/protos",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",

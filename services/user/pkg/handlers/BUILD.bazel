@@ -9,7 +9,7 @@ go_library(
         "update_user.go",
         "user_status.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/user/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/auth",

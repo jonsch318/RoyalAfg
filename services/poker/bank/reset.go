@@ -1,14 +1,14 @@
 package bank
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/showdown"
 	"github.com/Rhymond/go-money"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	moneyUtils "github.com/jonsch318/royalafg/services/poker/money"
+	"github.com/jonsch318/royalafg/services/poker/showdown"
 )
 
-//ConcludeRound resets the current round and adds the fair share of the to the winners wallets.
+// ConcludeRound resets the current round and adds the fair share of the to the winners wallets.
 func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []models.PublicPlayer) []*money.Money {
 	b.lock.Lock()
 
@@ -56,7 +56,7 @@ func (b *Bank) ConcludeRound(winners []showdown.WinnerInfo, publicPlayers []mode
 	return shares
 }
 
-//reset resets the state of the Bank for a new round
+// reset resets the state of the Bank for a new round
 func (b *Bank) reset() {
 	b.lock.RLock()
 	defer b.lock.RUnlock()

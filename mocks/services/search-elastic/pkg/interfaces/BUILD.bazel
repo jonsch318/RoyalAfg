@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "interfaces",
     srcs = ["GameSearch.go"],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/search-elastic/pkg/interfaces",
+    importpath = "github.com/jonsch318/royalafg/mocks/services/search-elastic/pkg/interfaces",
     visibility = ["//visibility:public"],
     deps = [
         "//services/search-elastic/pkg/dto",

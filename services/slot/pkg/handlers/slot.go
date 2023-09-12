@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/bank"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/logic"
+	"github.com/jonsch318/royalafg/pkg/bank"
+	"github.com/jonsch318/royalafg/pkg/protos"
+	"github.com/jonsch318/royalafg/services/slot/pkg/logic"
 	"go.uber.org/zap"
 )
 

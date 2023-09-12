@@ -6,14 +6,14 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/serviceconfig"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 )
 
-//Join adds the player to the waiting queue and starts the queue emptying if possible.
+// Join adds the player to the waiting queue and starts the queue emptying if possible.
 func (l *Lobby) Join(player *models.Player) error {
 
 	//Check if lobby is empty, if it is set state to allocated.
@@ -54,7 +54,7 @@ func (l *Lobby) Join(player *models.Player) error {
 	return nil
 }
 
-//FillLobbyPosition recursively adds players to the lobby until the maximum of 10
+// FillLobbyPosition recursively adds players to the lobby until the maximum of 10
 func (l *Lobby) FillLobbyPosition() {
 	if l.PlayerCount >= 10 {
 		//No new players can be added
@@ -129,7 +129,7 @@ func (l *Lobby) FillLobbyPosition() {
 	l.FillLobbyPosition()
 }
 
-//addPlayer is a helper function to add a player to the playerlist and bank
+// addPlayer is a helper function to add a player to the playerlist and bank
 func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) error {
 
 	log.Logger.Debugf("ADDING PLAYER [%v][%v]", public.ID, public.Username)
@@ -150,7 +150,7 @@ func (l *Lobby) addPlayer(player *models.Player, public *models.PublicPlayer) er
 	return utils.SendToPlayerInListTimeout(l.Players, playerIndex, ev)
 }
 
-//WatchPlayerConnClose watches the close channel and removes the player when leaving.
+// WatchPlayerConnClose watches the close channel and removes the player when leaving.
 func (l *Lobby) watchPlayerConnClose(playerIndex int, id string) {
 	defer func() {
 		//Player removal was and is the most crashed situation of the game.

@@ -78,7 +78,7 @@ Because this is not a very elegant solution this will likely change in the futur
 I publish each service as a docker container in my [docker hub page](https://hub.docker.com/u/johnnys318). This is used by the deployment scripts aswell.
 
 
-To deploy the application please refer to the [DEPLOY.md](https://github.com/JohnnyS318/RoyalAfg/tree/master/deployments/DEPLOY.md) under /deployments
+To deploy the application please refer to the [DEPLOY.md](https://github.com/jonsch318/RoyalAfg/tree/master/deployments/DEPLOY.md) under /deployments
 
 ### The following script is not ready yet.
 
@@ -103,14 +103,14 @@ It will fire of a new minikube instance, which will configure kubectl and helm a
 ## Architecture
 Following services are integrated into the system:
 
- - [Auth](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/auth)
- - [User](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/user)
- - [Bank](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/bank)
- - [Poker-Matchmaker](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/poker-matchmaker)
- - [Poker](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/poker)
- - [Search](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/search)
- - [Docs](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/docs)
- - [Web](https://github.com/JohnnyS318/RoyalAfg/tree/master/services/web)
+ - [Auth](https://github.com/jonsch318/RoyalAfg/tree/master/services/auth)
+ - [User](https://github.com/jonsch318/RoyalAfg/tree/master/services/user)
+ - [Bank](https://github.com/jonsch318/RoyalAfg/tree/master/services/bank)
+ - [Poker-Matchmaker](https://github.com/jonsch318/RoyalAfg/tree/master/services/poker-matchmaker)
+ - [Poker](https://github.com/jonsch318/RoyalAfg/tree/master/services/poker)
+ - [Search](https://github.com/jonsch318/RoyalAfg/tree/master/services/search)
+ - [Docs](https://github.com/jonsch318/RoyalAfg/tree/master/services/docs)
+ - [Web](https://github.com/jonsch318/RoyalAfg/tree/master/services/web)
 
 ## Auth
 The authentication service is responsible to generate authentication tokens (jwt) and verify and extend these tokens.

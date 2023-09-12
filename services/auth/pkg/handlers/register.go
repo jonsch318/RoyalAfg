@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
 	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -30,14 +30,13 @@ import (
 //
 //	Schemes: http, https
 //
-// 	Responses:
-// 		default: ErrorResponse
+//	Responses:
+//		default: ErrorResponse
 //		400: ErrorResponse
 //		403: ErrorResponse
 //		422: ValidationErrorResponse
 //		500: ErrorResponse
 //		200: UserResponse
-//
 func (h *Auth) Register(rw http.ResponseWriter, r *http.Request) {
 
 	h.l.Warnf("REGISTER CALLED")

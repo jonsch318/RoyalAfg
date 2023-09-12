@@ -10,7 +10,7 @@ go_library(
         "session.go",
         "verify.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/auth/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/auth",

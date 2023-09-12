@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	mocks "github.com/JohnnyS318/RoyalAfgInGo/mocks/services/auth/pkg/services/user"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
+	mocks "github.com/jonsch318/royalafg/mocks/services/auth/pkg/services/user"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/services/auth/pkg/security"
+	"github.com/jonsch318/royalafg/services/auth/pkg/serviceconfig"
 )
 
 func TestLogin(t *testing.T) {

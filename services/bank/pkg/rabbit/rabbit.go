@@ -8,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/config"
 )
 
 type CommandHandler interface {
@@ -56,7 +56,7 @@ func NewEventConsumer(logger *zap.SugaredLogger, bus ycq.EventBus, dispatcher yc
 	}, nil
 }
 
-//Start the rabbitmq consumer
+// Start the rabbitmq consumer
 func (c *EventConsumer) Start() error {
 	messages, err := c.ch.Consume(c.q.Name, "", true, false, false, false, nil)
 	if err != nil {

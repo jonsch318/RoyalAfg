@@ -8,7 +8,7 @@ go_library(
         "queue.go",
         "search.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils",
+    importpath = "github.com/jonsch318/royalafg/services/poker/utils",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/log",

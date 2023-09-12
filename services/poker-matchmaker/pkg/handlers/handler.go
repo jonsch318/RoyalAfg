@@ -3,7 +3,7 @@ package handlers
 import (
 	"go.uber.org/zap"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/lobby"
 )
 
 type Ticket struct {

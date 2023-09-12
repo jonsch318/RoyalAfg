@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
+	"github.com/jonsch318/royalafg/services/user/pkg/database"
 	"go.uber.org/zap"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	moneyUtils "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money"
+	moneyUtils "github.com/jonsch318/royalafg/services/poker/money"
 )
 
 type Player struct {

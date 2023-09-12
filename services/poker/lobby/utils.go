@@ -3,8 +3,8 @@ package lobby
 import (
 	"strconv"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 func IsInRange(players []models.Player, i int) bool {
@@ -23,7 +23,7 @@ func (l *Lobby) SetPlayerCountLabel() {
 	}
 }
 
-//FindPlayerByID searches a player based on the given id linearly.
+// FindPlayerByID searches a player based on the given id linearly.
 func (l *Lobby) FindPlayerByID(id string) int {
 	//A map structure or hashtable like map[string(id)]int(index) would be more efficient, though it is not necessary for the maximum of 10 players in this list.
 	for i, n := range l.Players {

@@ -9,10 +9,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/events"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/serviceconfig"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/utils"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker/events"
+	"github.com/jonsch318/royalafg/services/poker/serviceconfig"
+	"github.com/jonsch318/royalafg/services/poker/utils"
 
 	"github.com/spf13/viper"
 )
@@ -42,7 +42,7 @@ func (o *Once) Reset() {
 	atomic.StoreUint32(&o.done, 0)
 }
 
-//Start  starts a poker game
+// Start  starts a poker game
 func (l *Lobby) Start() {
 	// SETUP
 	defer func() {

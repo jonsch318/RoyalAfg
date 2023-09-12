@@ -5,7 +5,7 @@ import (
 
 	"github.com/Rhymond/go-money"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/dtos"
 )
 
 // Command is a default Bank Command used to communicate with the bank

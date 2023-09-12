@@ -3,8 +3,8 @@ package servers
 import (
 	"context"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/protos"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/user/pkg/database"
+	"github.com/jonsch318/royalafg/pkg/protos"
+	"github.com/jonsch318/royalafg/services/user/pkg/database"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

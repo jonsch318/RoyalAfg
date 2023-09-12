@@ -7,7 +7,7 @@ go_library(
         "slot.go",
         "spin.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/handlers",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/handlers",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/bank",

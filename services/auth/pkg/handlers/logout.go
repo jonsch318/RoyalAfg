@@ -4,17 +4,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/responses"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/responses"
+	"github.com/jonsch318/royalafg/pkg/utils"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/mw"
 )
 
 // Logout removes the cookie and therefore logs the user out
 // swagger:route POST /account/logout account logoutUser
 //
-// Logout of account
+// # Logout of account
 //
 // This will remove the identity cookie
 //
@@ -32,7 +32,6 @@ import (
 //	default: ErrorResponse
 //	401: ErrorResponse
 //	200: NoContentResponse
-//
 func (h *Auth) Logout(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.Header().Set("X-Content-Type-Options", "nosniff")

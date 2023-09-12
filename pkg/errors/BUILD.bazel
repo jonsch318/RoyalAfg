@@ -10,6 +10,6 @@ go_library(
         "pokerMatchmaker.go",
         "rabbit.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/errors",
+    importpath = "github.com/jonsch318/royalafg/pkg/errors",
     visibility = ["//visibility:public"],
 )

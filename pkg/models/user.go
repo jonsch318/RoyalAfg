@@ -3,10 +3,10 @@ package models
 import (
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/user"
 	"github.com/Kamva/mgm"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/jonsch318/royalafg/pkg/user"
 )
 
 type User struct {

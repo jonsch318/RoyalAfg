@@ -12,7 +12,7 @@ go_library(
         "players.go",
         "reset.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/bank",
+    importpath = "github.com/jonsch318/royalafg/services/poker/bank",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/bank",

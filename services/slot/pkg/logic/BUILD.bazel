@@ -6,7 +6,7 @@ go_library(
         "bank.go",
         "game_provider.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/slot/pkg/logic",
+    importpath = "github.com/jonsch318/royalafg/services/slot/pkg/logic",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/models",

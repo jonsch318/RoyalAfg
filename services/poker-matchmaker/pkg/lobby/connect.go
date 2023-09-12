@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/log"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/serviceconfig"
+	"github.com/jonsch318/royalafg/pkg/log"
+	"github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/serviceconfig"
 )
 
 func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
@@ -38,7 +38,7 @@ func (m *Manager) Connect(id string) (*TicketRequestResult, error) {
 
 	adr := list.Items[0].Status.Address
 	for _, address := range addresses {
-		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, list.Items[0].Status.Ports[0].Port)) ; err2 == nil {
+		if err2 := m.PingHealth(fmt.Sprintf("%s:%v", address, list.Items[0].Status.Ports[0].Port)); err2 == nil {
 			log.Logger.Debugf("Poker Address found of addresses %v => %v", addresses, address)
 			adr = address
 			break

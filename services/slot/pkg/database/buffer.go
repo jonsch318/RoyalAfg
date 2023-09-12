@@ -1,6 +1,6 @@
 package database
 
-import "github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
+import "github.com/jonsch318/royalafg/pkg/models"
 
 //############ GameBuffer ############
 

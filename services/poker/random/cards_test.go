@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 func TestSelectCards(t *testing.T) {
@@ -19,7 +19,7 @@ func TestSelectCards(t *testing.T) {
 		for i := 0; i < 10000; i++ {
 			cards, err := SelectCards(20)
 			assert.Empty(t, err)
-			seen := make([]models.Card,0)
+			seen := make([]models.Card, 0)
 			for _, card := range cards {
 				for _, m := range seen {
 					require.NotEqualValues(t, m, card)
@@ -43,7 +43,7 @@ func TestSelectCards(t *testing.T) {
 func TestGetCards(t *testing.T) {
 	t.Run("Should Generate Unique", func(t *testing.T) {
 		cards := GetCards()
-		seen := make([]models.Card,0)
+		seen := make([]models.Card, 0)
 		for _, card := range cards {
 			for _, m := range seen {
 				assert.NotEqualValues(t, m, card)
@@ -54,8 +54,8 @@ func TestGetCards(t *testing.T) {
 	})
 	t.Run("Should Keep in Bound", func(t *testing.T) {
 		cards := GetCards()
-		assert.Equal(t, cards[0], models.Card{Color: 0,Value: 0})
-		assert.Equal(t, cards[len(cards) -1], models.Card{Color: 3,Value: 12})
+		assert.Equal(t, cards[0], models.Card{Color: 0, Value: 0})
+		assert.Equal(t, cards[len(cards)-1], models.Card{Color: 3, Value: 12})
 		assert.Len(t, cards, 52)
 	})
 

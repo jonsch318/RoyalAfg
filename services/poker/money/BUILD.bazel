@@ -6,7 +6,7 @@ go_library(
         "convert.go",
         "currency.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker/money",
+    importpath = "github.com/jonsch318/royalafg/services/poker/money",
     visibility = ["//visibility:public"],
     deps = ["@com_github_rhymond_go_money//:go-money"],
 )

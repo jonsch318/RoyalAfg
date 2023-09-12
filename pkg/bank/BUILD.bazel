@@ -7,7 +7,7 @@ go_library(
         "rabbit.go",
         "types.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/pkg/bank",
+    importpath = "github.com/jonsch318/royalafg/pkg/bank",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/config",

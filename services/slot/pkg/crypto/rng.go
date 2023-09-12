@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/errors"
+	"github.com/jonsch318/royalafg/pkg/errors"
 	"github.com/vechain/go-ecvrf"
 )
 

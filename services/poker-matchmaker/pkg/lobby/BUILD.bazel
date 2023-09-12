@@ -11,7 +11,7 @@ go_library(
         "search.go",
         "ticket.go",
     ],
-    importpath = "github.com/JohnnyS318/RoyalAfgInGo/services/poker-matchmaker/pkg/lobby",
+    importpath = "github.com/jonsch318/royalafg/services/poker-matchmaker/pkg/lobby",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/log",

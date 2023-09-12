@@ -6,30 +6,29 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/spf13/viper"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/config"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/dtos"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/mw"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/utils"
+	"github.com/jonsch318/royalafg/pkg/config"
+	"github.com/jonsch318/royalafg/pkg/dtos"
+	"github.com/jonsch318/royalafg/pkg/mw"
+	"github.com/jonsch318/royalafg/pkg/utils"
 )
-
 
 // VerifyLoggedIn verifies and validates the cookie and it's jwt token. returns 401 if you are not signed in and 200 if everything is valid-
 // swagger:route GET /account/verify authentication account verifyLoggedIn
 //
-// Verify that the user is logged in
+// # Verify that the user is logged in
 //
 // This will return either status code 401 Unauthorized if user is not signed in and 200 when the login token is valid
 //
 //	Consumes:
 //
-// 	Produces:
+//	Produces:
 //	-	application/json
 //
 //	Schemes: http, https
 //
 //	Security:
 //
-// 	Responses:
+//	Responses:
 //	default: SessionInfo
 //	200: NoContentResponse
 func (h *Auth) VerifyLoggedIn(rw http.ResponseWriter, r *http.Request) {

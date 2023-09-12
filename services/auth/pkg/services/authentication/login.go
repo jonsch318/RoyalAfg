@@ -5,13 +5,13 @@ import (
 
 	"github.com/spf13/viper"
 
-	pAuth "github.com/JohnnyS318/RoyalAfgInGo/pkg/auth"
-	"github.com/JohnnyS318/RoyalAfgInGo/pkg/models"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/security"
-	"github.com/JohnnyS318/RoyalAfgInGo/services/auth/pkg/serviceconfig"
+	pAuth "github.com/jonsch318/royalafg/pkg/auth"
+	"github.com/jonsch318/royalafg/pkg/models"
+	"github.com/jonsch318/royalafg/services/auth/pkg/security"
+	"github.com/jonsch318/royalafg/services/auth/pkg/serviceconfig"
 )
 
-//Login authenticates the user and generates a jwt token to enable the session
+// Login authenticates the user and generates a jwt token to enable the session
 func (auth *Authentication) Login(username, password string) (*models.User, string, error) {
 
 	user, err := auth.UserService.GetUserByUsernameOrEmail(username)

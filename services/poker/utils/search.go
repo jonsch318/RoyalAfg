@@ -3,7 +3,7 @@ package utils
 import (
 	"errors"
 
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 func SearchByID(list []models.Player, id string) (*models.Player, int, error) {

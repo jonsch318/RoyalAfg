@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/JohnnyS318/RoyalAfgInGo/services/poker/models"
+	"github.com/jonsch318/royalafg/services/poker/models"
 )
 
 type PlayerQueue struct {
